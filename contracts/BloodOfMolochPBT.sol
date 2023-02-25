@@ -13,7 +13,7 @@ error CannotMakeChanges();
 error NoClaimToken();
 
 contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
-    uint256 public immutable TOTAL_SUPPLY;
+    uint256 public immutable TOTAL_SUPPLY = 350;
     uint256 public supply;
     uint256 public changeDeadline;
     bool public canMint;
@@ -21,11 +21,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     string private _baseTokenURI;
     IERC721Burnable private _claimToken;
 
-    constructor(string memory name_, string memory symbol_, uint256 totalSupply)
-        PBTSimple(name_, symbol_)
-    {
-        TOTAL_SUPPLY = totalSupply;
-    }
+    constructor() PBTSimple("Blood of Moloch PBT", "BMPBT") {}
 
     function mint(
         uint256 claimTokenId,
@@ -76,7 +72,10 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
 
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
-        require(address(_claimToken) != address(0), "BloodOfMoloch: no claim token");
+        require(
+            address(_claimToken) != address(0),
+            "BloodOfMoloch: no claim token"
+        );
         canMint = true;
     }
 
@@ -105,7 +104,10 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     }
 
     function _burnClaimToken(address user, uint256 tokenId) internal {
-        require(_claimToken.ownerOf(tokenId) == user, "BloodOfMoloch: not owner of claim token");
+        require(
+            _claimToken.ownerOf(tokenId) == user,
+            "BloodOfMoloch: not owner of claim token"
+        );
         _claimToken.burn(tokenId);
     }
 }
