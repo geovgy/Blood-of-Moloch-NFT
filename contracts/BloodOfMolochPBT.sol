@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chiru-labs/pbt/src/PBTSimple.sol";
 import "./IERC721Burnable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error MintNotOpen();
 error TotalSupplyReached();
@@ -11,7 +12,7 @@ error CannotUpdateDeadline();
 error CannotMakeChanges();
 error NoClaimToken();
 
-contract BloodOfMolochPBT is PBTSimple, Ownable {
+contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     uint256 public immutable TOTAL_SUPPLY;
     uint256 public supply;
     uint256 public changeDeadline;
@@ -30,7 +31,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable {
         uint256 claimTokenId,
         bytes calldata signatureFromChip,
         uint256 blockNumberUsedInSig
-    ) external {
+    ) external nonReentrant {
         if (!canMint) {
             revert MintNotOpen();
         }
@@ -40,12 +41,16 @@ contract BloodOfMolochPBT is PBTSimple, Ownable {
         if (address(_claimToken) == address(0)) {
             revert NoClaimToken();
         }
+        _burnClaimToken(_msgSender(), claimTokenId);
+        _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
         unchecked {
             ++supply;
         }
-        _burnClaimToken(_msgSender(), claimTokenId);
-        _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
     }
+
+    /**************************************
+     *        Only Owner Functions        *
+     **************************************/
 
     function seedChipToTokenMapping(
         address[] calldata chipAddresses,
@@ -75,10 +80,6 @@ contract BloodOfMolochPBT is PBTSimple, Ownable {
         canMint = true;
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
-    }
-
     function setBaseURI(string calldata baseURI) external onlyOwner {
         _baseTokenURI = baseURI;
     }
@@ -92,12 +93,19 @@ contract BloodOfMolochPBT is PBTSimple, Ownable {
 
     function setClaimToken(address tokenAddress) external onlyOwner {
         require(tokenAddress != address(0), "BloodOfMoloch: null address");
-        require(address(_claimToken) == address(0), "BloodOfMoloch: claim token already set");
         _claimToken = IERC721Burnable(tokenAddress);
     }
 
+    /**************************************
+     *        Internal Functions          *
+     **************************************/
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
+    }
+
     function _burnClaimToken(address user, uint256 tokenId) internal {
-        require(_claimToken.balanceOf(user) >= 1, "BloodOfMoloch: no claim token balance");
+        require(_claimToken.ownerOf(tokenId) == user, "BloodOfMoloch: not owner of claim token");
         _claimToken.burn(tokenId);
     }
 }
