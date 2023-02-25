@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chiru-labs/pbt/src/PBTSimple.sol";
-import "./IERC721Burnable.sol";
+import "./BloodOfMolochClaimNFT.sol";
 
 error MintNotOpen();
 error TotalSupplyReached();
