@@ -20,6 +20,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
 
     string private _baseTokenURI;
     IERC721Burnable private _claimToken;
+    bool private seeded;
 
     constructor(string memory name_, string memory symbol_, uint256 totalSupply)
         PBTSimple(name_, symbol_)
@@ -41,8 +42,13 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
         if (address(_claimToken) == address(0)) {
             revert NoClaimToken();
         }
-        _burnClaimToken(_msgSender(), claimTokenId);
+        require(_claimToken.ownerOf(claimTokenId) == _msgSender(), "BloodOfMoloch: not owner of claim token");
+        require(
+            _claimToken.isApprovedForAll(_msgSender(), address(this)) || _claimToken.getApproved(claimTokenId) == address(this),
+            "BloodOfMoloch: not approved"
+        );
         _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
+        _burnClaimToken(claimTokenId);
         unchecked {
             ++supply;
         }
@@ -62,6 +68,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
             tokenIds,
             throwIfTokenAlreadyMinted
         );
+        seeded = true;
     }
 
     function updateChips(
@@ -77,6 +84,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
         require(address(_claimToken) != address(0), "BloodOfMoloch: no claim token");
+        require(seeded, "BloodOfMoloch: no chips seeded");
         canMint = true;
     }
 
@@ -104,8 +112,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
         return _baseTokenURI;
     }
 
-    function _burnClaimToken(address user, uint256 tokenId) internal {
-        require(_claimToken.ownerOf(tokenId) == user, "BloodOfMoloch: not owner of claim token");
+    function _burnClaimToken(uint256 tokenId) internal {
         _claimToken.burn(tokenId);
     }
 }
