@@ -1,6 +1,7 @@
 import chakraTheme from "@chakra-ui/theme";
 import type { AppProps } from "next/app";
 import { extendBaseTheme, ChakraProvider } from "@chakra-ui/react";
+import { useToast, RGThemeProvider } from "@raidguild/design-system";
 import { DefaultSeo } from "next-seo";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { wagmiClient } from "../utils/wagmiClient";
@@ -17,7 +18,7 @@ const theme = extendBaseTheme({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider theme={theme}>
+    <RGThemeProvider theme={theme}>
       <DefaultSeo
         title="Blood of Moloch NFT"
         defaultTitle="Blood of Moloch NFT"
@@ -29,6 +30,6 @@ export default function App({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </RainbowKitProvider>
       </WagmiConfig>
-    </ChakraProvider>
+    </RGThemeProvider>
   );
 }
