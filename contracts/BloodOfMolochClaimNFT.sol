@@ -10,8 +10,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import "./IBurnable.sol";
 
-contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl {
+contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl, IBurnable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     string private constant SIGNING_DOMAIN = "BloodOfMolochClaim-voucher";
     string private constant SIGNATURE_VERSION = "1";
@@ -136,5 +137,18 @@ contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl {
         return
             ERC721.supportsInterface(interfaceId) ||
             AccessControl.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Burns `tokenId`. See {ERC721-_burn}.
+     *
+     * Requirements:
+     *
+     * - The caller must own `tokenId` or be an approved operator.
+     */
+    function burn(uint256 tokenId) public override virtual {
+        //solhint-disable-next-line max-line-length
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
+        _burn(tokenId);
     }
 }

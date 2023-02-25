@@ -4,6 +4,8 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chiru-labs/pbt/src/PBTSimple.sol";
 import "./BloodOfMolochClaimNFT.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "./IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error MintNotOpen();
@@ -19,8 +21,8 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     bool public canMint;
 
     string private _baseTokenURI;
-    IERC721Burnable private _claimToken;
-    bool private seeded;
+    address private _claimToken;
+    bool private _seeded;
 
     constructor(string memory name_, string memory symbol_, uint256 totalSupply)
         PBTSimple(name_, symbol_)
@@ -39,12 +41,12 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
         if (supply == TOTAL_SUPPLY) {
             revert TotalSupplyReached();
         }
-        if (address(_claimToken) == address(0)) {
+        if (_claimToken == address(0)) {
             revert NoClaimToken();
         }
-        require(_claimToken.ownerOf(claimTokenId) == _msgSender(), "BloodOfMoloch: not owner of claim token");
+        require(IERC721(_claimToken).ownerOf(claimTokenId) == _msgSender(), "BloodOfMoloch: not owner of claim token");
         require(
-            _claimToken.isApprovedForAll(_msgSender(), address(this)) || _claimToken.getApproved(claimTokenId) == address(this),
+            IERC721(_claimToken).isApprovedForAll(_msgSender(), address(this)) || IERC721(_claimToken).getApproved(claimTokenId) == address(this),
             "BloodOfMoloch: not approved"
         );
         _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
@@ -68,7 +70,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
             tokenIds,
             throwIfTokenAlreadyMinted
         );
-        seeded = true;
+        _seeded = true;
     }
 
     function updateChips(
@@ -84,7 +86,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
         require(address(_claimToken) != address(0), "BloodOfMoloch: no claim token");
-        require(seeded, "BloodOfMoloch: no chips seeded");
+        require(_seeded, "BloodOfMoloch: no chips seeded");
         canMint = true;
     }
 
@@ -101,7 +103,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
 
     function setClaimToken(address tokenAddress) external onlyOwner {
         require(tokenAddress != address(0), "BloodOfMoloch: null address");
-        _claimToken = IERC721Burnable(tokenAddress);
+        _claimToken = tokenAddress;
     }
 
     /**************************************
@@ -113,6 +115,6 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     }
 
     function _burnClaimToken(uint256 tokenId) internal {
-        _claimToken.burn(tokenId);
+        IBurnable(_claimToken).burn(tokenId);
     }
 }
