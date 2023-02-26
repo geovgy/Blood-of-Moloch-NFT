@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, Text } from "@raidguild/design-system";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -20,6 +20,7 @@ const ChipScan = () => {
           });
         }}
         mb={8}
+        fontFamily="texturina"
       >
         Click Me To Initiate Scan
       </Button>
@@ -34,7 +35,9 @@ const ChipScan = () => {
           });
         }}
       >
-        Click Me To Sign EOA+blockhash w/ Chip
+        <Text fontFamily="texturina">
+          Click Me To Sign EOA+blockhash w/ Chip
+        </Text>
       </Button>
     </>
   );

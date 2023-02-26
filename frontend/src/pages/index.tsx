@@ -2,10 +2,14 @@ import Head from "next/head";
 import { Container, Text, Flex, Box } from "@raidguild/design-system";
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { useAccount } from "wagmi";
 import ChipScan from "@/components/ChipScan";
+import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import ConnectWallet from "@/components/ConnectWallet";
 
 export default function Home() {
+  const { address } = useAccount();
+
   return (
     <>
       <Container>
@@ -17,6 +21,7 @@ export default function Home() {
             <Box mt={8} mb={4}>
               <ConnectWallet />
             </Box>
+            {address && <ClaimNFTPanel />}
             <ChipScan />
           </Flex>
         </Flex>
