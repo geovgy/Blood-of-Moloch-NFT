@@ -9,7 +9,7 @@ import { getPublicKeysFromScan, getSignatureFromScan } from './utils';
 describe("BloodOfMolochPBT", function () {
   const BOM_NAME = "Blood of Moloch"
   const BOM_SYMBOL = "BoM"
-  const BOM_TOTAL_SUPPLY = 10
+  const BOM_TOTAL_SUPPLY = 350
   const BOM_BASE_URI = "ipfs://<METADATA>"
 
   let bomContract: BloodOfMolochPBT
@@ -22,7 +22,7 @@ describe("BloodOfMolochPBT", function () {
     claimContract = await MockClaimNFT.deploy()
 
     const BloodOfMolochNFT = await ethers.getContractFactory("BloodOfMolochPBT")
-    bomContract = await BloodOfMolochNFT.deploy("Blood of Moloch", "BoM", BOM_TOTAL_SUPPLY)
+    bomContract = await BloodOfMolochNFT.deploy()
 
     signers = await ethers.getSigners()
     addresses = await Promise.all(signers.map(async signer => await signer.getAddress()))

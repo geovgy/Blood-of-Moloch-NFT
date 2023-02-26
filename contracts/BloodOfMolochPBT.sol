@@ -15,7 +15,7 @@ error CannotMakeChanges();
 error NoClaimToken();
 
 contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
-    uint256 public immutable TOTAL_SUPPLY;
+    uint256 public constant TOTAL_SUPPLY = 350;
     uint256 public supply;
     uint256 public changeDeadline;
     bool public canMint;
@@ -24,11 +24,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     address private _claimToken;
     bool private _seeded;
 
-    constructor(string memory name_, string memory symbol_, uint256 totalSupply)
-        PBTSimple(name_, symbol_)
-    {
-        TOTAL_SUPPLY = totalSupply;
-    }
+    constructor() PBTSimple("Blood of Moloch", "BoM") {}
 
     function mint(
         uint256 claimTokenId,
