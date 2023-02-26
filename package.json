@@ -6,6 +6,9 @@
   "author": "Raid Brood",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts"
+  },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
     "@ethersproject/providers": "^5.4.7",
@@ -30,6 +33,7 @@
   },
   "dependencies": {
     "@chiru-labs/pbt": "^0.3.0",
-    "@openzeppelin/contracts": "^4.8.1"
+    "@openzeppelin/contracts": "^4.8.1",
+    "pbt-chip-client": "^0.0.4"
   }
 }
