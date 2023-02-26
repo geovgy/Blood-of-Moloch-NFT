@@ -2025,7 +2025,7 @@ ethers@^4.0.40:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.4.7:
+ethers@^5.4.7, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -3664,6 +3664,13 @@ pbkdf2@^3.0.17:
     ripemd160 "^2.0.1"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+pbt-chip-client@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/pbt-chip-client/-/pbt-chip-client-0.0.4.tgz#6772df66d6ede6401b06821c72a7e70bdc5ce4e5"
+  integrity sha512-bdppJUE+WPSUv2Rf1eHD4MVkmwpsX03Rjul+6uOOb6ymOsnXUmla/kRFg9pmL2TUdBGa6ZcRYod+UB40zCr+vg==
+  dependencies:
+    ethers "^5.7.2"
 
 performance-now@^2.1.0:
   version "2.1.0"

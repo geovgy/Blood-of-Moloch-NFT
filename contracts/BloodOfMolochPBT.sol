@@ -85,7 +85,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
 
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
-        require(address(_claimToken) != address(0), "BloodOfMoloch: no claim token");
+        require(_claimToken != address(0), "BloodOfMoloch: no claim token");
         require(_seeded, "BloodOfMoloch: no chips seeded");
         canMint = true;
     }

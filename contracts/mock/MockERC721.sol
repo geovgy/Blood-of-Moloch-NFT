@@ -5,7 +5,14 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../IBurnable.sol";
 
 contract MockERC721 is ERC721, IBurnable {
+    uint public supply;
+
     constructor() ERC721("MockERC721", "MOCK") {}
+
+    function mint(address to) external {
+        supply += 1;
+        _mint(to, supply);
+    }
 
     function burn(uint256 tokenId) external {
         _burn(tokenId);
