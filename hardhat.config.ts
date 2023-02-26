@@ -53,6 +53,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       mainnet: process.env.ETHERSCAN_API_KEY || "",
       polygon: process.env.POLYGONSCAN_API_KEY || "",
+      goerli: process.env.ETHERSCAN_GOERLI_API_KEY || "",
       polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
     },
   },
@@ -74,6 +75,7 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic,
       },
+      url: `https://rpc.ankr.com/eth`,
       chainId: chainIds.hardhat,
       allowUnlimitedContractSize: false,
     },
@@ -81,6 +83,7 @@ const config: HardhatUserConfig = {
         accounts: {
           mnemonic,
         },
+        url:`https://rpc.ankr.com/eth_goerli`,
         chainId: chainIds.hardhat,
         allowUnlimitedContractSize: false,
       },
