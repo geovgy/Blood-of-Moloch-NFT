@@ -7,7 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts"
+    "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
+    "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
@@ -34,6 +35,8 @@
   "dependencies": {
     "@chiru-labs/pbt": "^0.3.0",
     "@openzeppelin/contracts": "^4.8.1",
+    "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.3"
   }
 }
