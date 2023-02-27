@@ -24,6 +24,12 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     address private _claimToken;
     bool private _seeded;
 
+    event Burn (
+        address indexed from,
+        uint256 tokenId,
+        address indexed claimToken
+    );
+
     constructor() PBTSimple("Blood of Moloch", "BoM") {}
 
     function mint(
@@ -112,5 +118,6 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
 
     function _burnClaimToken(uint256 tokenId) internal {
         IBurnable(_claimToken).burn(tokenId);
+        emit Burn(_msgSender(), tokenId, _claimToken);
     }
 }

@@ -7,7 +7,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts"
+    "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
+    "deploy:bom:local": "npx hardhat run --network localhost scripts/deploy/bom-pbt.ts",
+    "deploy:bom:test": "npx hardhat run --network goerli scripts/deploy/bom-pbt.ts",
+    "deploy:bom:main": "npx hardhat run --network mainnet scripts/deploy/bom-pbt.ts",
+    "verify:bom:test": "npx hardhat run --network goerli scripts/verify/verify-bom.ts",
+    "verify:bom:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
