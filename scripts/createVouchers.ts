@@ -1,18 +1,22 @@
-import { ethers } from "hardhat";
-
+import { LazyMinter } from "../lib/lazyMinter";
+import {getDefaultSigners} from "../lib/utils"
+import { ethers } from 'hardhat';
+import * as addresses from "../deployments/deployments-goerli.json"
+import BloodOfMolochClaimNFTABI from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
+import { BloodOfMolochClaimNFT } from "../types";
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const signers = await getDefaultSigners();
+  const claimNft = new ethers.Contract(addresses.BloodOfMolochClaimNFT, BloodOfMolochClaimNFTABI.abi, signers.admin) as BloodOfMolochClaimNFT;
+  const tokenUri = "";
+  const minPrice = ethers.utils.parseEther(".001");
+  const lazyMinter = new LazyMinter(claimNft, signers.admin);
+  for(let i = 0; i<350; i++){
+    lazyMinter.createVoucher(i, tokenUri, minPrice)
+    
+  }
+ 
+  
 
-  const lockedAmount = ethers.utils.parseEther("1");
-
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
