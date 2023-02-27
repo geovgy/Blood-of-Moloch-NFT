@@ -8,6 +8,9 @@
   "private": true,
   "scripts": {
     "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
+    "deploy:local": "npx hardhat deploy --network localhost",
+    "deploy:test": "npx hardhat deploy --network goerli",
+    "deploy:main": "npx hardhat deploy --network mainnet",
     "deploy:bom:local": "npx hardhat run --network localhost scripts/deploy/bom-pbt.ts",
     "deploy:bom:test": "npx hardhat run --network goerli scripts/deploy/bom-pbt.ts",
     "deploy:bom:main": "npx hardhat run --network mainnet scripts/deploy/bom-pbt.ts",
