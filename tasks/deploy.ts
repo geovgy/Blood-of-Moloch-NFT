@@ -1,6 +1,5 @@
 // import hre from 'hardhat';
 import { task } from 'hardhat/config';
-import hre from "hardhat";
 import * as fs from 'fs';
 import { ContractFactory } from 'ethers/lib/ethers';
 
@@ -51,7 +50,7 @@ task('deploy', 'Deploy contracts and verify')
 
       deployments[name as Contracts] = instance.address;
 
-      toFile(`deployments/deployments-${hre.network.name}.json`, deployments);
+      toFile(`deployments/${hre.network.name}.json`, deployments);
 
       if (hre.network.name !== ('localhost' || 'hardhat')) {
         try {
