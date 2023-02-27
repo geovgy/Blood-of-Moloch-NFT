@@ -11,6 +11,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@fontsource/texturina";
 import "@fontsource/space-mono";
 import "@rainbow-me/rainbowkit/styles.css";
+import React from "react";
+import { AppStateProvider } from "../context/appState";
 
 // const theme = extendBaseTheme({
 //   components: {},
@@ -27,7 +29,9 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains} theme={darkTheme()}>
-          <Component {...pageProps} />
+          <AppStateProvider>
+            <Component {...pageProps} />
+          </AppStateProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     </RGThemeProvider>

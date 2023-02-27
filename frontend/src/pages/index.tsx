@@ -6,6 +6,8 @@ import { useAccount } from "wagmi";
 import ChipScan from "@/components/ChipScan";
 import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import ConnectWallet from "@/components/ConnectWallet";
+import React from "react";
+import DrinkNFTPanel from "@/components/DrinkNFTPanel";
 
 export default function Home() {
   const { address } = useAccount();
@@ -22,6 +24,7 @@ export default function Home() {
               <ConnectWallet />
             </Box>
             {address && <ClaimNFTPanel />}
+            {address && <DrinkNFTPanel />}
             <ChipScan />
           </Flex>
         </Flex>
