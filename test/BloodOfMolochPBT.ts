@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { BloodOfMolochPBT, MockERC721 } from "../typechain-types";
+import { BloodOfMolochPBT, MockERC721 } from "../types";
 import { BigNumber, Signer } from "ethers";
 
 describe("BloodOfMolochPBT", function () {

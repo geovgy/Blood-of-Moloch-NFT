@@ -12,7 +12,8 @@
     "deploy:bom:test": "npx hardhat run --network goerli scripts/deploy/bom-pbt.ts",
     "deploy:bom:main": "npx hardhat run --network mainnet scripts/deploy/bom-pbt.ts",
     "verify:bom:test": "npx hardhat run --network goerli scripts/verify/verify-bom.ts",
-    "verify:bom:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts"
+    "verify:bom:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts",
+    "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
@@ -39,6 +40,9 @@
   "dependencies": {
     "@chiru-labs/pbt": "^0.3.0",
     "@openzeppelin/contracts": "^4.8.1",
-    "pbt-chip-client": "^0.0.4"
+    "pbt-chip-client": "^0.0.4",
+    "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3"
   }
 }
