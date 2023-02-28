@@ -1,8 +1,10 @@
+import { ethers, utils } from 'ethers';
+
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BloodOfMolochClaimNFT } from '../types/contracts/BloodOfMolochClaimNFT';
 import { BigNumber } from 'ethers';
 // These constants must match the ones used in the smart contract.
-const SIGNING_DOMAIN_NAME = "BloodOfMolochClaimNFT-Voucher"
+const SIGNING_DOMAIN_NAME = "BloodOfMolochClaimVoucher"
 const SIGNING_DOMAIN_VERSION = "1"
 
 /**
@@ -42,20 +44,22 @@ export class LazyMinter {
    * 
    * @returns {NFTVoucher}
    */
-  async createVoucher(tokenId: number, uri: string, minPrice: BigNumber) {
-    const voucher = { tokenId, uri, minPrice }
-    const domain = await this._signingDomain()
+  async createVoucher(tokenId: number | BigNumber, uri: string, minPrice: number| BigNumber) {
+    const voucher = { tokenId, uri, minPrice };
+    const domain = await this._signingDomain();
     const types = {
       NFTVoucher: [
-        {name: "tokenId", type: "uint256"},
+        {name: "tokenId", type: "uint256"},  
+        {name: "uri", type: "string"},
         {name: "minPrice", type: "uint256"},
-        {name: "uri", type: "string"},  
       ]
     }
+    console.log(domain)
     const signature = await this.signer._signTypedData(domain, types, voucher)
+    // const encodedVoucher = ethers.utils.defaultAbiCoder.encode(["NFTVoucher(uint256 tokenId, string uri, uint256 minPrice)", "bytes signature"],[voucher, signature])
     return {
-      ...voucher,
-      signature,
+      voucher,
+      signature
     }
   }
 
@@ -67,7 +71,7 @@ export class LazyMinter {
     if (this._domain != null) {
       return this._domain
     }
-    const chainId = await this.contract.getChainID()
+    const chainId = await this.contract.getChainID();
     this._domain = {
       name: SIGNING_DOMAIN_NAME,
       version: SIGNING_DOMAIN_VERSION,

@@ -9,13 +9,21 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "./IBurnable.sol";
 
-contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl, IBurnable {
+contract BloodOfMolochClaimNFT is
+    ERC721URIStorage,
+    EIP712,
+    AccessControl,
+    IBurnable
+{
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    string private constant SIGNING_DOMAIN = "BloodOfMolochClaim-voucher";
+    string private constant SIGNING_DOMAIN = "BloodOfMolochClaimVoucher";
     string private constant SIGNATURE_VERSION = "1";
+
+    // pre calculated to save gas keccak256("NFTVoucher(uint256 tokenId, string uri, uint256 minPrice)");
+    bytes32 private constant TYPE_HASH = 0x95246aa2c4cba4a29e418c1d18ae1bbf88918f16cf07638520de8bbf1d719c8f;
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
@@ -39,24 +47,22 @@ contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl, IBurn
     struct NFTVoucher {
         /// @notice The id of the token to be redeemed. Must be unique - if another token with this ID already exists, the redeem function will revert.
         uint256 tokenId;
-        /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
-        uint256 minPrice;
         /// @notice The metadata URI to associate with this token.
         string uri;
-        /// @notice the EIP-712 signature of all other fields in the NFTVoucher struct. For a voucher to be valid, it must be signed by an account with the MINTER_ROLE.
-        bytes signature;
+        /// @notice The minimum price (in wei) that the NFT creator is willing to accept for the initial sale of this NFT.
+        uint256 minPrice;
     }
 
     /// @notice Redeems an NFTVoucher for an actual NFT, creating it in the process.
     /// @param redeemer The address of the account which will receive the NFT upon success.
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
-    function redeem(address redeemer, NFTVoucher calldata voucher)
+    function redeem(address redeemer, NFTVoucher calldata voucher, bytes calldata signature)
         public
         payable
         returns (uint256)
     {
         // make sure signature is valid and get the address of the signer
-        address signer = _verify(voucher);
+        address signer = _verify(voucher, signature);
         uint256 tokenId = voucher.tokenId;
 
         //check that tokenId is within the correct limits
@@ -100,31 +106,50 @@ contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl, IBurn
         view
         returns (bytes32)
     {
-        return
-            _hashTypedDataV4(
-                keccak256(
-                    abi.encode(
-                        keccak256(
-                            "NFTVoucher(uint256 tokenId,uint256 minPrice,string uri)"
-                        ),
-                        voucher.tokenId,
-                        voucher.minPrice,
-                        keccak256(bytes(voucher.uri))
-                    )
-                )
-            );
+        console.log("VOUCHER: ");
+        console.log(voucher.tokenId);
+        console.log(voucher.uri);
+        console.log(voucher.minPrice);
+       
+     
+        bytes32 STRUCT_HASH = keccak256(
+            abi.encode(
+                TYPE_HASH,
+                voucher.tokenId,
+                keccak256(bytes(voucher.uri)),
+                voucher.minPrice
+            )
+        );
+        console.log("STRUCT HASH: ");
+        console.logBytes32(STRUCT_HASH);
+        return _hashTypedDataV4(STRUCT_HASH);
     }
 
     /// @notice Verifies the signature for a given NFTVoucher, returning the address of the signer.
     /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
     /// @param voucher An NFTVoucher describing an unminted NFT.
-    function _verify(NFTVoucher calldata voucher)
+    function _verify(NFTVoucher calldata voucher, bytes calldata signature)
         internal
         view
         returns (address)
     {
         bytes32 digest = _hash(voucher);
-        return ECDSA.recover(digest, voucher.signature);
+        console.log("digest");
+        console.logBytes32(digest);
+        console.log("signature");
+        console.logBytes(signature);
+        address recoveredAddress = ECDSA.recover(digest, signature);
+        console.log("recovered address: ", recoveredAddress);
+        return recoveredAddress;
+        // return _hash(voucher).recover(voucher.signature);
+    }
+
+    function getChainID() external view returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
     }
 
     function supportsInterface(bytes4 interfaceId)
@@ -146,9 +171,12 @@ contract BloodOfMolochClaimNFT is ERC721URIStorage, EIP712, AccessControl, IBurn
      *
      * - The caller must own `tokenId` or be an approved operator.
      */
-    function burn(uint256 tokenId) public override virtual {
+    function burn(uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
+        );
         _burn(tokenId);
     }
 }
