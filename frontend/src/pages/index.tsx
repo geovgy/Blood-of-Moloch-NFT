@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Container, Text, Flex, Box } from "@raidguild/design-system";
+import { Container, Text, Flex, Box } from "@chakra-ui/react";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useAccount } from "wagmi";

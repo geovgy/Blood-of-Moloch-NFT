@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { Link as ChakraLink } from "@raidguild/design-system";
+import { Link as ChakraLink } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React from "react";
 

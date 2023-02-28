@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { VStack, Text } from "@raidguild/design-system";
+import { VStack, Text } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { useSigner, useContract } from "wagmi";
 import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";

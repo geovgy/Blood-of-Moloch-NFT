@@ -15,7 +15,7 @@ import {
   Flex,
   Image,
   Text,
-} from "@raidguild/design-system";
+} from "@chakra-ui/react";
 import { CgProfile } from "react-icons/cg";
 import { FiKey, FiChevronDown, FiXCircle } from "react-icons/fi";
 import { truncateAddress } from "../utils/general";

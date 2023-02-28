@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, HStack, Icon, VStack } from "@raidguild/design-system";
+import { Text, HStack, Icon, VStack } from "@chakra-ui/react";
 import { useBlockNumber, useSigner } from "wagmi";
 import { Button } from "@chakra-ui/react";
 import {

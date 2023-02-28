@@ -1,5 +1,5 @@
 import React from "react";
-import { HStack, Text, Icon } from "@raidguild/design-system";
+import { HStack, Text, Icon } from "@chakra-ui/react";
 import { FaCheckCircle } from "react-icons/fa";
 
 const DoneIcon = () => {

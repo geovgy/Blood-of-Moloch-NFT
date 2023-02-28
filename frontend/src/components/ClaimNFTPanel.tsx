@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, Flex, Icon, HStack } from "@raidguild/design-system";
+import { Text, Flex, Icon, HStack } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { useSigner, useContract } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
