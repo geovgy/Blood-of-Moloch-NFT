@@ -1,15 +1,25 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "target": "es2020",
-    "module": "commonjs",
+    "declaration": true,
+    "declarationMap": true,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
+    "lib": ["es6"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
     "strict": true,
+    "target": "es6",
     "skipLibCheck": true,
     "outDir": "dist",
     "allowJs": true
   },
+  "files": ["./hardhat.config.ts"],
   "exclude": ["./dist", "node_modules"],
-  "include": ["./src", "**/*"]
+  "include": ["tasks/**/*", "test/**/*", "scripts/**/*", "src/**/*"]
 }

@@ -2,7 +2,7 @@ import hre, { ethers } from "hardhat";
 import fs from "fs/promises";
 
 async function main() {
-  const contractName = "BloodOfMolochPBT";
+  const contractName = "BloodOfMolochClaimNFT";
   const constructorArgs: any[] = [];
 
   const { name: networkName } = hre.network

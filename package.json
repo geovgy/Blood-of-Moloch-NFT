@@ -8,11 +8,21 @@
   "private": true,
   "scripts": {
     "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
+    "mock": "npx hardhat mock-deploy --network localhost",
+    "deploy:local": "npx hardhat deploy --network localhost",
+    "deploy:test": "npx hardhat deploy --network goerli",
+    "deploy:main": "npx hardhat deploy --network mainnet",
     "deploy:bom:local": "npx hardhat run --network localhost scripts/deploy/bom-pbt.ts",
     "deploy:bom:test": "npx hardhat run --network goerli scripts/deploy/bom-pbt.ts",
     "deploy:bom:main": "npx hardhat run --network mainnet scripts/deploy/bom-pbt.ts",
     "verify:bom:test": "npx hardhat run --network goerli scripts/verify/verify-bom.ts",
-    "verify:bom:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts"
+    "verify:bom:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts",
+    "verify:claim:test": "npx hardhat run --network goerli scripts/verify/verify-bom.ts",
+    "verify:claim:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts",
+    "verify:test": "yarn verify:claim:test && yarn verify:bom:test",
+    "verify:main": "yarn verify:claim:main && yarn verify:bom:main",
+    "seed:local": "npx hardhat run --network localhost scripts/seedChips.ts",
+    "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
@@ -39,6 +49,9 @@
   "dependencies": {
     "@chiru-labs/pbt": "^0.3.0",
     "@openzeppelin/contracts": "^4.8.1",
-    "pbt-chip-client": "^0.0.4"
+    "pbt-chip-client": "^0.0.4",
+    "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3"
   }
 }
