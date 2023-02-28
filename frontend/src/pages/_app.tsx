@@ -20,8 +20,6 @@ import theme from "../styles/theme";
 //   components: {},
 // });
 
-console.log('theme', theme);
-
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
