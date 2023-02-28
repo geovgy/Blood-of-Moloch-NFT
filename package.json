@@ -20,6 +20,7 @@
     "verify:claim:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts",
     "verify:test": "yarn verify:claim:test && yarn verify:bom:test",
     "verify:main": "yarn verify:claim:main && yarn verify:bom:main",
+    "seed:local": "npx hardhat run --network localhost scripts/seedChips.ts",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile"
   },
   "devDependencies": {
