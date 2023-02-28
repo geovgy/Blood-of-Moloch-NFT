@@ -25,7 +25,6 @@ export default function Home() {
             </Box>
             {address && <ClaimNFTPanel />}
             {address && <DrinkNFTPanel />}
-            <ChipScan />
           </Flex>
         </Flex>
       </Container>

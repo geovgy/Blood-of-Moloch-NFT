@@ -1,25 +1,40 @@
 import { useState, useEffect } from "react";
-import { Button, Text } from "@raidguild/design-system";
+import { Text, HStack, Icon, VStack } from "@raidguild/design-system";
 import { useBlockNumber, useSigner } from "wagmi";
+import { Button } from "@chakra-ui/react";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
 } from "pbt-chip-client/kong";
 import React from "react";
-import { useAppState } from "../context/AppState";
+import DoneIcon from "./DoneIcon";
+import { useAppState } from "../context/AppContext";
 
 const ChipScan = () => {
-  const { blockNumberUsedInSig, setBlockNumberUsedInSig, signatureFromChip, setSignatureFromChip, setChipPublicKey } = useAppState();
+  const {
+    blockNumberUsedInSig,
+    setBlockNumberUsedInSig,
+    signatureFromChip,
+    setSignatureFromChip,
+    setChipPublicKey,
+    chipPublicKey,
+  } = useAppState();
   const [blockNumber, setBlockNumber] = useState<string>("");
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-  const { data: blockNumberData, isLoading, error, refetch } = useBlockNumber({
+  const {
+    data: blockNumberData,
+    isLoading,
+    error,
+    refetch,
+  } = useBlockNumber({
     enabled: false,
   });
   const { data: signer } = useSigner();
   useEffect(() => {
     if (!blockNumberUsedInSig && blockNumberData) {
       console.log(`block number data: ${blockNumberData}`);
+      setBlockNumberUsedInSig(blockNumberData);
     }
   }, [blockNumberData]);
 
@@ -29,10 +44,17 @@ const ChipScan = () => {
   if (!signer) {
     return null;
   }
+
   return (
-    <>
-      {!keys && (
+    <VStack>
+      <VStack align="center">
+        <Text fontSize="lg" my={6}>
+          Part A. Get public key from Chip
+        </Text>
+        {chipPublicKey && <DoneIcon />}
+
         <Button
+          disabled={!!chipPublicKey}
           onClick={() => {
             getPublicKeysFromScan().then((keys: any) => {
               setKeys(keys);
@@ -42,11 +64,20 @@ const ChipScan = () => {
           mb={8}
           fontFamily="texturina"
         >
-          Click Me To Initiate Scan
+          Initiate Scan
         </Button>
-      )}
-      {keys && (
+        <Text fontSize="xs" my={4} color="gray.600">
+          This will grab the public key from the chip necessary for the next
+          step
+        </Text>
+      </VStack>
+      <VStack>
+        <Text fontSize="lg" my={6}>
+          Part B. Get Signature
+        </Text>
+        {signatureFromChip && <DoneIcon />}
         <Button
+          disabled={!!signatureFromChip}
           onClick={() => {
             getSignatureFromScan({
               chipPublicKey: keys?.primaryPublicKeyRaw,
@@ -58,12 +89,15 @@ const ChipScan = () => {
             });
           }}
         >
-          <Text fontFamily="texturina">
-            Click Me To Sign EOA+blockhash w/ Chip
-          </Text>
+          Get Signature from Chip
         </Button>
-      )}
-    </>
+        {/* <Text fontSize="xs" my={4} color="gray.600">
+          This will initiate the chip to sign a message with contents of your
+          address: {signer?.getAddress()} and recent block number:{" "}
+          {blockNumberUsedInSig}
+        </Text> */}
+      </VStack>
+    </VStack>
   );
 };
 

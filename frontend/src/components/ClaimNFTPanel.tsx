@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Text, Flex, Icon, Button, HStack } from "@raidguild/design-system";
+import { Text, Flex, Icon, HStack } from "@raidguild/design-system";
+import { Button } from "@chakra-ui/react";
 import { useSigner, useContract } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
 import React from "react";
-import { useAppState } from "@/context/AppState";
+import { useAppState } from "@/context/AppContext";
 import { FaCheckCircle } from "react-icons/fa";
 
 const ClaimNFTPanel = () => {
@@ -48,18 +49,18 @@ const ClaimNFTPanel = () => {
       );
       const result = await tx.wait();
       console.log(`checkIfIsApprovedForAll result: ${result}`);
-      setIsApproved(result.data); 
+      setIsApproved(result.data);
     }
   };
 
   return (
     <Flex direction="column" m={10}>
-      <Text fontSize="16px" as="h2" fontFamily="texturina">
+      <Text fontSize="4xl" fontFamily="texturina" mb={6}>
         Step 1. Approve the contract to burn your CLAIM NFT
       </Text>
       <Text>You have {claimNFTBalance} CLAIM NFTs</Text>
       {!isApproved && (
-        <Button my={8} onClick={approveClaimNFT}>
+        <Button fontFamily="Texturina" my={8} onClick={approveClaimNFT}>
           Set Approval to Burn CLAIM NFT
         </Button>
       )}
@@ -71,6 +72,7 @@ const ClaimNFTPanel = () => {
           <Icon as={FaCheckCircle} />
         </HStack>
       )}
+      {/* // todo: display Claim NFT image */}
     </Flex>
   );
 };

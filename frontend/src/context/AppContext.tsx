@@ -20,7 +20,6 @@ const AppStateProvider = ({ children }: any): any => {
     isApproved,
     setIsApproved,
   };
-  console.log("inside appState.tsx");
   return <AppContext.Provider value={appState}>{children}</AppContext.Provider>;
 };
 

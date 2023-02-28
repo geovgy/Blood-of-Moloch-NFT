@@ -1,6 +1,5 @@
-import chakraTheme from "@chakra-ui/theme";
 import type { AppProps } from "next/app";
-import { useToast, RGThemeProvider } from "@raidguild/design-system";
+import { ChakraProvider } from "@chakra-ui/react";
 import { DefaultSeo } from "next-seo";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { wagmiClient } from "../utils/wagmiClient";
@@ -11,16 +10,21 @@ import "react-datepicker/dist/react-datepicker.css";
 import "@fontsource/texturina";
 import "@fontsource/space-mono";
 import "@rainbow-me/rainbowkit/styles.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import React from "react";
-import { AppStateProvider } from "../context/appState";
+import { AppStateProvider } from "../context/AppContext";
+import theme from "../styles/theme";
 
 // const theme = extendBaseTheme({
 //   components: {},
 // });
 
+console.log('theme', theme);
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <RGThemeProvider>
+    <ChakraProvider theme={theme}>
       <DefaultSeo
         title="Blood of Moloch NFT"
         defaultTitle="Blood of Moloch NFT"
@@ -34,6 +38,17 @@ export default function App({ Component, pageProps }: AppProps) {
           </AppStateProvider>
         </RainbowKitProvider>
       </WagmiConfig>
-    </RGThemeProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </ChakraProvider>
   );
 }
