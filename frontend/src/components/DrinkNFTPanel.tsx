@@ -34,7 +34,7 @@ const DrinkNFTPanel = () => {
   const canMint = claimTokenId && signatureFromChip && blockNumberUsedInSig;
   return (
     <VStack align="center">
-      <Text fontSize="4xl" mb={8} textAlign="center">
+      <Text fontSize="4xl" mb={8} textAlign="center" fontFamily="texturina">
         Step 2. Mint your Drink NFT
       </Text>
 
