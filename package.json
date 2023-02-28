@@ -8,6 +8,7 @@
   "private": true,
   "scripts": {
     "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
+    "mock": "npx hardhat mock-deploy --network localhost",
     "test:claim" : "npx hardhat test test/BloodOfMolochClaimNFT.ts",
     "deploy:local": "npx hardhat deploy --network localhost",
     "deploy:test": "npx hardhat deploy --network goerli",
@@ -21,6 +22,7 @@
     "verify:claim:main": "npx hardhat run --network mainnet scripts/verify/verify-bom.ts",
     "verify:test": "yarn verify:claim:test && yarn verify:bom:test",
     "verify:main": "yarn verify:claim:main && yarn verify:bom:main",
+    "seed:local": "npx hardhat run --network localhost scripts/seedChips.ts",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile"
   },
   "devDependencies": {
