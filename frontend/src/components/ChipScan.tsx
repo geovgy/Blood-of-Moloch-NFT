@@ -22,24 +22,21 @@ const ChipScan = () => {
   const [blockNumber, setBlockNumber] = useState<string>("");
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-  const {
-    data: blockNumberData,
-    isLoading,
-    error,
-    refetch,
-  } = useBlockNumber({
-    enabled: false,
-  });
+
+  const { data: blockNumberData, isError, isLoading } = useBlockNumber();
   const { data: signer } = useSigner();
   useEffect(() => {
-    if (!blockNumberUsedInSig && blockNumberData) {
-      console.log(`block number data: ${blockNumberData}`);
-      setBlockNumberUsedInSig(blockNumberData);
-    }
+    console.log(`block number data: ${blockNumberData}`);
+    setBlockNumberUsedInSig(blockNumberData);
   }, [blockNumberData]);
 
-  console.log(`keys: ${keys} sig: ${sig}`);
-  console.log(`blockNumber: ${blockNumberData} `);
+  console.log(`keys: ${JSON.stringify(keys)} sig: ${JSON.stringify(sig)}`);
+  console.log(
+    `blockNumberData: ${blockNumberData} `,
+    `blockNumberUsedInSig: ${blockNumberUsedInSig} `,
+    isError,
+    isLoading
+  );
 
   const getPublicKey = () => {
     getPublicKeysFromScan({
@@ -53,6 +50,12 @@ const ChipScan = () => {
     });
   };
   const getSignatureFromChip = (publicKey: string) => {
+    console.log(
+      "inside getSignatureFromChip",
+      publicKey,
+      address,
+      blockNumberUsedInSig
+    );
     getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
