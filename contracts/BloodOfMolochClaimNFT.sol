@@ -22,8 +22,9 @@ contract BloodOfMolochClaimNFT is
     string private constant SIGNING_DOMAIN = "BloodOfMolochClaimVoucher";
     string private constant SIGNATURE_VERSION = "1";
 
-    // pre calculated to save gas keccak256("NFTVoucher(uint256 tokenId, string uri, uint256 minPrice)");
-    bytes32 private constant TYPE_HASH = 0x95246aa2c4cba4a29e418c1d18ae1bbf88918f16cf07638520de8bbf1d719c8f;
+    // pre calculated to save gas keccak256("NFTVoucher(uint256 tokenId,string uri,uint256 minPrice)")
+    bytes32 private constant TYPE_HASH =
+        0xc313c44abe7b9471f6e6151a39dadc2293e741d2f166ce98e663dd1a49208461;
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
@@ -56,11 +57,11 @@ contract BloodOfMolochClaimNFT is
     /// @notice Redeems an NFTVoucher for an actual NFT, creating it in the process.
     /// @param redeemer The address of the account which will receive the NFT upon success.
     /// @param voucher A signed NFTVoucher that describes the NFT to be redeemed.
-    function redeem(address redeemer, NFTVoucher calldata voucher, bytes calldata signature)
-        public
-        payable
-        returns (uint256)
-    {
+    function redeem(
+        address redeemer,
+        NFTVoucher calldata voucher,
+        bytes calldata signature
+    ) public payable returns (uint256) {
         // make sure signature is valid and get the address of the signer
         address signer = _verify(voucher, signature);
         uint256 tokenId = voucher.tokenId;
@@ -106,12 +107,6 @@ contract BloodOfMolochClaimNFT is
         view
         returns (bytes32)
     {
-        console.log("VOUCHER: ");
-        console.log(voucher.tokenId);
-        console.log(voucher.uri);
-        console.log(voucher.minPrice);
-       
-     
         bytes32 STRUCT_HASH = keccak256(
             abi.encode(
                 TYPE_HASH,
@@ -120,8 +115,7 @@ contract BloodOfMolochClaimNFT is
                 voucher.minPrice
             )
         );
-        console.log("STRUCT HASH: ");
-        console.logBytes32(STRUCT_HASH);
+
         return _hashTypedDataV4(STRUCT_HASH);
     }
 
@@ -134,14 +128,9 @@ contract BloodOfMolochClaimNFT is
         returns (address)
     {
         bytes32 digest = _hash(voucher);
-        console.log("digest");
-        console.logBytes32(digest);
-        console.log("signature");
-        console.logBytes(signature);
         address recoveredAddress = ECDSA.recover(digest, signature);
-        console.log("recovered address: ", recoveredAddress);
+
         return recoveredAddress;
-        // return _hash(voucher).recover(voucher.signature);
     }
 
     function getChainID() external view returns (uint256) {
@@ -162,6 +151,27 @@ contract BloodOfMolochClaimNFT is
         return
             ERC721.supportsInterface(interfaceId) ||
             AccessControl.supportsInterface(interfaceId);
+    }
+
+    /// @notice Transfers all pending withdrawal balance to the caller. Reverts if the caller is not an authorized minter.
+    function withdraw() public {
+        require(
+            hasRole(MINTER_ROLE, msg.sender),
+            "Only authorized minters can withdraw"
+        );
+
+        // IMPORTANT: casting msg.sender to a payable address is only safe if ALL members of the minter role are payable addresses.
+        address payable receiver = payable(msg.sender);
+
+        uint256 amount = pendingWithdrawals[receiver];
+        // zero account before transfer to prevent re-entrancy attack
+        pendingWithdrawals[receiver] = 0;
+        receiver.transfer(amount);
+    }
+
+    /// @notice Retuns the amount of Ether available to the caller to withdraw.
+    function availableToWithdraw() public view returns (uint256) {
+        return pendingWithdrawals[msg.sender];
     }
 
     /**

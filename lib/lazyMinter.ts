@@ -1,11 +1,11 @@
-import { ethers, utils } from 'ethers';
+import { ethers, TypedDataDomain, utils } from 'ethers';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { BloodOfMolochClaimNFT } from '../types/contracts/BloodOfMolochClaimNFT';
 import { BigNumber } from 'ethers';
 // These constants must match the ones used in the smart contract.
-const SIGNING_DOMAIN_NAME = "BloodOfMolochClaimVoucher"
-const SIGNING_DOMAIN_VERSION = "1"
+const SIGNING_DOMAIN_NAME = "BloodOfMolochClaimVoucher";
+const SIGNING_DOMAIN_VERSION = "1";
 
 /**
  * JSDoc typedefs.
@@ -23,6 +23,7 @@ const SIGNING_DOMAIN_VERSION = "1"
 export class LazyMinter {
     contract: BloodOfMolochClaimNFT;
     signer: SignerWithAddress;
+
   /**
    * Create a new LazyMinter targeting a deployed instance of the LazyNFT contract.
    * 
@@ -31,8 +32,8 @@ export class LazyMinter {
    * @param signer signer a Signer whose account is authorized to mint NFTs on the deployed contract
    */
   constructor( contract: BloodOfMolochClaimNFT, signer: SignerWithAddress) {
-    this.contract = contract
-    this.signer = signer
+    this.contract = contract;
+    this.signer = signer;
   }
 
   /**
@@ -54,12 +55,14 @@ export class LazyMinter {
         {name: "minPrice", type: "uint256"},
       ]
     }
-    console.log(domain)
+
     const signature = await this.signer._signTypedData(domain, types, voucher)
-    // const encodedVoucher = ethers.utils.defaultAbiCoder.encode(["NFTVoucher(uint256 tokenId, string uri, uint256 minPrice)", "bytes signature"],[voucher, signature])
+  
     return {
       voucher,
-      signature
+      signature,
+      domain,
+      types
     }
   }
 
@@ -75,8 +78,9 @@ export class LazyMinter {
     this._domain = {
       name: SIGNING_DOMAIN_NAME,
       version: SIGNING_DOMAIN_VERSION,
+      chainId: chainId,
       verifyingContract: this.contract.address,
-      chainId,
+      
     }
     return this._domain
   }
