@@ -19,7 +19,7 @@ export default function ClaimBaBom() {
     _setIsConnected(isConnected);
   }, [isConnected]);
   useEffect(() => {
-    if (router.query.drink && router.query.drink !== "dabom") {
+    if (router.query.drink && router.query.drink !== "babom") {
       setIs404(true);
     }
   }, [router.query.drink]);
@@ -28,7 +28,7 @@ export default function ClaimBaBom() {
     router,
     router.query.drink,
     is404,
-    router.query.drink !== "dabom"
+    router.query.drink !== "babom"
   );
   if (is404) {
     return <ErrorPage statusCode={404} />;
