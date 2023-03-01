@@ -41,6 +41,31 @@ const ChipScan = () => {
   console.log(`keys: ${keys} sig: ${sig}`);
   console.log(`blockNumber: ${blockNumberData} `);
 
+  const getPublicKey = () => {
+    getPublicKeysFromScan({
+      rpId: "raidbrood.xyz",
+    }).then((keys: any) => {
+      setKeys(keys);
+      setChipPublicKey(keys?.primaryPublicKeyRaw);
+      // alert(`Public key: ${JSON.stringify(keys)}`);
+      console.log(`Public keys: ${JSON.stringify(keys)}`);
+      getSignatureFromChip(keys?.primaryPublicKeyRaw);
+    });
+  };
+  const getSignatureFromChip = (publicKey: string) => {
+    getSignatureFromScan({
+      chipPublicKey: publicKey,
+      address: address,
+      hash: blockNumberUsedInSig,
+    }).then((sig) => {
+      setSig(sig);
+      setSignatureFromChip(sig);
+
+      alert(` sig: ${JSON.stringify(sig)}`);
+      console.log(` sig: ${JSON.stringify(sig)}`);
+    });
+  };
+
   if (!signer) {
     return null;
   }
@@ -56,16 +81,7 @@ const ChipScan = () => {
         <VStack direction="column">
           <Button
             disabled={!!chipPublicKey}
-            onClick={() => {
-              getPublicKeysFromScan({
-                rpId: "raidbrood.xyz",
-              }).then((keys: any) => {
-                setKeys(keys);
-                setChipPublicKey(keys?.primaryPublicKeyRaw);
-                alert(`Public key: ${JSON.stringify(keys)}`);
-                console.log(`Public keys: ${JSON.stringify(keys)}`);
-              });
-            }}
+            onClick={getPublicKey}
             fontFamily="texturina"
           >
             Initiate Scan
@@ -84,16 +100,7 @@ const ChipScan = () => {
         <Box my={10}>
           <Button
             disabled={!!signatureFromChip}
-            onClick={() => {
-              getSignatureFromScan({
-                chipPublicKey: keys?.primaryPublicKeyRaw,
-                address: address,
-                hash: blockNumberUsedInSig,
-              }).then((sig) => {
-                setSig(sig);
-                setSignatureFromChip(sig);
-              });
-            }}
+            onClick={getSignatureFromChip}
             my={10}
           >
             Get Signature from Chip
