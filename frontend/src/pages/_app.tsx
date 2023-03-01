@@ -15,12 +15,16 @@ import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 import { AppStateProvider } from "../context/AppContext";
 import theme from "../styles/theme";
+import { SessionProvider } from "next-auth/react";
 
 // const theme = extendBaseTheme({
 //   components: {},
 // });
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <DefaultSeo
@@ -29,24 +33,26 @@ export default function App({ Component, pageProps }: AppProps) {
         description="Blood of Moloch NFT"
         canonical="https://bloodofmoloch.xyz"
       />
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} theme={darkTheme()}>
-          <AppStateProvider>
-            <Component {...pageProps} />
-          </AppStateProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <SessionProvider session={session}>
+        <WagmiConfig client={wagmiClient}>
+          <RainbowKitProvider chains={chains} theme={darkTheme()}>
+            <AppStateProvider>
+              <Component {...pageProps} />
+            </AppStateProvider>
+          </RainbowKitProvider>
+        </WagmiConfig>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </SessionProvider>
     </ChakraProvider>
   );
 }
