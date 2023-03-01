@@ -58,7 +58,7 @@ const ChipScan = () => {
             disabled={!!chipPublicKey}
             onClick={() => {
               getPublicKeysFromScan({
-                rpId: "https://www.raidbrood.xyz/babom/claim-pbt",
+                rpId: "raidbrood.xyz",
               }).then((keys: any) => {
                 setKeys(keys);
                 setChipPublicKey(keys?.primaryPublicKeyRaw);
