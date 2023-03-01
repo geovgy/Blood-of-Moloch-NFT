@@ -1,55 +1,58 @@
 import { useState, useEffect } from "react";
 import { Text, Flex, Icon, HStack } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
-import { useSigner, useContract } from "wagmi";
+import { useSigner, useContract, useAccount } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
+import MockERC721 from "../artifacts/contracts/mock/MockERC721.sol/MockERC721.json";
 import React from "react";
 import { useAppState } from "@/context/AppContext";
 import { FaCheckCircle } from "react-icons/fa";
 
 const ClaimNFTPanel = () => {
   const { isApproved, setIsApproved } = useAppState();
-  const { data: signer } = useSigner();
+  const { data: signer, isSuccess } = useSigner();
+  const { address, connector, isConnected } = useAccount()
+  const ClaimContract = process.env.NEXT_PUBLIC_DEV_MODE ? MockERC721 : BloodOfMolochClaimNFT;
   const claimNFT = useContract({
-    addressOrName: process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "",
-    abi: BloodOfMolochClaimNFT.abi,
+    address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    abi: ClaimContract.abi,
     signerOrProvider: signer,
   });
-  const [claimNFTBalance, setClaimNFTBalance] = useState<string>("");
+
   useEffect(() => {
-    checkClaimNFTBalance();
-    checkIfIsApprovedForAll();
-  }, []);
+    if (isSuccess) {
+      checkClaimNFTBalance();
+      checkIfIsApprovedForAll();
+    }
+  }, [isSuccess]);
+
+  const [claimNFTBalance, setClaimNFTBalance] = useState<string>("0");
 
   const approveClaimNFT = async () => {
     if (claimNFT) {
       const tx = await claimNFT.setApprovalForAll(
-        process.env.NEXT_PUBLIC_DRINK_NFT_ADDRESS || "",
+        process.env.NEXT_PUBLIC_CLAIM_ADDRESS,
         true
       );
-      const result = await tx.wait();
-      console.log(`approve result: ${result}`);
     }
   };
 
   const checkClaimNFTBalance = async () => {
-    if (claimNFT) {
-      const tx = await claimNFT.balanceOf(signer?.getAddress());
-      const result = await tx.wait();
-      console.log(`check balance result ${result}`);
+    if (address) {
+      const tx = await claimNFT.balanceOf(address);
+      const result = tx.toString();
       setClaimNFTBalance(result);
     }
   };
 
   const checkIfIsApprovedForAll = async () => {
-    if (claimNFT) {
+    if (address) {
       const tx = await claimNFT.isApprovedForAll(
-        signer?.getAddress(),
-        process.env.NEXT_PUBLIC_CLAIM_ADDRESS || ""
+        address, // owner
+        process.env.NEXT_PUBLIC_CLAIM_ADDRESS // operator
       );
-      const result = await tx.wait();
-      console.log(`checkIfIsApprovedForAll result: ${result}`);
-      setIsApproved(result.data);
+      console.log('is approved for all ', tx);
+      setIsApproved(tx);
     }
   };
 
@@ -64,6 +67,7 @@ const ClaimNFTPanel = () => {
           Set Approval to Burn CLAIM NFT
         </Button>
       )}
+      {isApproved ? <Text>Approved to Burn</Text> : <Text>Not Approved</Text>}
       {isApproved && (
         <HStack>
           <Text fontSize="2xl" fontFamily="texturina" mr={4}>
