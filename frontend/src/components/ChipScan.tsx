@@ -8,6 +8,7 @@ import {
 import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
+import Web3Utils from "web3-utils";
 
 const ChipScan = () => {
   const { address } = useAccount();
@@ -35,7 +36,10 @@ const ChipScan = () => {
     `blockNumberData: ${blockNumberData} `,
     `blockNumberUsedInSig: ${blockNumberUsedInSig} `,
     isError,
-    isLoading
+    isLoading,
+    `Web3Utils.fromAscii(blockNumberUsedInSig): ${Web3Utils.fromAscii(
+      blockNumberUsedInSig
+    )} `
   );
 
   const getPublicKey = () => {
@@ -54,19 +58,25 @@ const ChipScan = () => {
       "inside getSignatureFromChip",
       publicKey,
       address,
-      `${blockNumberUsedInSig}`
+      `${blockNumberUsedInSig}`,
+      typeof blockNumberUsedInSig,
+      Web3Utils.fromAscii(blockNumberUsedInSig)
     );
     getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
-      hash: `${blockNumberUsedInSig}`,
-    }).then((sig) => {
-      setSig(sig);
-      setSignatureFromChip(sig);
+      hash: Web3Utils.fromAscii(blockNumberUsedInSig),
+    })
+      .then((sig) => {
+        setSig(sig);
+        setSignatureFromChip(sig);
 
-      alert(` sig: ${JSON.stringify(sig)}`);
-      console.log(` sig: ${JSON.stringify(sig)}`);
-    });
+        alert(` sig: ${JSON.stringify(sig)}`);
+        console.log(` sig: ${JSON.stringify(sig)}`);
+      })
+      .catch((err: any) => {
+        console.log(`getSignatureFromScan error: ${JSON.stringify(err)}`);
+      });
   };
 
   if (!signer) {
