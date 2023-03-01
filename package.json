@@ -9,6 +9,7 @@
   "scripts": {
     "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
     "mock": "npx hardhat mock-deploy --network localhost",
+    "test:claim" : "npx hardhat test test/BloodOfMolochClaimNFT.ts",
     "deploy:local": "npx hardhat deploy --network localhost",
     "deploy:test": "npx hardhat deploy --network goerli",
     "deploy:main": "npx hardhat deploy --network mainnet",
@@ -49,9 +50,10 @@
   "dependencies": {
     "@chiru-labs/pbt": "^0.3.0",
     "@openzeppelin/contracts": "^4.8.1",
-    "pbt-chip-client": "^0.0.4",
     "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "@types/uuid": "^9.0.1",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "pbt-chip-client": "^0.0.4"
   }
 }
