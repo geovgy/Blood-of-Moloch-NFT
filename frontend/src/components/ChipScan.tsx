@@ -27,7 +27,7 @@ const ChipScan = () => {
   const { data: signer } = useSigner();
   useEffect(() => {
     console.log(`block number data: ${blockNumberData}`);
-    setBlockNumberUsedInSig(blockNumberData);
+    setBlockNumberUsedInSig(`${blockNumberData}`);
   }, [blockNumberData]);
 
   console.log(`keys: ${JSON.stringify(keys)} sig: ${JSON.stringify(sig)}`);
@@ -54,12 +54,12 @@ const ChipScan = () => {
       "inside getSignatureFromChip",
       publicKey,
       address,
-      blockNumberUsedInSig
+      `${blockNumberUsedInSig}`
     );
     getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
-      hash: blockNumberUsedInSig,
+      hash: `${blockNumberUsedInSig}`,
     }).then((sig) => {
       setSig(sig);
       setSignatureFromChip(sig);
