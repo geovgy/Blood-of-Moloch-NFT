@@ -16,7 +16,7 @@ const ClaimNFTPanel = () => {
     ? MockERC721
     : BloodOfMolochClaimNFT;
   const claimNFT = useContract({
-    address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    address: process.env.NEXT_PUBLIC_CLAIM_ADDRESS,
     abi: ClaimContract.abi,
     signerOrProvider: signer,
   });
@@ -40,7 +40,7 @@ const ClaimNFTPanel = () => {
   };
 
   const checkClaimNFTBalance = async () => {
-    if (address) {
+    if (address && claimNFT) {
       const tx = await claimNFT.balanceOf(address);
       const result = tx.toString();
       setClaimNFTBalance(result);
@@ -48,7 +48,7 @@ const ClaimNFTPanel = () => {
   };
 
   const checkIfIsApprovedForAll = async () => {
-    if (address) {
+    if (address && claimNFT) {
       const tx = await claimNFT.isApprovedForAll(
         address, // owner
         process.env.NEXT_PUBLIC_CLAIM_ADDRESS // operator
@@ -65,7 +65,7 @@ const ClaimNFTPanel = () => {
       </Text>
       <Text textAlign="center">You have {claimNFTBalance} CLAIM NFTs</Text>
       {!isApproved && (
-        <Button fontFamily="Texturina" my={8} onClick={approveClaimNFT}>
+        <Button fontFamily="texturina" my={8} onClick={approveClaimNFT}>
           Set Approval
         </Button>
       )}

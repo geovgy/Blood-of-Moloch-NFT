@@ -40,14 +40,14 @@ export default function ClaimBaBom() {
         <Flex direction="column" align="center" justify="center" m={8}>
           <VStack>
             <Image
-              src="/assets/RaidBrood.png"
+              src="/assets/logo_header.svg"
               alt="RaidBrood Logo"
-              width="80px"
-              height="80px"
+              width="280px"
+              height="280px"
             />
-            <Text fontSize="42px" as="h1" fontFamily="texturina">
+            {/* <Text fontSize="42px" as="h1" fontFamily="texturina">
               Blood of Moloch NFT
-            </Text>
+            </Text> */}
           </VStack>
           <Flex direction="column" align="center" justify="center" m={8}>
             <Box mt={8} mb={4}>
