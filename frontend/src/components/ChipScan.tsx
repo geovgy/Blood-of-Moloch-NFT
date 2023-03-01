@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Text, HStack, Icon, VStack } from "@chakra-ui/react";
-import { useBlockNumber, useSigner } from "wagmi";
-import { Button } from "@chakra-ui/react";
+import { Text, Button, Icon, VStack } from "@chakra-ui/react";
+import { useBlockNumber, useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -11,6 +10,7 @@ import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 
 const ChipScan = () => {
+  const { address } = useAccount();
   const {
     blockNumberUsedInSig,
     setBlockNumberUsedInSig,
@@ -81,13 +81,14 @@ const ChipScan = () => {
           onClick={() => {
             getSignatureFromScan({
               chipPublicKey: keys?.primaryPublicKeyRaw,
-              address: signer?.getAddress(),
+              address: address,
               hash: blockNumberUsedInSig,
             }).then((sig) => {
               setSig(sig);
               setSignatureFromChip(sig);
             });
           }}
+          my={6}
         >
           Get Signature from Chip
         </Button>
