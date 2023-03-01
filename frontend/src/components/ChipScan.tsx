@@ -57,9 +57,13 @@ const ChipScan = () => {
           <Button
             disabled={!!chipPublicKey}
             onClick={() => {
-              getPublicKeysFromScan().then((keys: any) => {
+              getPublicKeysFromScan({
+                rpId: "https://www.raidbrood.xyz/babom/claim-pbt",
+              }).then((keys: any) => {
                 setKeys(keys);
                 setChipPublicKey(keys?.primaryPublicKeyRaw);
+                alert(`Public key: ${JSON.stringify(keys)}`);
+                console.log(`Public keys: ${JSON.stringify(keys)}`);
               });
             }}
             fontFamily="texturina"

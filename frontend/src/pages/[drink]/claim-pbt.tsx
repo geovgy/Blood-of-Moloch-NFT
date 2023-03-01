@@ -56,8 +56,11 @@ export default function ClaimBaBom() {
             {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE && (
               <MintMockNFT />
             )}
-            {_isConnected && <ClaimNFTPanel />}
-            {_isConnected && <DrinkNFTPanel />}
+            {_isConnected && (
+              <VStack>
+                <ClaimNFTPanel /> <DrinkNFTPanel />
+              </VStack>
+            )}
           </Flex>
         </Flex>
       </Container>
