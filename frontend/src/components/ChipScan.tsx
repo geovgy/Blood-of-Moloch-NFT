@@ -14,7 +14,7 @@ import Web3Utils from "web3-utils";
 import Web3 from "web3";
 
 const ChipScan = () => {
-  const [web3, setWeb3] = useState<any>();
+  const web3 = new Web3(Web3.givenProvider || "");
   const { address } = useAccount();
   const provider = getProvider();
   const {
@@ -41,14 +41,9 @@ const ChipScan = () => {
   };
 
   useEffect(() => {
-    setWeb3(new Web3((window as any).ethereum));
-
-    // console.log(`web3 ${JSON.stringify(web3)}}`);
-  }, []);
-  useEffect(() => {
-    web3 && getBlockHash();
+    getBlockHash();
     console.log(`inside useEffect`, typeof web3);
-  }, [web3]);
+  }, []);
 
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
