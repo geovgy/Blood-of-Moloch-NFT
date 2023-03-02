@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
+import { getProvider } from "@wagmi/core";
+
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -13,6 +15,7 @@ import Web3 from "web3";
 
 const ChipScan = () => {
   const { address } = useAccount();
+  const provider = getProvider();
   const {
     blockHashUsedInSig,
     setBlockHashUsedInSig,
@@ -23,6 +26,7 @@ const ChipScan = () => {
   } = useAppState();
   let web3: any;
   console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
+  console.log(`(window as any).ethereum: ${typeof (window as any).ethereum}`);
 
   const getBlockHash = async () => {
     console.log(`inside getBlockHash`, typeof web3);
@@ -42,7 +46,7 @@ const ChipScan = () => {
     console.log(`inside useEffect`, typeof web3);
 
     // console.log(`web3 ${JSON.stringify(web3)}}`);
-  }, []);
+  }, [provider]);
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
   const { data: signer } = useSigner();
