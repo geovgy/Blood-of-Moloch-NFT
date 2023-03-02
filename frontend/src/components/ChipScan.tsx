@@ -14,6 +14,7 @@ import Web3Utils from "web3-utils";
 import Web3 from "web3";
 
 const ChipScan = () => {
+  const [web3, setWeb3] = useState<any>();
   const { address } = useAccount();
   const provider = getProvider();
   const {
@@ -24,7 +25,6 @@ const ChipScan = () => {
     setChipPublicKey,
     chipPublicKey,
   } = useAppState();
-  let web3: any;
   console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
   console.log(`(window as any).ethereum: ${typeof (window as any).ethereum}`);
 
@@ -41,12 +41,15 @@ const ChipScan = () => {
   };
 
   useEffect(() => {
-    web3 = new Web3((window as any).ethereum);
-    getBlockHash();
-    console.log(`inside useEffect`, typeof web3);
+    setWeb3(new Web3((window as any).ethereum));
 
     // console.log(`web3 ${JSON.stringify(web3)}}`);
-  }, [provider]);
+  }, []);
+  useEffect(() => {
+    web3 && getBlockHash();
+    console.log(`inside useEffect`, typeof web3);
+  }, [web3]);
+
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
   const { data: signer } = useSigner();
