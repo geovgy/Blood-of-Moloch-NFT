@@ -9,9 +9,10 @@ import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 import Web3 from "web3";
+import { getProvider } from "@wagmi/core";
 
 const ChipScan = () => {
-  const web3 = new Web3(Web3.givenProvider || "");
+  const { data: signer } = useSigner();
   const { address } = useAccount();
   const {
     blockHashUsedInSig,
@@ -21,6 +22,10 @@ const ChipScan = () => {
     setChipPublicKey,
     chipPublicKey,
   } = useAppState();
+
+  // const web3 = new Web3(signer?.provider as any);
+  const web3 = new Web3("https://cloudflare-eth.com")
+
   console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
   console.log(`typeof web3: ${typeof web3}`);
 
@@ -44,7 +49,6 @@ const ChipScan = () => {
 
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-  const { data: signer } = useSigner();
 
   console.log(`keys: ${JSON.stringify(keys)} sig: ${JSON.stringify(sig)}`);
 
