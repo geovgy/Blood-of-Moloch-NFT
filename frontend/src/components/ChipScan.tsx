@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
-import { getProvider } from "@wagmi/core";
-
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -10,13 +8,11 @@ import {
 import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
-import Web3Utils from "web3-utils";
 import Web3 from "web3";
 
 const ChipScan = () => {
   const web3 = new Web3(Web3.givenProvider || "");
   const { address } = useAccount();
-  const provider = getProvider();
   const {
     blockHashUsedInSig,
     setBlockHashUsedInSig,
@@ -26,14 +22,15 @@ const ChipScan = () => {
     chipPublicKey,
   } = useAppState();
   console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
-  console.log(`(window as any).ethereum: ${typeof (window as any).ethereum}`);
+  console.log(`typeof web3: ${typeof web3}`);
 
   const getBlockHash = async () => {
     console.log(`inside getBlockHash`, typeof web3);
+    console.log("inside getBlockHash  web3.eth ", typeof web3.eth);
 
     const blockNumber = await web3.eth.getBlockNumber();
-    const block = await web3.eth.getBlock(blockNumber);
     console.log(`blockNumber: ${JSON.stringify(blockNumber)}`);
+    const block = await web3.eth.getBlock(blockNumber);
     console.log(`block: ${JSON.stringify(block)}`);
 
     setBlockHashUsedInSig(block.hash);
