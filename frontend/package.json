@@ -26,6 +26,7 @@
     "framer-motion": "^10.0.0",
     "lodash": "^4.17.21",
     "next": "13.2.1",
+    "next-auth": "^4.19.2",
     "next-compose-plugins": "^2.2.1",
     "next-seo": "^5.14.1",
     "next-transpile-modules": "^10.0.0",
