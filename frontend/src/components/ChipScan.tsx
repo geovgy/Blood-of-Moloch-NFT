@@ -22,6 +22,7 @@ const ChipScan = () => {
     chipPublicKey,
   } = useAppState();
   let web3: any;
+  console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
 
   const getBlockHash = async () => {
     const blockNumber = await web3.eth.getBlockNumber();
@@ -33,6 +34,9 @@ const ChipScan = () => {
   useEffect(() => {
     web3 = new Web3((window as any).ethereum);
     getBlockHash();
+    console.log(`inside useEffect`);
+
+    // console.log(`web3 ${JSON.stringify(web3)}}`);
   }, []);
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
