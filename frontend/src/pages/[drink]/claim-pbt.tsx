@@ -23,13 +23,6 @@ export default function ClaimBaBom() {
       setIs404(true);
     }
   }, [router.query.drink]);
-  console.log(
-    "router",
-    router,
-    router.query.drink,
-    is404,
-    router.query.drink !== "babom"
-  );
   if (is404) {
     return <ErrorPage statusCode={404} />;
   }

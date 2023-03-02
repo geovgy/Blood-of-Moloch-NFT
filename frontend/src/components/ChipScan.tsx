@@ -27,6 +27,9 @@ const ChipScan = () => {
   const getBlockHash = async () => {
     const blockNumber = await web3.eth.getBlockNumber();
     const block = await web3.eth.getBlock(blockNumber);
+    console.log(`blockNumber: ${JSON.stringify(blockNumber)}`);
+    console.log(`block: ${JSON.stringify(block)}`);
+
     setBlockHashUsedInSig(block.hash);
     console.log(`block.hash: ${block.hash}`);
   };
@@ -34,7 +37,7 @@ const ChipScan = () => {
   useEffect(() => {
     web3 = new Web3((window as any).ethereum);
     getBlockHash();
-    console.log(`inside useEffect`);
+    console.log(`inside useEffect`, JSON.stringify(web3));
 
     // console.log(`web3 ${JSON.stringify(web3)}}`);
   }, []);
