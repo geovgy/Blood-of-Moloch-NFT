@@ -9,7 +9,6 @@ import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 import Web3 from "web3";
-import { getProvider } from "@wagmi/core";
 
 const ChipScan = () => {
   const { data: signer } = useSigner();
@@ -23,34 +22,20 @@ const ChipScan = () => {
     chipPublicKey,
   } = useAppState();
 
-  // const web3 = new Web3(signer?.provider as any);
   const web3 = new Web3("https://cloudflare-eth.com")
 
-  console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
-  console.log(`typeof web3: ${typeof web3}`);
-
   const getBlockHash = async () => {
-    console.log(`inside getBlockHash`, typeof web3);
-    console.log("inside getBlockHash  web3.eth ", typeof web3.eth);
-
     const blockNumber = await web3.eth.getBlockNumber();
-    console.log(`blockNumber: ${JSON.stringify(blockNumber)}`);
     const block = await web3.eth.getBlock(blockNumber);
-    console.log(`block: ${JSON.stringify(block)}`);
-
     setBlockHashUsedInSig(block.hash);
-    console.log(`block.hash: ${block.hash}`);
   };
 
   useEffect(() => {
     getBlockHash();
-    console.log(`inside useEffect`, typeof web3);
   }, []);
 
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-
-  console.log(`keys: ${JSON.stringify(keys)} sig: ${JSON.stringify(sig)}`);
 
   const getPublicKey = () => {
     getPublicKeysFromScan({
