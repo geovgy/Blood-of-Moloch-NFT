@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
-import { useBlockNumber, useSigner, useAccount } from "wagmi";
+import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -9,38 +9,36 @@ import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 import Web3Utils from "web3-utils";
+import Web3 from "web3";
 
 const ChipScan = () => {
   const { address } = useAccount();
   const {
-    blockNumberUsedInSig,
-    setBlockNumberUsedInSig,
+    blockHashUsedInSig,
+    setBlockHashUsedInSig,
     signatureFromChip,
     setSignatureFromChip,
     setChipPublicKey,
     chipPublicKey,
   } = useAppState();
-  const [blockNumber, setBlockNumber] = useState<string>("");
+  let web3: any;
+
+  const getBlockHash = async () => {
+    const blockNumber = await web3.eth.getBlockNumber();
+    const block = await web3.eth.getBlock(blockNumber);
+    setBlockHashUsedInSig(block.hash);
+    console.log(`block.hash: ${block.hash}`);
+  };
+
+  useEffect(() => {
+    web3 = new Web3((window as any).ethereum);
+    getBlockHash();
+  }, []);
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-
-  const { data: blockNumberData, isError, isLoading } = useBlockNumber();
   const { data: signer } = useSigner();
-  useEffect(() => {
-    console.log(`block number data: ${blockNumberData}`);
-    setBlockNumberUsedInSig(`${blockNumberData}`);
-  }, [blockNumberData]);
 
   console.log(`keys: ${JSON.stringify(keys)} sig: ${JSON.stringify(sig)}`);
-  console.log(
-    `blockNumberData: ${blockNumberData} `,
-    `blockNumberUsedInSig: ${blockNumberUsedInSig} `,
-    isError,
-    isLoading,
-    `Web3Utils.fromAscii(blockNumberUsedInSig): ${Web3Utils.fromAscii(
-      blockNumberUsedInSig
-    )} `
-  );
 
   const getPublicKey = () => {
     getPublicKeysFromScan({
@@ -48,7 +46,6 @@ const ChipScan = () => {
     }).then((keys: any) => {
       setKeys(keys);
       setChipPublicKey(keys?.primaryPublicKeyRaw);
-      // alert(`Public key: ${JSON.stringify(keys)}`);
       console.log(`Public keys: ${JSON.stringify(keys)}`);
       getSignatureFromChip(keys?.primaryPublicKeyRaw);
     });
@@ -58,14 +55,12 @@ const ChipScan = () => {
       "inside getSignatureFromChip",
       publicKey,
       address,
-      `${blockNumberUsedInSig}`,
-      typeof blockNumberUsedInSig,
-      Web3Utils.fromAscii(blockNumberUsedInSig)
+      blockHashUsedInSig
     );
     getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
-      hash: Web3Utils.fromAscii(blockNumberUsedInSig),
+      hash: blockHashUsedInSig,
     })
       .then((sig) => {
         setSig(sig);
@@ -122,7 +117,7 @@ const ChipScan = () => {
         {/* <Text fontSize="xs" my={4} color="gray.600">
           This will initiate the chip to sign a message with contents of your
           address: {signer?.getAddress()} and recent block number:{" "}
-          {blockNumberUsedInSig}
+          {blockHashUsedInSig}
         </Text> */}
       </VStack>
     </VStack>

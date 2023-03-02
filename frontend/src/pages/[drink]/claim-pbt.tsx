@@ -48,7 +48,7 @@ export default function ClaimBaBom() {
             {/* <Text fontSize="42px" as="h1" fontFamily="texturina">
               Blood of Moloch NFT
             </Text> */}
-            <Text>3</Text>
+            <Text>4</Text>
           </VStack>
           <Flex direction="column" align="center" justify="center" m={8}>
             <Box mt={8} mb={4}>

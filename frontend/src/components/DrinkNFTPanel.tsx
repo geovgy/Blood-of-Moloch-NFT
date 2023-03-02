@@ -8,8 +8,7 @@ import ChipScan from "./ChipScan";
 
 const DrinkNFTPanel = () => {
   const { data: signer } = useSigner();
-  const { claimTokenId, signatureFromChip, blockNumberUsedInSig } =
-    useAppState();
+  const { claimTokenId, signatureFromChip, blockHashUsedInSig } = useAppState();
   const claimNFT = useContract({
     address: process.env.NEXT_PUBLIC_DRINK_NFT_ADDRESS || "",
     abi: BloodOfMolochPBT.abi,
@@ -25,13 +24,13 @@ const DrinkNFTPanel = () => {
       const tx = await claimNFT.mint(
         claimTokenId,
         signatureFromChip,
-        blockNumberUsedInSig
+        blockHashUsedInSig
       );
       const result = tx.wait();
       console.log(`mint PBT result ${result}`);
     }
   };
-  const canMint = claimTokenId && signatureFromChip && blockNumberUsedInSig;
+  const canMint = claimTokenId && signatureFromChip && blockHashUsedInSig;
   return (
     <VStack align="center">
       <Text fontSize="xl" mb={8} textAlign="center" fontFamily="texturina">

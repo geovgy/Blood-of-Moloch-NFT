@@ -35,7 +35,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     function mint(
         uint256 claimTokenId,
         bytes calldata signatureFromChip,
-        uint256 blockNumberUsedInSig
+        uint256 blockHashUsedInSig
     ) external nonReentrant {
         if (!canMint) {
             revert MintNotOpen();
@@ -51,7 +51,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
             IERC721(_claimToken).isApprovedForAll(_msgSender(), address(this)) || IERC721(_claimToken).getApproved(claimTokenId) == address(this),
             "BloodOfMoloch: not approved"
         );
-        _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
+        _mintTokenWithChip(signatureFromChip, blockHashUsedInSig);
         _burnClaimToken(claimTokenId);
         unchecked {
             ++supply;
