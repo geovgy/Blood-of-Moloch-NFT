@@ -25,6 +25,8 @@ const ChipScan = () => {
   console.log(`blockHashUsedInSig: ${blockHashUsedInSig}`);
 
   const getBlockHash = async () => {
+    console.log(`inside getBlockHash`, typeof web3);
+
     const blockNumber = await web3.eth.getBlockNumber();
     const block = await web3.eth.getBlock(blockNumber);
     console.log(`blockNumber: ${JSON.stringify(blockNumber)}`);
