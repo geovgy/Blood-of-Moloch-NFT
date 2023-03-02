@@ -37,7 +37,7 @@ const ChipScan = () => {
   useEffect(() => {
     web3 = new Web3((window as any).ethereum);
     getBlockHash();
-    console.log(`inside useEffect`, JSON.stringify(web3));
+    console.log(`inside useEffect`, typeof web3);
 
     // console.log(`web3 ${JSON.stringify(web3)}}`);
   }, []);
