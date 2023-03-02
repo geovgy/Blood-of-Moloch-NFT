@@ -1,3 +1,4 @@
+import { Contract } from 'ethers';
 import { BloodOfMolochClaimNFT } from './../types/contracts/BloodOfMolochClaimNFT';
 import { expect } from "chai";
 import { ethers } from 'hardhat';
@@ -120,7 +121,7 @@ describe("Claim NFT", function() {
     const payment = minPrice.sub(10000)
     await expect(redeemerContract.redeem(redeemer.address, voucher, signature, { value: payment }))
       .to.be.revertedWith('Insufficient funds to redeem')
-  })
+  });
 
   it("Should make payments available to minter for withdrawal", async function() {
     const { contract, redeemerContract, redeemer, minter } = await deploy()
@@ -142,6 +143,27 @@ describe("Claim NFT", function() {
 
     // minter should now have zero available
     expect(await contract.availableToWithdraw()).to.equal(0)
+  });
+  it("should create 350 vouchers and redeem them", async function() {
+    const { contract, minter, redeemer } = await deploy();
+
+    const lazyMinter = new LazyMinter(contract, minter);
+    const minPrice = ethers.utils.parseEther(".001");
+    let vouchersWSig = [];
+    for(let i =0; i<350; i++){
+        const voucherWSig = await lazyMinter.createVoucher(i, "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi", minPrice);
+        vouchersWSig.push(voucherWSig);
+    }
+    expect(vouchersWSig.length).to.eq(350);
+
+    vouchersWSig.forEach(async (voucher)=> {
+      await expect(contract.connect(redeemer).redeem(redeemer.address, voucher.voucher, voucher.signature, {value: minPrice}))
+      .to.emit(contract, 'Transfer')  // transfer from null address to minter
+      .withArgs('0x0000000000000000000000000000000000000000', minter.address, voucher.voucher.tokenId)
+      .and.to.emit(contract, 'Transfer') // transfer from minter to redeemer
+      .withArgs(minter.address, redeemer.address, voucher.voucher.tokenId)
+
+    });
   })
 
 });

@@ -70,7 +70,7 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
       url: `https://rpc.ankr.com/eth`,
-      chainId: chainIds.hardhat,
+      chainId: 1,
       allowUnlimitedContractSize: false,
     },
       goerli: {
@@ -78,7 +78,7 @@ const config: HardhatUserConfig = {
           mnemonic,
         },
         url:`https://rpc.ankr.com/eth_goerli`,
-        chainId: chainIds.hardhat,
+        chainId: 5,
         allowUnlimitedContractSize: false,
       },
     "polygon-mainnet": { ...getChainConfig("polygon-mainnet"), url: "https://rpc.ankr.com/polygon" },
