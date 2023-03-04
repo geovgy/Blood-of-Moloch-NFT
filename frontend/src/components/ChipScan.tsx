@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Text, HStack, Icon, VStack } from "@chakra-ui/react";
-import { useBlockNumber, useSigner } from "wagmi";
-import { Button } from "@chakra-ui/react";
+import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
+import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -9,37 +8,68 @@ import {
 import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
+import Web3 from "web3";
 
 const ChipScan = () => {
+  const { data: signer } = useSigner();
+  const { address } = useAccount();
   const {
-    blockNumberUsedInSig,
-    setBlockNumberUsedInSig,
+    blockHashUsedInSig,
+    setBlockHashUsedInSig,
     signatureFromChip,
     setSignatureFromChip,
     setChipPublicKey,
     chipPublicKey,
   } = useAppState();
-  const [blockNumber, setBlockNumber] = useState<string>("");
+
+  const web3 = new Web3("https://cloudflare-eth.com")
+
+  const getBlockHash = async () => {
+    const blockNumber = await web3.eth.getBlockNumber();
+    const block = await web3.eth.getBlock(blockNumber);
+    setBlockHashUsedInSig(block.hash);
+  };
+
+  useEffect(() => {
+    getBlockHash();
+  }, []);
+
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-  const {
-    data: blockNumberData,
-    isLoading,
-    error,
-    refetch,
-  } = useBlockNumber({
-    enabled: false,
-  });
-  const { data: signer } = useSigner();
-  useEffect(() => {
-    if (!blockNumberUsedInSig && blockNumberData) {
-      console.log(`block number data: ${blockNumberData}`);
-      setBlockNumberUsedInSig(blockNumberData);
-    }
-  }, [blockNumberData]);
 
-  console.log(`keys: ${keys} sig: ${sig}`);
-  console.log(`blockNumber: ${blockNumberData} `);
+  const getPublicKey = () => {
+    getPublicKeysFromScan({
+      rpId: "raidbrood.xyz",
+    }).then((keys: any) => {
+      setKeys(keys);
+      setChipPublicKey(keys?.primaryPublicKeyRaw);
+      console.log(`Public keys: ${JSON.stringify(keys)}`);
+      getSignatureFromChip(keys?.primaryPublicKeyRaw);
+    });
+  };
+  const getSignatureFromChip = (publicKey: string) => {
+    console.log(
+      "inside getSignatureFromChip",
+      publicKey,
+      address,
+      blockHashUsedInSig
+    );
+    getSignatureFromScan({
+      chipPublicKey: publicKey,
+      address: address,
+      hash: blockHashUsedInSig,
+    })
+      .then((sig) => {
+        setSig(sig);
+        setSignatureFromChip(sig);
+
+        alert(` sig: ${JSON.stringify(sig)}`);
+        console.log(` sig: ${JSON.stringify(sig)}`);
+      })
+      .catch((err: any) => {
+        console.log(`getSignatureFromScan error: ${JSON.stringify(err)}`);
+      });
+  };
 
   if (!signer) {
     return null;
@@ -53,48 +83,38 @@ const ChipScan = () => {
         </Text>
         {chipPublicKey && <DoneIcon />}
 
-        <Button
-          disabled={!!chipPublicKey}
-          onClick={() => {
-            getPublicKeysFromScan().then((keys: any) => {
-              setKeys(keys);
-              setChipPublicKey(keys?.primaryPublicKeyRaw);
-            });
-          }}
-          mb={8}
-          fontFamily="texturina"
-        >
-          Initiate Scan
-        </Button>
-        <Text fontSize="xs" my={4} color="gray.600">
-          This will grab the public key from the chip necessary for the next
-          step
-        </Text>
+        <VStack direction="column">
+          <Button
+            disabled={!!chipPublicKey}
+            onClick={getPublicKey}
+            fontFamily="texturina"
+          >
+            Initiate Scan
+          </Button>
+          <Text fontSize="xs" my={4} color="gray.600">
+            This will grab the public key from the chip necessary for the next
+            step
+          </Text>
+        </VStack>
       </VStack>
       <VStack>
         <Text fontSize="lg" my={6}>
           Part B. Get Signature
         </Text>
         {signatureFromChip && <DoneIcon />}
-        <Button
-          disabled={!!signatureFromChip}
-          onClick={() => {
-            getSignatureFromScan({
-              chipPublicKey: keys?.primaryPublicKeyRaw,
-              address: signer?.getAddress(),
-              hash: blockNumberUsedInSig,
-            }).then((sig) => {
-              setSig(sig);
-              setSignatureFromChip(sig);
-            });
-          }}
-        >
-          Get Signature from Chip
-        </Button>
+        <Box my={10}>
+          <Button
+            disabled={!!signatureFromChip}
+            onClick={getSignatureFromChip}
+            my={10}
+          >
+            Get Signature from Chip
+          </Button>
+        </Box>
         {/* <Text fontSize="xs" my={4} color="gray.600">
           This will initiate the chip to sign a message with contents of your
           address: {signer?.getAddress()} and recent block number:{" "}
-          {blockNumberUsedInSig}
+          {blockHashUsedInSig}
         </Text> */}
       </VStack>
     </VStack>

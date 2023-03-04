@@ -8,10 +8,9 @@ import ChipScan from "./ChipScan";
 
 const DrinkNFTPanel = () => {
   const { data: signer } = useSigner();
-  const { claimTokenId, signatureFromChip, blockNumberUsedInSig } =
-    useAppState();
+  const { claimTokenId, signatureFromChip, blockHashUsedInSig } = useAppState();
   const claimNFT = useContract({
-    addressOrName: process.env.NEXT_PUBLIC_DRINK_NFT_ADDRESS || "",
+    address: process.env.NEXT_PUBLIC_DRINK_NFT_ADDRESS || "",
     abi: BloodOfMolochPBT.abi,
     signerOrProvider: signer,
   });
@@ -25,19 +24,18 @@ const DrinkNFTPanel = () => {
       const tx = await claimNFT.mint(
         claimTokenId,
         signatureFromChip,
-        blockNumberUsedInSig
+        blockHashUsedInSig
       );
       const result = tx.wait();
       console.log(`mint PBT result ${result}`);
     }
   };
-  const canMint = claimTokenId && signatureFromChip && blockNumberUsedInSig;
+  const canMint = claimTokenId && signatureFromChip && blockHashUsedInSig;
   return (
     <VStack align="center">
-      <Text fontSize="4xl" mb={8} textAlign="center" fontFamily="texturina">
+      <Text fontSize="xl" mb={8} textAlign="center" fontFamily="texturina">
         Step 2. Mint your Drink NFT
       </Text>
-
       <ChipScan />
       <Text fontSize="lg" my={10}>
         Part C. Ready to Mint!

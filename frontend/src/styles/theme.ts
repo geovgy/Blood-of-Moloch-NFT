@@ -19,7 +19,15 @@ const components = {
     },
   },
 };
+const styles = {
+  global: {
+    "html, body": {
+      color: "white",
+      background: "#0f0f0e",
+    },
+  },
+};
 
-const theme = extendTheme({ config, components });
+const theme = extendTheme({ config, components, styles });
 
 export default theme;
