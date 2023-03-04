@@ -73,14 +73,15 @@ const config: HardhatUserConfig = {
       chainId: 1,
       allowUnlimitedContractSize: false,
     },
-      goerli: {
-        accounts: {
-          mnemonic,
-        },
-        url:`https://rpc.ankr.com/eth_goerli`,
-        chainId: 5,
-        allowUnlimitedContractSize: false,
-      },
+    goerli: {
+      // accounts: {
+      //   mnemonic,
+      // },
+      accounts: [process.env.PRIVATE_KEY || ""],
+      url:`https://rpc.ankr.com/eth_goerli`,
+      chainId: 5,
+      allowUnlimitedContractSize: false,
+    },
     "polygon-mainnet": { ...getChainConfig("polygon-mainnet"), url: "https://rpc.ankr.com/polygon" },
     "polygon-mumbai": { ...getChainConfig("polygon-mumbai"), url: "https://rpc.ankr.com/polygon_mumbai" },
     "sandbox-mumbai": { ...getChainConfig("sandbox-mumbai"), url: "https://rpc.ankr.com/polygon_mumbai" },

@@ -27,28 +27,13 @@ async function main() {
         signer
       )
 
-      const chipAddresses = await parseHaloScans()
-      const tokenIds = chipAddresses.map((addr, i) => i + 1)
+      const claimAddress = deployments["BloodOfMolochClaimNFT"]
+      if (!claimAddress) throw Error("No address of claim NFT contract")
 
-      await bomContract.seedChipToTokenMapping(chipAddresses, tokenIds, true)
-      console.log("Chips seeded")
+      await bomContract.setClaimToken(claimAddress)
+      console.log(`Set claim NFT address to ${claimAddress} on ${hre.network.name}`)
     } catch (error: any) {
       console.error(error);
     }
   }
-}
-
-async function parseHaloScans() {
-  const chipAddresses = []
-  const dir = await fs.readdir("./kongchips");
-  for(let i=1; i < dir.length; i++) {
-    const file = JSON.parse(await fs.readFile(`./kongchips/scanned-halos-${i}.json`, 'utf-8'))
-    
-    for (var key in file) {
-      if (file.hasOwnProperty(key)) {
-        chipAddresses.push(file[key].address)
-      }
-    }
-  }
-  return chipAddresses
 }
