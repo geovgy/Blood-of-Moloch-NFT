@@ -1,25 +1,28 @@
 import { expect } from "chai";
 import { ethers } from 'hardhat';
 import { LazyMinter } from'../lib/lazyMinter';
-import { BloodOfMolochClaimNFT } from '../types';
+import { OldBloodOfMolochClaimNFT } from '../types';
 
 describe("Claim NFT", function() {
   async function deploy() {
-    const [minter, mockPBT, rando] = await ethers.getSigners();
+    const [minter, redeemer, rando] = await ethers.getSigners();
   
-    let factory = await ethers.getContractFactory("BloodOfMolochClaimNFT", minter)
-    const contract = await factory.deploy(minter.address, mockPBT.address) as BloodOfMolochClaimNFT;
+    let factory = await ethers.getContractFactory("OldBloodOfMolochClaimNFT", minter)
+    const contract = await factory.deploy(minter.address, rando.address) as OldBloodOfMolochClaimNFT;
+  
+    // the redeemerContract is an instance of the contract that's wired up to the redeemer's signing key
+    const redeemerFactory = factory.connect(redeemer)
+    const redeemerContract = redeemerFactory.attach(contract.address)
   
     return {
       minter,
-      mockPBT,
+      redeemer,
       rando,
       contract,
+      redeemerContract,
     }
   }
   let minPrice = ethers.utils.parseEther(".001");
-  const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
-
   it("Should deploy", async function() {
     const signers = await ethers.getSigners();
     const minter = signers[0];
@@ -29,82 +32,20 @@ describe("Claim NFT", function() {
     await lazynft.deployed();
   });
 
-  it("Should mint an NFT from minter role", async function() {
-    const { contract, mockPBT, minter } = await deploy()
+  it("Should redeem an NFT from a signed voucher", async function() {
+    const { contract, redeemer, minter } = await deploy()
 
-    const receipt = contract.connect(minter).mint()
-
-    const tokenId = 1
-    await expect(receipt)
-      .to.emit(contract, "Minted").withArgs(tokenId)
-      .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, tokenId)
+    const lazyMinter = new LazyMinter(contract, minter);
+    const {voucher, signature } = await lazyMinter.createVoucher(1, "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi", 0)
+    
+    await expect(contract.connect(redeemer).redeem(redeemer.address, voucher, signature))
+      .to.emit(contract, 'Transfer')  // transfer from null address to minter
+      .withArgs('0x0000000000000000000000000000000000000000', minter.address, voucher.tokenId)
+      .and.to.emit(contract, 'Transfer') // transfer from minter to redeemer
+      .withArgs(minter.address, redeemer.address, voucher.tokenId);
   });
 
-  it("Should revert mint if not minter role", async function () {
-    const { contract, mockPBT, minter, rando } = await deploy()
-
-    const receipt = contract.connect(rando).mint()
-
-    await expect(receipt)
-      .to.be.reverted
-  })
-
-  it("Should batchMint quantity of NFTs as minter role", async function () {
-    const { contract, mockPBT, minter } = await deploy()
-
-    const quantity = 10
-    const receipt = contract.connect(minter).batchMint(quantity)
-
-    for(let i=0; i < quantity; i++) {
-      await expect(receipt)
-        .to.emit(contract, "Minted").withArgs(i + 1)
-        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, i + 1)
-    }
-  })
-
-  it("Should revert batchMint if not minter role", async function () {
-    const { contract, mockPBT, minter, rando } = await deploy()
-
-    const receipt = contract.connect(rando).batchMint(10)
-
-    await expect(receipt)
-      .to.be.reverted
-  })
-
-	it("Should revert mint/batchMint if supply is 350", async function () {
-		const { contract, mockPBT, minter } = await deploy()
-
-    const quantity = 350
-    await contract.connect(minter).batchMint(quantity)
-
-		let revertedTx = contract.connect(minter).mint()
-		await expect(revertedTx).to.be.revertedWith("BloodOfMolochClaimNFT: cannot exceed max supply")
-
-		revertedTx = contract.connect(minter).batchMint(5)
-		await expect(revertedTx).to.be.revertedWith("BloodOfMolochClaimNFT: cannot exceed max supply")
-	})
-
-	it("Should burn if operator is PBT", async function () {
-		const { contract, mockPBT, minter } = await deploy()
-		await contract.connect(minter).mint()
-
-		const tokenId = 1
-		const receipt = contract.connect(mockPBT).burn(tokenId)
-
-		await expect(receipt).to.not.be.reverted
-	})
-
-	it("Should revert burn if not PBT or token owner", async function () {
-		const { contract, mockPBT, minter, rando } = await deploy()
-		await contract.connect(minter).mint()
-
-		const tokenId = 1
-		const receipt = contract.connect(rando).burn(tokenId)
-
-		await expect(receipt).to.be.reverted
-	})
-
-  xit("Should fail to redeem an NFT that's already been claimed", async function() {
+  it("Should fail to redeem an NFT that's already been claimed", async function() {
     const { contract, redeemerContract, redeemer, minter } = await deploy()
 
     const lazyMinter = new LazyMinter( contract, minter)
@@ -120,7 +61,7 @@ describe("Claim NFT", function() {
       .to.be.revertedWith('cannot claim an already minted token')
   });
 
-  xit("Should fail to redeem an NFT voucher that's signed by an unauthorized account", async function() {
+  it("Should fail to redeem an NFT voucher that's signed by an unauthorized account", async function() {
     const { contract, redeemerContract, redeemer, rando } = await deploy()
 
     
@@ -131,7 +72,7 @@ describe("Claim NFT", function() {
       .to.be.revertedWith('Signature invalid or unauthorized')
   });
 
-  xit("Should fail to redeem an NFT voucher that's been modified", async function() {
+  it("Should fail to redeem an NFT voucher that's been modified", async function() {
     const { contract, redeemerContract, redeemer, rando } = await deploy()
 
     const lazyMinter = new LazyMinter(contract, rando)
@@ -141,7 +82,7 @@ describe("Claim NFT", function() {
       .to.be.revertedWith('Signature invalid or unauthorized')
   });
 
-  xit("Should fail to redeem an NFT voucher with an invalid signature", async function() {
+  it("Should fail to redeem an NFT voucher with an invalid signature", async function() {
     const { contract, redeemerContract, redeemer, minter, rando } = await deploy()
 
     
@@ -155,7 +96,7 @@ describe("Claim NFT", function() {
       .to.be.revertedWith('Signature invalid or unauthorized')
   });
 
-  xit("Should redeem if payment is >= minPrice", async function() {
+  it("Should redeem if payment is >= minPrice", async function() {
     const { contract, redeemerContract, redeemer, minter } = await deploy()
 
     const lazyMinter = new LazyMinter( contract, minter )
@@ -169,7 +110,7 @@ describe("Claim NFT", function() {
       .withArgs(minter.address, redeemer.address, voucher.tokenId)
   })
 
-  xit("Should fail to redeem if payment is < minPrice", async function() {
+  it("Should fail to redeem if payment is < minPrice", async function() {
     const { contract, redeemerContract, redeemer, minter } = await deploy()
 
     const lazyMinter = new LazyMinter( contract, minter )
@@ -181,7 +122,7 @@ describe("Claim NFT", function() {
       .to.be.revertedWith('Insufficient funds to redeem')
   });
 
-  xit("Should make payments available to minter for withdrawal", async function() {
+  it("Should make payments available to minter for withdrawal", async function() {
     const { contract, redeemerContract, redeemer, minter } = await deploy()
 
     const lazyMinter = new LazyMinter( contract, minter )
@@ -202,7 +143,7 @@ describe("Claim NFT", function() {
     // minter should now have zero available
     expect(await contract.availableToWithdraw()).to.equal(0)
   });
-  xit("should create 350 vouchers and redeem them", async function() {
+  it("should create 350 vouchers and redeem them", async function() {
     const { contract, minter, redeemer } = await deploy();
 
     const lazyMinter = new LazyMinter(contract, minter);

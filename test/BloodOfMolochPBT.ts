@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { BloodOfMolochClaimNFT, BloodOfMolochPBT, MockERC721 } from "../types";
+import { OldBloodOfMolochClaimNFT, BloodOfMolochPBT, MockERC721 } from "../types";
 import { BigNumber, Signer } from "ethers";
 import { LazyMinter } from "../lib/lazyMinter";
 
@@ -370,13 +370,13 @@ describe("BloodOfMolochPBT", function () {
       const [minter, redeemer, rando] = await ethers.getSigners();
 
       let factory = await ethers.getContractFactory(
-        "BloodOfMolochClaimNFT",
+        "OldBloodOfMolochClaimNFT",
         minter
       );
       const contract = (await factory.deploy(
         minter.address,
         bomContract.address
-      )) as BloodOfMolochClaimNFT;
+      )) as OldBloodOfMolochClaimNFT;
 
       // the redeemerContract is an instance of the contract that's wired up to the redeemer's signing key
       const redeemerFactory = factory.connect(redeemer);

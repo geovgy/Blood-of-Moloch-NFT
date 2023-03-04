@@ -25,6 +25,7 @@ contract BloodOfMolochClaimNFT is
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
+    event Minted(uint256 tokenId);
 
     mapping(address => uint256) pendingWithdrawals;
 
@@ -42,13 +43,16 @@ contract BloodOfMolochClaimNFT is
         PBT_ADDRESS = pbtAddress;
     }
 
-    function mint() public {
+    function mint() public onlyRole(MINTER_ROLE) {
         uint tokenId = supply + 1;
+        require(tokenId <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
         supply++;
         _mint(_msgSender(), tokenId);
+        emit Minted(tokenId);
     }
 
-    function batchMint(uint256 _quantity) external {
+    function batchMint(uint256 _quantity) external onlyRole(MINTER_ROLE) {
+        require(_quantity > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
         for(uint i=0; i<_quantity; i++) {
             mint();
         }

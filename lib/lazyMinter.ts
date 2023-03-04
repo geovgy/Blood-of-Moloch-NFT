@@ -1,7 +1,7 @@
 import { ethers, TypedDataDomain, utils } from 'ethers';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { BloodOfMolochClaimNFT } from '../types/contracts/BloodOfMolochClaimNFT';
+import { OldBloodOfMolochClaimNFT } from '../types';
 import { BigNumber } from 'ethers';
 // These constants must match the ones used in the smart contract.
 const SIGNING_DOMAIN_NAME = "BloodOfMolochClaimVoucher";
@@ -21,7 +21,7 @@ const SIGNING_DOMAIN_VERSION = "1";
  * LazyMinter is a helper class that creates NFTVoucher objects and signs them, to be redeemed later by the LazyNFT contract.
  */
 export class LazyMinter {
-    contract: BloodOfMolochClaimNFT;
+    contract: OldBloodOfMolochClaimNFT;
     signer: SignerWithAddress;
 
   /**
@@ -31,7 +31,7 @@ export class LazyMinter {
    * @param contract contract an ethers Contract that's wired up to the deployed contract
    * @param signer signer a Signer whose account is authorized to mint NFTs on the deployed contract
    */
-  constructor( contract: BloodOfMolochClaimNFT, signer: SignerWithAddress) {
+  constructor( contract: OldBloodOfMolochClaimNFT, signer: SignerWithAddress) {
     this.contract = contract;
     this.signer = signer;
   }
