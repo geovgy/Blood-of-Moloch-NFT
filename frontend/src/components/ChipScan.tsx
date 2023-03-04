@@ -27,7 +27,7 @@ const ChipScan = () => {
   const web3 = new Web3("https://cloudflare-eth.com");
 
   const getBlockHash = async () => {
-    const blockNumber = await web3.eth.getBlockNumber();
+    const blockNumber = (await web3.eth.getBlockNumber()) + 2;
     const block = await web3.eth.getBlock(blockNumber);
     setBlockHashUsedInSig(block.hash);
   };
@@ -40,19 +40,17 @@ const ChipScan = () => {
 
   useEffect(() => {
     getBlockHash();
+    getOwner();
   }, []);
 
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
+
+  const getOwner = async () => {
+    const tx = await bomPBT?.owner();
+    console.log("tx", JSON.stringify(tx));
+  };
   const initiateScan = async () => {
-    // getPublicKeysFromScan({
-    //   rpId: "raidbrood.xyz",
-    // }).then((keys: any) => {
-    //   setKeys(keys);
-    //   setChipPublicKey(keys?.primaryPublicKeyRaw);
-    //   console.log(`Public keys: ${JSON.stringify(keys)}`);
-    //   getSignatureFromChip(keys?.primaryPublicKeyRaw);
-    // });
     try {
       const keys = await getPublicKeysFromScan({
         rpId: "raidbrood.xyz",
@@ -62,7 +60,7 @@ const ChipScan = () => {
       console.log(`Public keys: ${JSON.stringify(keys)}`);
       const sig = await getSignatureFromChip(keys?.primaryPublicKeyRaw);
       console.log(`sig: ${JSON.stringify(sig)}`);
-      mintPBT();
+      mintPBT(sig);
     } catch (e: any) {
       alert(`error: ${JSON.stringify(e)}`);
     }
@@ -87,19 +85,14 @@ const ChipScan = () => {
     console.log(` sig: ${JSON.stringify(sig)}`);
     return sig;
   };
-  const mintPBT = async () => {
-    debugger;
-    const tx = await bomPBT?.mintWithSignature(
+  const mintPBT = async (sig: string) => {
+    const tx = await bomPBT?.mint(
       claimTokenId,
       signatureFromChip,
       blockHashUsedInSig
-      // uint256 claimTokenId,
-      // bytes calldata signatureFromChip,
-      // uint256 blockHashUsedInSig
     );
     console.log("tx", JSON.stringify(tx));
 
-    debugger;
     const receipt = await tx?.wait();
     console.log("receipt", JSON.stringify(receipt));
   };

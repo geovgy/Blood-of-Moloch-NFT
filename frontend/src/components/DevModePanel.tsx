@@ -53,12 +53,45 @@ const DevModePanel = () => {
   };
 
   const getPBTBalance = async () => {
-    debugger;
     const tx = await bomPBT?.balanceOf(address);
     console.log(`getPBTBalance tx: ${tx.toString()}`);
-    // const result = await tx.wait();
-    // console.log(`getPBTBalance result: ${JSON.stringify(result)}`);
-    // return JSON.stringify(result);
+  };
+
+  const openMint = async () => {
+    const tx = await bomPBT?.openMint();
+
+    console.log("openMint tx", JSON.stringify(tx));
+    const receipt = await tx?.wait();
+    console.log("receipt", JSON.stringify(receipt));
+  };
+  const setBaseURI = async () => {
+    const tx = await bomPBT?.setBaseURI("https://broodraid.xyz/assets/babom/");
+
+    console.log("openMint tx", JSON.stringify(tx));
+    const receipt = await tx?.wait();
+    console.log("receipt", JSON.stringify(receipt));
+  };
+
+  const setClaimToken = async () => {
+    const tx = await bomPBT?.setClaimToken(
+      process.env.NEXT_PUBLIC_CLAIM_ADDRESS
+    );
+
+    console.log("setClaimToken tx", JSON.stringify(tx));
+    const receipt = await tx?.wait();
+    console.log("receipt", JSON.stringify(receipt));
+  };
+
+  const hardcodeMint = async () => {
+    const sigHardcode =
+      "0x85c7134cd7ac01f2984530eda5e4cdbf3b7cabcca9e7f39711570eced48381534628c4b74dda63eb194bf9c8b652c0e31629e394e2544ce874c250bf12f8ae0c1c";
+    const blockHashHardcode =
+      "0xf8bcf752743e928060fa0606ec8ab9d34f03bef47dcc21d1e9e0cde37b35a080";
+    const tx = await bomPBT?.mint(1, sigHardcode, blockHashHardcode);
+
+    console.log("hardcodeMint tx", JSON.stringify(tx));
+    const receipt = await tx?.wait();
+    console.log("receipt", JSON.stringify(receipt));
   };
 
   return (
@@ -69,9 +102,10 @@ const DevModePanel = () => {
       direction="column"
       align="center"
       justify="center"
+      width="100%"
     >
       <Text>Dev Mode Panel</Text>
-      <Flex>
+      <Flex flexWrap="wrap">
         <Button m={4} onClick={mintClaimFT}>
           Mint Mock NFT
         </Button>
@@ -83,6 +117,19 @@ const DevModePanel = () => {
         </Button>
         <Button m={4} onClick={getPBTBalance}>
           getPBTBalance
+        </Button>
+        <Button m={4} onClick={openMint}>
+          openMint
+        </Button>
+        <Button m={4} onClick={setBaseURI}>
+          setBaseURI
+        </Button>
+        <Button m={4} onClick={setClaimToken}>
+          setClaimToken
+        </Button>
+
+        <Button m={4} onClick={hardcodeMint}>
+          hardcode mint
         </Button>
       </Flex>
       <Text> chip address: {chipAddress}</Text>
