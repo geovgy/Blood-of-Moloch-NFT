@@ -23,6 +23,7 @@
     "babel": "^6.23.0",
     "eslint": "8.34.0",
     "eslint-config-next": "13.2.1",
+    "eth-crypto": "^2.6.0",
     "ethers": "^5",
     "framer-motion": "^10.0.0",
     "lodash": "^4.17.21",

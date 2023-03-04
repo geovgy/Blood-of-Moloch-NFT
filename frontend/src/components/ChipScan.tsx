@@ -36,7 +36,6 @@ const ChipScan = () => {
 
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-
   const initiateScan = () => {
     getPublicKeysFromScan({
       rpId: "raidbrood.xyz",
