@@ -13,7 +13,7 @@ async function main() {
   const contractName = "BloodOfMolochPBT";
 
   const { name: networkName } = hre.network
-  const deployments = JSON.parse(await fs.readFile(`./deployments/${networkName}.json`, 'utf-8'))
+  const deployments = JSON.parse(await fs.readFile(`./deployments/deployment-${networkName}.json`, 'utf-8'))
   const address = deployments[contractName]
   const { chainId } = hre.network.config
 
