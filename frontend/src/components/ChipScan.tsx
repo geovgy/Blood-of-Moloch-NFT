@@ -22,7 +22,7 @@ const ChipScan = () => {
     chipPublicKey,
   } = useAppState();
 
-  const web3 = new Web3("https://cloudflare-eth.com")
+  const web3 = new Web3("https://cloudflare-eth.com");
 
   const getBlockHash = async () => {
     const blockNumber = await web3.eth.getBlockNumber();
@@ -37,7 +37,7 @@ const ChipScan = () => {
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
 
-  const getPublicKey = () => {
+  const initiateScan = () => {
     getPublicKeysFromScan({
       rpId: "raidbrood.xyz",
     }).then((keys: any) => {
@@ -86,10 +86,10 @@ const ChipScan = () => {
         <VStack direction="column">
           <Button
             disabled={!!chipPublicKey}
-            onClick={getPublicKey}
+            onClick={initiateScan}
             fontFamily="texturina"
           >
-            Initiate Scan
+            Scan Your PBT Chip
           </Button>
           <Text fontSize="xs" my={4} color="gray.600">
             This will grab the public key from the chip necessary for the next
@@ -98,19 +98,6 @@ const ChipScan = () => {
         </VStack>
       </VStack>
       <VStack>
-        <Text fontSize="lg" my={6}>
-          Part B. Get Signature
-        </Text>
-        {signatureFromChip && <DoneIcon />}
-        <Box my={10}>
-          <Button
-            disabled={!!signatureFromChip}
-            onClick={getSignatureFromChip}
-            my={10}
-          >
-            Get Signature from Chip
-          </Button>
-        </Box>
         {/* <Text fontSize="xs" my={4} color="gray.600">
           This will initiate the chip to sign a message with contents of your
           address: {signer?.getAddress()} and recent block number:{" "}

@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Container, VStack, Text, Flex, Box, Image } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";
-import DrinkNFTPanel from "@/components/DrinkNFTPanel";
+import ChipScan from "@/components/ChipScan";
 import MintMockNFT from "@/components/MintMockNFT";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
@@ -29,30 +28,33 @@ export default function ClaimBaBom() {
 
   return (
     <>
+      <Flex
+        mt={8}
+        mb={4}
+        justify="flex-end"
+        width="100%"
+        mx={8}
+        maxWidth="1200px"
+      >
+        <ConnectWallet />
+      </Flex>
       <Container>
         <Flex direction="column" align="center" justify="center" m={8}>
           <VStack>
             <Image
               src="/assets/logo_header.svg"
               alt="RaidBrood Logo"
-              width="280px"
-              height="280px"
+              width="180px"
+              height="180px"
             />
-            {/* <Text fontSize="42px" as="h1" fontFamily="texturina">
-              Blood of Moloch NFT
-            </Text> */}
-            <Text>8</Text>
           </VStack>
           <Flex direction="column" align="center" justify="center" m={8}>
-            <Box mt={8} mb={4}>
-              <ConnectWallet />
-            </Box>
             {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE && (
               <MintMockNFT />
             )}
             {_isConnected && (
               <VStack>
-                <ClaimNFTPanel /> <DrinkNFTPanel />
+                <ChipScan />
               </VStack>
             )}
           </Flex>

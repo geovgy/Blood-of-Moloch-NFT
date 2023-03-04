@@ -25,6 +25,7 @@ const ClaimNFTPanel = () => {
     if (isSuccess) {
       checkClaimNFTBalance();
       checkIfIsApprovedForAll();
+      getTokenURI();
     }
   }, [isSuccess]);
 
@@ -55,6 +56,13 @@ const ClaimNFTPanel = () => {
       );
       console.log("is approved for all ", tx);
       setIsApproved(tx);
+    }
+  };
+
+  const getTokenURI = async () => {
+    if (address && claimNFT) {
+      const tx = await claimNFT.tokenURI(2);
+      console.log("getTokenURI claimNFT tx: ", tx.toString());
     }
   };
 

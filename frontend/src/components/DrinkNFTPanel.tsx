@@ -10,7 +10,7 @@ const DrinkNFTPanel = () => {
   const { data: signer } = useSigner();
   const { claimTokenId, signatureFromChip, blockHashUsedInSig } = useAppState();
   const claimNFT = useContract({
-    address: process.env.NEXT_PUBLIC_DRINK_NFT_ADDRESS || "",
+    address: process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
     abi: BloodOfMolochPBT.abi,
     signerOrProvider: signer,
   });

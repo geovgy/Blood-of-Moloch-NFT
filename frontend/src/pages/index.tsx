@@ -67,13 +67,13 @@ export default function Home() {
     <>
       <Container>
         <Flex direction="column" align="center" justify="center" m={8}>
-          <Text fontSize="42px" as="h1" fontFamily="texturina">
+          <Flex mt={8} mb={4} align="flex-end">
+            <ConnectWallet />
+          </Flex>
+          <Text fontSize="28px" as="h1" fontFamily="texturina">
             Blood of Moloch NFT
           </Text>
           <Flex direction="column" align="center" justify="center" m={8}>
-            <Box mt={8} mb={4}>
-              <ConnectWallet />
-            </Box>
             <KeypLogin />
             {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE && (
               <MintMockNFT />
