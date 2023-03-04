@@ -66,26 +66,21 @@ const ClaimNFTPanel = () => {
     }
   };
 
+  const mintClaimNFT = async () => {
+    const tx = await claimNFT?.mint();
+    const result = await tx.wait();
+    console.log(`mint result: ${JSON.stringify(result)}`);
+  };
+
   return (
     <Flex direction="column" m={10}>
       <Text fontSize="xl" textAlign="center" fontFamily="texturina" mb={6}>
-        Step 1. Approve the contract to burn your CLAIM NFT
+        Mint your CLAIM NFT
       </Text>
       <Text textAlign="center">You have {claimNFTBalance} CLAIM NFTs</Text>
-      {!isApproved && (
-        <Button fontFamily="texturina" my={8} onClick={approveClaimNFT}>
-          Set Approval
-        </Button>
-      )}
-      {isApproved ? <Text>Approved to Burn</Text> : <Text>Not Approved</Text>}
-      {isApproved && (
-        <HStack>
-          <Text fontSize="2xl" fontFamily="texturina" mr={4}>
-            Done
-          </Text>
-          <Icon as={FaCheckCircle} />
-        </HStack>
-      )}
+      <Button fontFamily="texturina" my={8} onClick={mintClaimNFT}>
+        Mint
+      </Button>
     </Flex>
   );
 };

@@ -27,9 +27,14 @@ const ChipScan = () => {
   const web3 = new Web3("https://cloudflare-eth.com");
 
   const getBlockHash = async () => {
-    const blockNumber = (await web3.eth.getBlockNumber()) + 2;
+    const blockNumber = await web3.eth.getBlockNumber();
+    console.log(`blockNumber: ${blockNumber}`);
+
     const block = await web3.eth.getBlock(blockNumber);
+    console.log(`block: ${block}`);
+
     setBlockHashUsedInSig(block.hash);
+    return block.hash;
   };
 
   const bomPBT = useContract({
@@ -39,7 +44,7 @@ const ChipScan = () => {
   });
 
   useEffect(() => {
-    getBlockHash();
+    // getBlockHash();
     getOwner();
   }, []);
 
@@ -50,32 +55,42 @@ const ChipScan = () => {
     const tx = await bomPBT?.owner();
     console.log("tx", JSON.stringify(tx));
   };
+
   const initiateScan = async () => {
     try {
+      const currBlockHash = await getBlockHash();
+      console.log(`currBlockHash: ${currBlockHash}`);
+
       const keys = await getPublicKeysFromScan({
         rpId: "raidbrood.xyz",
       });
       setKeys(keys);
       setChipPublicKey(keys?.primaryPublicKeyRaw);
       console.log(`Public keys: ${JSON.stringify(keys)}`);
-      const sig = await getSignatureFromChip(keys?.primaryPublicKeyRaw);
+      const sig = await getSignatureFromChip(
+        keys?.primaryPublicKeyRaw,
+        currBlockHash
+      );
       console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig);
     } catch (e: any) {
       alert(`error: ${JSON.stringify(e)}`);
     }
   };
-  const getSignatureFromChip = async (publicKey: string) => {
+  const getSignatureFromChip = async (
+    publicKey: string,
+    currBlockHash: string
+  ) => {
     console.log(
       "inside getSignatureFromChip",
       publicKey,
       address,
-      blockHashUsedInSig
+      currBlockHash
     );
     const sig = await getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
-      hash: blockHashUsedInSig,
+      hash: currBlockHash,
     });
 
     setSig(sig);

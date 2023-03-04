@@ -7,6 +7,7 @@ import ChipScan from "@/components/ChipScan";
 import DevModePanel from "@/components/DevModePanel";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
+import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -39,8 +40,8 @@ export default function ClaimBaBom() {
             <Image
               src="/assets/logo_header.svg"
               alt="RaidBrood Logo"
-              width="180px"
-              height="180px"
+              width="120px"
+              height="120px"
             />
           </VStack>
           <Flex direction="column" align="center" justify="center" m={8}>
@@ -49,6 +50,7 @@ export default function ClaimBaBom() {
             )}
             {_isConnected && (
               <VStack>
+                <ClaimNFTPanel />
                 <ChipScan />
               </VStack>
             )}

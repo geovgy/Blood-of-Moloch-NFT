@@ -107,7 +107,7 @@ const DevModePanel = () => {
       <Text>Dev Mode Panel</Text>
       <Flex flexWrap="wrap">
         <Button m={4} onClick={mintClaimFT}>
-          Mint Mock NFT
+          Mint Claim NFT
         </Button>
         <Button m={4} onClick={getTokenOfOwner}>
           Get Token of Owner
@@ -127,7 +127,6 @@ const DevModePanel = () => {
         <Button m={4} onClick={setClaimToken}>
           setClaimToken
         </Button>
-
         <Button m={4} onClick={hardcodeMint}>
           hardcode mint
         </Button>
