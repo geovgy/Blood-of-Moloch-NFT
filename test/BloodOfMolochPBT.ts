@@ -1,7 +1,8 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { BloodOfMolochPBT, MockERC721 } from "../types";
+import { BloodOfMolochClaimNFT, BloodOfMolochPBT, MockERC721 } from "../types";
 import { BigNumber, Signer } from "ethers";
+import { LazyMinter } from "../lib/lazyMinter";
 
 describe("BloodOfMolochPBT", function () {
   const BOM_NAME = "Blood of Moloch"
@@ -281,5 +282,59 @@ describe("BloodOfMolochPBT", function () {
       expect(tokenId).to.equal(10)
       expect(uri).to.equal(BOM_BASE_URI + `${tokenId}`)
     })
+  })
+
+  describe("Full", function () {
+    async function deploy() {
+      const [minter, redeemer, rando] = await ethers.getSigners();
+    
+      let factory = await ethers.getContractFactory("BloodOfMolochClaimNFT", minter)
+      const contract = await factory.deploy(minter.address, bomContract.address) as BloodOfMolochClaimNFT;
+    
+      // the redeemerContract is an instance of the contract that's wired up to the redeemer's signing key
+      const redeemerFactory = factory.connect(redeemer)
+      const redeemerContract = redeemerFactory.attach(contract.address)
+    
+      return {
+        minter,
+        redeemer,
+        rando,
+        contract,
+        redeemerContract,
+      }
+    }
+
+    it("Should redeem an NFT from a signed voucher", async function() {
+      const claimTokenId = 1;
+      const { contract, redeemer, minter } = await deploy()
+  
+      const lazyMinter = new LazyMinter(contract, minter);
+      const {voucher, signature } = await lazyMinter.createVoucher(1, "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi", 0)
+      
+      await expect(contract.connect(redeemer).redeem(redeemer.address, voucher, signature))
+        .to.emit(contract, 'Transfer')  // transfer from null address to minter
+        .withArgs('0x0000000000000000000000000000000000000000', minter.address, voucher.tokenId)
+        .and.to.emit(contract, 'Transfer') // transfer from minter to redeemer
+        .withArgs(minter.address, redeemer.address, voucher.tokenId);
+
+      await setupForMint(true)
+      const chip = signers[1]
+      
+      const block = await ethers.provider.getBlock("latest")
+      
+      const messagePrefix = "\x19Ethereum Signed Message:\n32"
+      const message = ethers.utils.solidityKeccak256(["address", "bytes32"], [await redeemer.getAddress(), block.hash])
+      const messageBytes = ethers.utils.arrayify(message)
+      const messageHash = ethers.utils.solidityKeccak256(["string", "bytes32"], [messagePrefix, messageBytes]);
+      const chipSig = await chip.signMessage(messageBytes)
+
+      await bomContract.setBaseURI(BOM_BASE_URI)
+      await bomContract.setClaimToken(contract.address)
+      const tokenIds = signers.map((signer,index) => index).slice(1)
+      await bomContract.seedChipToTokenMapping(addresses.slice(1), tokenIds, true)
+      await bomContract.openMint()
+
+      await bomContract.connect(redeemer).mint(claimTokenId, chipSig, block.number)
+    });
   })
 });

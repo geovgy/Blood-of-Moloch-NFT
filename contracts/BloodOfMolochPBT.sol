@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chiru-labs/pbt/src/PBTSimple.sol";
-import "./BloodOfMolochClaimNFT.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";

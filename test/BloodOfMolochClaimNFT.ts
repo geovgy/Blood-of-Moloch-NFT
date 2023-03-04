@@ -9,7 +9,7 @@ describe("Claim NFT", function() {
     const [minter, redeemer, rando] = await ethers.getSigners();
   
     let factory = await ethers.getContractFactory("BloodOfMolochClaimNFT", minter)
-    const contract = await factory.deploy(minter.address) as BloodOfMolochClaimNFT;
+    const contract = await factory.deploy(minter.address, rando.address) as BloodOfMolochClaimNFT;
   
     // the redeemerContract is an instance of the contract that's wired up to the redeemer's signing key
     const redeemerFactory = factory.connect(redeemer)
@@ -29,7 +29,7 @@ describe("Claim NFT", function() {
     const minter = signers[0];
 
     const LazyNFT = await ethers.getContractFactory("BloodOfMolochClaimNFT");
-    const lazynft = await LazyNFT.deploy(minter.address);
+    const lazynft = await LazyNFT.deploy(minter.address, signers[1].address);
     await lazynft.deployed();
   });
 

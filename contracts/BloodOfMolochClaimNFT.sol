@@ -4,9 +4,7 @@ pragma abicoder v2; // required to accept structs as function parameters
 
 import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "./ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
@@ -18,6 +16,7 @@ contract BloodOfMolochClaimNFT is
     AccessControl,
     IBurnable
 {
+    address private PBT_ADDRESS;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     string private constant SIGNING_DOMAIN = "BloodOfMolochClaimVoucher";
     string private constant SIGNATURE_VERSION = "1";
@@ -37,11 +36,13 @@ contract BloodOfMolochClaimNFT is
      */
     mapping(uint256 => bool) private minted;
 
-    constructor(address payable minter)
+    constructor(address payable minter, address pbtAddress)
         ERC721("Blood of Moloch Claim", "BLMC")
         EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
     {
+        require(pbtAddress != address(0), "BloodOfMolochClaimNFT: null address");
         _setupRole(MINTER_ROLE, minter);
+        PBT_ADDRESS = pbtAddress;
     }
 
     /// @notice Represents an un-minted NFT, which has not yet been recorded into the blockchain. A signed voucher can be redeemed for a real NFT using the redeem function.
@@ -188,5 +189,15 @@ contract BloodOfMolochClaimNFT is
             "ERC721: caller is not token owner or approved"
         );
         _burn(tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-isApprovedForAll}.
+     */
+    function isApprovedForAll(address owner, address operator) public view override returns (bool) {
+        if (operator == PBT_ADDRESS) {
+            return true;
+        }
+        return _operatorApprovals[owner][operator];
     }
 }
