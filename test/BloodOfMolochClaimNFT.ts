@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { parseEther } from "ethers/lib/utils";
 import { ethers } from 'hardhat';
 import { LazyMinter } from'../lib/lazyMinter';
 import { BloodOfMolochClaimNFT } from '../types';
@@ -34,7 +35,7 @@ describe("Claim NFT", function() {
 
     const receipt = contract.connect(minter).mint()
 
-    const tokenId = 1
+    const tokenId = 0
     await expect(receipt)
       .to.emit(contract, "Minted").withArgs(tokenId)
       .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, tokenId)
@@ -57,8 +58,8 @@ describe("Claim NFT", function() {
 
     for(let i=0; i < quantity; i++) {
       await expect(receipt)
-        .to.emit(contract, "Minted").withArgs(i + 1)
-        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, i + 1)
+        .to.emit(contract, "Minted").withArgs(i)
+        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, i)
     }
   })
 
@@ -88,7 +89,7 @@ describe("Claim NFT", function() {
 		const { contract, mockPBT, minter } = await deploy()
 		await contract.connect(minter).mint()
 
-		const tokenId = 1
+		const tokenId = 0
 		const receipt = contract.connect(mockPBT).burn(tokenId)
 
 		await expect(receipt).to.not.be.reverted
@@ -140,5 +141,39 @@ describe("Claim NFT", function() {
 
     // minter should now have zero available
     expect(await contract.availableToWithdraw()).to.equal(minPrice)
+	})
+
+	it("Should mint to user if msg.value >= min price", async function () {
+		const { contract, rando, minter } = await deploy()
+
+		const receipt = contract.connect(rando).mintClaimToken({ value: parseEther("0.05") })
+		await expect(receipt).to.emit(contract, "Minted").withArgs(0)
+	})
+
+	it("Should revert mint if below min price", async function () {
+		const { contract, rando, minter } = await deploy()
+
+		const receipt = contract.connect(rando).mintClaimToken({ value: parseEther("0.01") })
+		await expect(receipt).to.be.revertedWith("BloodOfMolochClaimNFT: msg.value below min price")
+	})
+
+	it("Should batch mint to user if msg.value >= min price", async function () {
+		const { contract, rando, minter } = await deploy()
+
+		const quantity = 3
+		const receipt = contract.connect(rando).batchMintClaimTokens(quantity, { value: parseEther("0.15") })
+		for(let i=0; i < quantity; i++) {
+      await expect(receipt)
+        .to.emit(contract, "Minted").withArgs(i)
+        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, rando.address, i)
+    }
+	})
+
+	it("Should revert mint if below min price", async function () {
+		const { contract, rando, minter } = await deploy()
+
+		const quantity = 3
+		const receipt = contract.connect(rando).batchMintClaimTokens(quantity, { value: parseEther("0.14") })
+		await expect(receipt).to.be.revertedWith("BloodOfMolochClaimNFT: msg.value below min price")
 	})
 });

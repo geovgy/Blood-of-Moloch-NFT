@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 pragma abicoder v2; // required to accept structs as function parameters
 
-import "hardhat/console.sol";
-
-import "./ERC721URIStorage.sol";
+import "./ERC721.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "./IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract BloodOfMolochClaimNFT is
-    ERC721URIStorage,
+    ERC721,
     AccessControl,
     IBurnable
 {
@@ -22,6 +18,7 @@ contract BloodOfMolochClaimNFT is
 
     uint256 public supply;
     uint256 public constant MAX_SUPPLY = 350;
+    uint256 public constant MIN_PRICE = 0.05 ether;
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
@@ -36,25 +33,35 @@ contract BloodOfMolochClaimNFT is
     mapping(uint256 => bool) private minted;
 
     constructor(address payable minter, address pbtAddress)
-        ERC721("Blood of Moloch Claim", "BLMC")
+        ERC721("Blood of Moloch Claim", "BoMC")
     {
         require(pbtAddress != address(0), "BloodOfMolochClaimNFT: null address");
         _setupRole(MINTER_ROLE, minter);
         PBT_ADDRESS = pbtAddress;
     }
 
+    function mintClaimToken() payable public {
+        require(msg.value >= MIN_PRICE, "BloodOfMolochClaimNFT: msg.value below min price");
+        _mintClaimToken();
+    }
+
+    function batchMintClaimTokens(uint256 _quantity) payable public {
+        require(_quantity > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
+        uint256 payment = MIN_PRICE * _quantity;
+        require(msg.value >= payment, "BloodOfMolochClaimNFT: msg.value below min price");
+        for(uint i=0; i<_quantity; i++) {
+            _mintClaimToken();
+        }
+    }
+
     function mint() public onlyRole(MINTER_ROLE) {
-        uint tokenId = supply + 1;
-        require(tokenId <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
-        supply++;
-        _mint(_msgSender(), tokenId);
-        emit Minted(tokenId);
+        _mintClaimToken();
     }
 
     function batchMint(uint256 _quantity) external onlyRole(MINTER_ROLE) {
         require(_quantity > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
         for(uint i=0; i<_quantity; i++) {
-            mint();
+            _mintClaimToken();
         }
     }
 
@@ -124,6 +131,23 @@ contract BloodOfMolochClaimNFT is
             return true;
         }
         return _operatorApprovals[owner][operator];
+    }
+
+    function _mintClaimToken() internal {
+        uint tokenId = supply;
+        require(tokenId + 1 <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
+        supply++;
+        _mint(_msgSender(), tokenId);
+        emit Minted(tokenId);
+    }
+
+    /**
+     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
+     * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
+     * by default, can be overridden in child contracts.
+     */
+    function _baseURI() internal view override returns (string memory) {
+        return "ipfs://bafybeie5js6d3laop3adpe4bmpxuwpbpwyp4mjkthtt24havk4ghfzqery/";
     }
 
     receive() payable external {}
