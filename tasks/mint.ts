@@ -13,10 +13,10 @@ task('mint', 'mint claim NFTs by quantity')
     const deployments = JSON.parse(fs.readFileSync(`./deployments/deployments-${hre.network.name}.json`, 'utf-8'))
     const address = deployments["BloodOfMolochClaimNFT"]
 
-    let bomInterface = require("../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json")
+    let claimInterface = require("../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json")
     const claimContract: BloodOfMolochClaimNFT = new Contract(
       address,
-      bomInterface.abi,
+      claimInterface.abi,
       admin
     )
 
