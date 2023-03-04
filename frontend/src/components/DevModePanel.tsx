@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSigner, useContract, useAccount } from "wagmi";
 import EthCrypto from "eth-crypto";
-import { Button, Text } from "@chakra-ui/react";
+import { Button, Text, Flex } from "@chakra-ui/react";
 import ClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
 import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
 import getWalletClaimNFTs from "../utils/api";
 
-const MintClaimNFT = () => {
+const DevModePanel = () => {
   const { data: signer } = useSigner();
   const [chipAddress, setChipAddress] = useState<string>("");
   const { address } = useAccount();
@@ -62,15 +62,33 @@ const MintClaimNFT = () => {
   };
 
   return (
-    <div>
-      <Button onClick={mintClaimFT}>Mint Mock NFT</Button>
-      <Button onClick={getTokenOfOwner}>Get Token of Owner</Button>
-      <Button onClick={seedPBT}>Seed PBT</Button>
-      <Button onClick={getPBTBalance}>getPBTBalance</Button>
+    <Flex
+      border="solid 1px pink"
+      borderRadius="12px"
+      p={4}
+      direction="column"
+      align="center"
+      justify="center"
+    >
+      <Text>Dev Mode Panel</Text>
+      <Flex>
+        <Button m={4} onClick={mintClaimFT}>
+          Mint Mock NFT
+        </Button>
+        <Button m={4} onClick={getTokenOfOwner}>
+          Get Token of Owner
+        </Button>
+        <Button m={4} onClick={seedPBT}>
+          Seed PBT
+        </Button>
+        <Button m={4} onClick={getPBTBalance}>
+          getPBTBalance
+        </Button>
+      </Flex>
       <Text> chip address: {chipAddress}</Text>
       <Text>{/* balance of PBT: <p>{getPBTBalance()}</p> */}</Text>
-    </div>
+    </Flex>
   );
 };
 
-export default MintClaimNFT;
+export default DevModePanel;

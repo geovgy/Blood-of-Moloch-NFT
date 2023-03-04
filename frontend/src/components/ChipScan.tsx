@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
-import { useSigner, useAccount } from "wagmi";
+import { useSigner, useAccount, useContract } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -9,9 +9,11 @@ import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 import Web3 from "web3";
+import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
 
 const ChipScan = () => {
   const { data: signer } = useSigner();
+  const claimTokenId = 1;
   const { address } = useAccount();
   const {
     blockHashUsedInSig,
@@ -30,44 +32,76 @@ const ChipScan = () => {
     setBlockHashUsedInSig(block.hash);
   };
 
+  const bomPBT = useContract({
+    address: process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
+    abi: BloodOfMolochPBT.abi,
+    signerOrProvider: signer,
+  });
+
   useEffect(() => {
     getBlockHash();
   }, []);
 
   const [keys, setKeys] = useState<any>(null);
   const [sig, setSig] = useState<any>(null);
-  const initiateScan = () => {
-    getPublicKeysFromScan({
-      rpId: "raidbrood.xyz",
-    }).then((keys: any) => {
+  const initiateScan = async () => {
+    // getPublicKeysFromScan({
+    //   rpId: "raidbrood.xyz",
+    // }).then((keys: any) => {
+    //   setKeys(keys);
+    //   setChipPublicKey(keys?.primaryPublicKeyRaw);
+    //   console.log(`Public keys: ${JSON.stringify(keys)}`);
+    //   getSignatureFromChip(keys?.primaryPublicKeyRaw);
+    // });
+    try {
+      const keys = await getPublicKeysFromScan({
+        rpId: "raidbrood.xyz",
+      });
       setKeys(keys);
       setChipPublicKey(keys?.primaryPublicKeyRaw);
       console.log(`Public keys: ${JSON.stringify(keys)}`);
-      getSignatureFromChip(keys?.primaryPublicKeyRaw);
-    });
+      const sig = await getSignatureFromChip(keys?.primaryPublicKeyRaw);
+      console.log(`sig: ${JSON.stringify(sig)}`);
+      mintPBT();
+    } catch (e: any) {
+      alert(`error: ${JSON.stringify(e)}`);
+    }
   };
-  const getSignatureFromChip = (publicKey: string) => {
+  const getSignatureFromChip = async (publicKey: string) => {
     console.log(
       "inside getSignatureFromChip",
       publicKey,
       address,
       blockHashUsedInSig
     );
-    getSignatureFromScan({
+    const sig = await getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
       hash: blockHashUsedInSig,
-    })
-      .then((sig) => {
-        setSig(sig);
-        setSignatureFromChip(sig);
+    });
 
-        alert(` sig: ${JSON.stringify(sig)}`);
-        console.log(` sig: ${JSON.stringify(sig)}`);
-      })
-      .catch((err: any) => {
-        console.log(`getSignatureFromScan error: ${JSON.stringify(err)}`);
-      });
+    setSig(sig);
+    setSignatureFromChip(sig);
+
+    alert(` sig: ${JSON.stringify(sig)}`);
+    console.log(` sig: ${JSON.stringify(sig)}`);
+    return sig;
+  };
+  const mintPBT = async () => {
+    debugger;
+    const tx = await bomPBT?.mintWithSignature(
+      claimTokenId,
+      signatureFromChip,
+      blockHashUsedInSig
+      // uint256 claimTokenId,
+      // bytes calldata signatureFromChip,
+      // uint256 blockHashUsedInSig
+    );
+    console.log("tx", JSON.stringify(tx));
+
+    debugger;
+    const receipt = await tx?.wait();
+    console.log("receipt", JSON.stringify(receipt));
   };
 
   if (!signer) {
@@ -77,10 +111,10 @@ const ChipScan = () => {
   return (
     <VStack>
       <VStack align="center">
-        <Text fontSize="lg" my={6}>
-          Part A. Get public key from Chip
+        <Text textAlign="center" fontSize="xl" my={6}>
+          Press button and bring your phone near your Blood of Moloch KONG chip.
+          Then you will be prompted to mint your physically backed token.
         </Text>
-        {chipPublicKey && <DoneIcon />}
 
         <VStack direction="column">
           <Button
@@ -90,10 +124,10 @@ const ChipScan = () => {
           >
             Scan Your PBT Chip
           </Button>
-          <Text fontSize="xs" my={4} color="gray.600">
+          {/* <Text fontSize="xs" my={4} color="gray.600">
             This will grab the public key from the chip necessary for the next
             step
-          </Text>
+          </Text> */}
         </VStack>
       </VStack>
       <VStack>

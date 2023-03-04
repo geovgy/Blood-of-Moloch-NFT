@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
-import MintMockNFT from "@/components/MintMockNFT";
+import MintMockNFT from "@/components/DevModePanel";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 

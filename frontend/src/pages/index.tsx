@@ -1,21 +1,25 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { Container, Text, Flex, Box, Button, Heading } from "@chakra-ui/react";
-import Image from "next/image";
+import { useRouter } from "next/router";
 import { Inter } from "next/font/google";
 import { useAccount } from "wagmi";
-import ChipScan from "@/components/ChipScan";
 import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";
 import DrinkNFTPanel from "@/components/DrinkNFTPanel";
-import MintMockNFT from "@/components/MintMockNFT";
+import DevModePanel from "@/components/DevModePanel";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   const { address, isConnected } = useAccount();
   const [_isConnected, _setIsConnected] = useState(false);
   const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/babom/claim-pbt");
+  }, []);
 
   useEffect(() => {
     if (session?.user?.address) {
@@ -76,7 +80,7 @@ export default function Home() {
           <Flex direction="column" align="center" justify="center" m={8}>
             <KeypLogin />
             {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE && (
-              <MintMockNFT />
+              <DevModePanel />
             )}
             {_isConnected && <ClaimNFTPanel />}
             {_isConnected && <DrinkNFTPanel />}
