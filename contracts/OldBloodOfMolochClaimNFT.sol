@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "./IBurnable.sol";
 
-contract BloodOfMolochClaimNFT is
+contract OldBloodOfMolochClaimNFT is
     ERC721URIStorage,
     EIP712,
     AccessControl,
