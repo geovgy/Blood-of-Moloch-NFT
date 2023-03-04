@@ -80,9 +80,7 @@ contract BloodOfMolochClaimNFT is
         // IMPORTANT: casting msg.sender to a payable address is only safe if ALL members of the minter role are payable addresses.
         address payable receiver = payable(msg.sender);
 
-        uint256 amount = pendingWithdrawals[receiver];
-        // zero account before transfer to prevent re-entrancy attack
-        pendingWithdrawals[receiver] = 0;
+        uint256 amount = address(this).balance;
         receiver.transfer(amount);
     }
 
@@ -99,7 +97,7 @@ contract BloodOfMolochClaimNFT is
 
     /// @notice Retuns the amount of Ether available to the caller to withdraw.
     function availableToWithdraw() public view returns (uint256) {
-        return pendingWithdrawals[msg.sender];
+        return address(this).balance;
     }
 
     /**
@@ -127,4 +125,6 @@ contract BloodOfMolochClaimNFT is
         }
         return _operatorApprovals[owner][operator];
     }
+
+    receive() payable external {}
 }
