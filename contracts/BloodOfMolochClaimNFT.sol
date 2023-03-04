@@ -25,6 +25,7 @@ contract BloodOfMolochClaimNFT is
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
+    event Minted(uint256 tokenId);
 
     mapping(address => uint256) pendingWithdrawals;
 
@@ -42,13 +43,16 @@ contract BloodOfMolochClaimNFT is
         PBT_ADDRESS = pbtAddress;
     }
 
-    function mint() public {
+    function mint() public onlyRole(MINTER_ROLE) {
         uint tokenId = supply + 1;
+        require(tokenId <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
         supply++;
         _mint(_msgSender(), tokenId);
+        emit Minted(tokenId);
     }
 
-    function batchMint(uint256 _quantity) external {
+    function batchMint(uint256 _quantity) external onlyRole(MINTER_ROLE) {
+        require(_quantity > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
         for(uint i=0; i<_quantity; i++) {
             mint();
         }
@@ -76,9 +80,7 @@ contract BloodOfMolochClaimNFT is
         // IMPORTANT: casting msg.sender to a payable address is only safe if ALL members of the minter role are payable addresses.
         address payable receiver = payable(msg.sender);
 
-        uint256 amount = pendingWithdrawals[receiver];
-        // zero account before transfer to prevent re-entrancy attack
-        pendingWithdrawals[receiver] = 0;
+        uint256 amount = address(this).balance;
         receiver.transfer(amount);
     }
 
@@ -95,7 +97,7 @@ contract BloodOfMolochClaimNFT is
 
     /// @notice Retuns the amount of Ether available to the caller to withdraw.
     function availableToWithdraw() public view returns (uint256) {
-        return pendingWithdrawals[msg.sender];
+        return address(this).balance;
     }
 
     /**
@@ -123,4 +125,6 @@ contract BloodOfMolochClaimNFT is
         }
         return _operatorApprovals[owner][operator];
     }
+
+    receive() payable external {}
 }

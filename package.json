@@ -23,6 +23,9 @@
     "verify:test": "yarn verify:claim:test && yarn verify:bom:test",
     "verify:main": "yarn verify:claim:main && yarn verify:bom:main",
     "seed:local": "npx hardhat run --network localhost scripts/seedChips.ts",
+    "mint:local": "npx hardhat mint --network localhost --quantity 350",
+    "mint:test": "npx hardhat mint --network goerli --quantity 20",
+    "mint:main": "npx hardhat mint --network mainnet --quantity 20",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "clean": "npx hardhat clean"
   },
