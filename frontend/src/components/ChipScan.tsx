@@ -113,7 +113,7 @@ const ChipScan = () => {
       console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockHash);
     } catch (e: any) {
-      alert(`error: ${JSON.stringify(e)}`);
+      console.error(`error: ${JSON.stringify(e)}`);
     }
   };
   const getSignatureFromChip = async (
@@ -133,15 +133,16 @@ const ChipScan = () => {
     });
 
     setSignatureFromChip(sig);
-
-    alert(` sig: ${JSON.stringify(sig)}`);
+    // alert(` sig: ${JSON.stringify(sig)}`);
     console.log(` sig: ${JSON.stringify(sig)}`);
     return sig;
   };
   const mintPBT = async (sig: string, currBlockHash: string) => {
     console.log(`mintPBT sig: ${sig} currBlockHash: ${currBlockHash}`);
 
-    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockHash);
+    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockHash, {
+      gasLimit: 100000,
+    });
     console.log("tx", JSON.stringify(tx));
 
     const receipt = await tx?.wait();
