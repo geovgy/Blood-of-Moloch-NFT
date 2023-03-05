@@ -24,7 +24,7 @@ const ClaimNFTPanel = () => {
   useEffect(() => {
     if (isSuccess) {
       checkClaimNFTBalance();
-      checkIfIsApprovedForAll();
+      // checkIfIsApprovedForAll();
       getTokenURI();
     }
   }, [isSuccess]);
@@ -54,7 +54,6 @@ const ClaimNFTPanel = () => {
         address, // owner
         process.env.NEXT_PUBLIC_CLAIM_ADDRESS // operator
       );
-      console.log("is approved for all ", tx);
       setIsApproved(tx);
     }
   };
@@ -79,7 +78,7 @@ const ClaimNFTPanel = () => {
       </Text>
       <Text textAlign="center">You have {claimNFTBalance} CLAIM NFTs</Text>
       <Button fontFamily="texturina" my={8} onClick={mintClaimNFT}>
-        Mint
+        Mint for 0.05 ETH
       </Button>
     </Flex>
   );

@@ -10,10 +10,20 @@ import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 import Web3 from "web3";
 import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
+import { Network, Alchemy } from "alchemy-sdk";
 
+const settings = {
+  apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
+  network: Network.ETH_GOERLI,
+};
+
+const alchemy = new Alchemy(settings);
+
+// Get the latest block
+const latestBlock = alchemy.core.getBlockNumber();
 const ChipScan = () => {
   const { data: signer } = useSigner();
-  const claimTokenId = 1;
+  const claimTokenId = 0;
   const { address } = useAccount();
   const {
     blockHashUsedInSig,
@@ -23,15 +33,19 @@ const ChipScan = () => {
     setChipPublicKey,
     chipPublicKey,
   } = useAppState();
+  const [drinkNFTBalance, setDrinkNFTBalance] = useState<string>("0");
 
   const web3 = new Web3("https://cloudflare-eth.com");
 
   const getBlockHash = async () => {
-    const blockNumber = await web3.eth.getBlockNumber();
-    console.log(`blockNumber: ${blockNumber}`);
+    const blockNumber = await alchemy.core.getBlockNumber();
 
-    const block = await web3.eth.getBlock(blockNumber);
-    console.log(`block: ${block}`);
+    // const blockNumber = await web3.eth.getBlockNumber();
+    console.log(`getBlockHash blockNumber: ${blockNumber}`);
+    const block = await alchemy.core.getBlock(blockNumber);
+
+    // const block = await web3.eth.getBlock(blockNumber);
+    console.log(`block.hash: ${block.hash}`);
 
     setBlockHashUsedInSig(block.hash);
     return block.hash;
@@ -47,13 +61,18 @@ const ChipScan = () => {
     // getBlockHash();
     getOwner();
   }, []);
-
-  const [keys, setKeys] = useState<any>(null);
-  const [sig, setSig] = useState<any>(null);
+  useEffect(() => {
+    getPBTBalance();
+  });
 
   const getOwner = async () => {
     const tx = await bomPBT?.owner();
     console.log("tx", JSON.stringify(tx));
+  };
+  const getPBTBalance = async () => {
+    const tx = await bomPBT?.balanceOf(address);
+    console.log("tx", tx.toString());
+    setDrinkNFTBalance(tx.toString());
   };
 
   const initiateScan = async () => {
@@ -64,7 +83,6 @@ const ChipScan = () => {
       const keys = await getPublicKeysFromScan({
         rpId: "raidbrood.xyz",
       });
-      setKeys(keys);
       setChipPublicKey(keys?.primaryPublicKeyRaw);
       console.log(`Public keys: ${JSON.stringify(keys)}`);
       const sig = await getSignatureFromChip(
@@ -93,7 +111,6 @@ const ChipScan = () => {
       hash: currBlockHash,
     });
 
-    setSig(sig);
     setSignatureFromChip(sig);
 
     alert(` sig: ${JSON.stringify(sig)}`);
@@ -109,7 +126,7 @@ const ChipScan = () => {
     console.log("tx", JSON.stringify(tx));
 
     const receipt = await tx?.wait();
-    console.log("receipt", JSON.stringify(receipt));
+    console.log("mintPBT receipt", JSON.stringify(receipt));
   };
 
   if (!signer) {
@@ -123,6 +140,7 @@ const ChipScan = () => {
           Press button and bring your phone near your Blood of Moloch KONG chip.
           Then you will be prompted to mint your physically backed token.
         </Text>
+        <Text>You own {drinkNFTBalance} Drink NFTs</Text>
 
         <VStack direction="column">
           <Button
