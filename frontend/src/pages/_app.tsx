@@ -33,26 +33,24 @@ export default function App({
         description="Blood of Moloch NFT"
         canonical="https://bloodofmoloch.xyz"
       />
-      <SessionProvider session={session}>
-        <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider chains={chains} theme={darkTheme()}>
-            <AppStateProvider>
-              <Component {...pageProps} />
-            </AppStateProvider>
-          </RainbowKitProvider>
-        </WagmiConfig>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </SessionProvider>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains} theme={darkTheme()}>
+          <AppStateProvider>
+            <Component {...pageProps} />
+          </AppStateProvider>
+        </RainbowKitProvider>
+      </WagmiConfig>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </ChakraProvider>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
-import { useSigner, useAccount, useContract } from "wagmi";
+import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
@@ -11,6 +11,7 @@ import { useAppState } from "../context/AppContext";
 import Web3 from "web3";
 import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
 import { Network, Alchemy } from "alchemy-sdk";
+import { ethers } from "ethers";
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
@@ -22,6 +23,7 @@ const alchemy = new Alchemy(settings);
 // Get the latest block
 const latestBlock = alchemy.core.getBlockNumber();
 const ChipScan = () => {
+  const [bomPBT, setBomPBT] = useState<any>(null);
   const { data: signer } = useSigner();
   const claimTokenId = 0;
   const { address } = useAccount();
@@ -52,11 +54,21 @@ const ChipScan = () => {
     return block.hash;
   };
 
-  const bomPBT = useContract({
-    address: process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
-    abi: BloodOfMolochPBT.abi,
-    signerOrProvider: signer,
-  });
+  const initContracts = () => {
+    setBomPBT(
+      new ethers.Contract(
+        process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
+        BloodOfMolochPBT.abi,
+        signer
+      )
+    );
+  };
+
+  useEffect(() => {
+    if (signer) {
+      initContracts();
+    }
+  }, [signer]);
   console.log(
     `process.env.NEXT_PUBLIC_PBT_ADDRESS: ${process.env.NEXT_PUBLIC_PBT_ADDRESS}`
   );
@@ -77,9 +89,11 @@ const ChipScan = () => {
     console.log("tx", JSON.stringify(tx));
   };
   const getPBTBalance = async () => {
-    const tx = await bomPBT?.balanceOf(address);
-    console.log("tx", tx.toString());
-    setDrinkNFTBalance(tx.toString());
+    if (bomPBT) {
+      const tx = await bomPBT?.balanceOf(address);
+      console.log("tx", tx.toString());
+      setDrinkNFTBalance(tx.toString());
+    }
   };
 
   const initiateScan = async () => {

@@ -1,33 +1,46 @@
 import { useState, useEffect } from "react";
 import { Text, Flex, Icon, HStack } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
-import { useSigner, useContract, useAccount } from "wagmi";
+import { useSigner, useAccount } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
 import MockERC721 from "../artifacts/contracts/mock/MockERC721.sol/MockERC721.json";
 import React from "react";
+import { ethers } from "ethers";
 import { useAppState } from "@/context/AppContext";
 import { FaCheckCircle } from "react-icons/fa";
 
 const ClaimNFTPanel = () => {
   const { isApproved, setIsApproved } = useAppState();
+  const [claimNFT, setClaimNFT] = useState<any>(null);
   const { data: signer, isSuccess } = useSigner();
   const { address, connector, isConnected } = useAccount();
   const ClaimContract = process.env.NEXT_PUBLIC_DEV_MODE
     ? MockERC721
     : BloodOfMolochClaimNFT;
-  const claimNFT = useContract({
-    address: process.env.NEXT_PUBLIC_CLAIM_ADDRESS,
-    abi: ClaimContract.abi,
-    signerOrProvider: signer,
-  });
+
+  const initContracts = () => {
+    setClaimNFT(
+      new ethers.Contract(
+        process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "",
+        BloodOfMolochClaimNFT.abi,
+        signer
+      )
+    );
+  };
 
   useEffect(() => {
     if (isSuccess) {
       checkClaimNFTBalance();
       // checkIfIsApprovedForAll();
       getTokenURI();
+      initContracts();
     }
   }, [isSuccess]);
+  useEffect(() => {
+    if (claimNFT) {
+      checkClaimNFTBalance();
+    }
+  }, [claimNFT]);
 
   const [claimNFTBalance, setClaimNFTBalance] = useState<string>("0");
 
@@ -41,11 +54,9 @@ const ClaimNFTPanel = () => {
   };
 
   const checkClaimNFTBalance = async () => {
-    if (address && claimNFT) {
-      const tx = await claimNFT.balanceOf(address);
-      const result = tx.toString();
-      setClaimNFTBalance(result);
-    }
+    const tx = await claimNFT.balanceOf(address);
+    const result = tx.toString();
+    setClaimNFTBalance(result);
   };
 
   const checkIfIsApprovedForAll = async () => {

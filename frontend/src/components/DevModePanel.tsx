@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSigner, useContract, useAccount } from "wagmi";
+import { useSigner, useAccount } from "wagmi";
+import { ethers } from "ethers";
 import EthCrypto from "eth-crypto";
 import { Button, Text, Flex } from "@chakra-ui/react";
 import ClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
@@ -8,22 +9,33 @@ import getWalletClaimNFTs from "../utils/api";
 
 const DevModePanel = () => {
   const { data: signer } = useSigner();
+  const [claimNFT, setClaimNFT] = useState<any>(null);
+  const [bomPBT, setBomPBT] = useState<any>(null);
   const [chipAddress, setChipAddress] = useState<string>("");
   const { address } = useAccount();
-  const claimNFT = useContract({
-    address: process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "",
-    abi: ClaimNFT.abi,
-    signerOrProvider: signer,
-  });
-  const bomPBT = useContract({
-    address: process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
-    abi: BloodOfMolochPBT.abi,
-    signerOrProvider: signer,
-  });
+  const initContracts = () => {
+    setClaimNFT(
+      new ethers.Contract(
+        process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "",
+        ClaimNFT.abi,
+        signer
+      )
+    );
+    setBomPBT(
+      new ethers.Contract(
+        process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
+        BloodOfMolochPBT.abi,
+        signer
+      )
+    );
+  };
 
   useEffect(() => {
     getAddress();
   }, []);
+  useEffect(() => {
+    initContracts();
+  }, [signer]);
 
   const mintClaimFT = async () => {
     const tx = await claimNFT?.batchMint(10);
