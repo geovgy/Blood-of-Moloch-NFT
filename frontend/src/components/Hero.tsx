@@ -38,7 +38,7 @@ export const Hero = () => {
       px={{ lg: "8rem", md: "4rem", base: "2rem" }}
     >
       <Flex justify="center" width="100%">
-        <Flex justify="flex-end" width="100%" mx={8} my={6}>
+        <Flex justify="flex-end" width="100%" mx={{ base: 0, md: 6 }} my={6}>
           <ConnectWallet />
         </Flex>
       </Flex>
@@ -46,9 +46,9 @@ export const Hero = () => {
         <Image
           src={MEDIA_FILES.logos.header}
           alt="RaidBrood Logo"
-          width="220px"
-          height="220px"
-          mb={12}
+          width={{ base: "180px", md: "220px" }}
+          height={{ base: "180px", md: "220px" }}
+          mb={{ base: 6, md: 12 }}
         />
         <StyledHeroText
           fontSize={{ lg: "72px", base: "48px" }}
