@@ -40,6 +40,8 @@ const ChipScan = () => {
   );
 
   const getBlockHash = async () => {
+    console.log(`getBlockHash start`);
+
     const blockNumber = await alchemy.core.getBlockNumber();
 
     console.log(`getBlockHash blockNumber: ${blockNumber}`);
@@ -57,7 +59,7 @@ const ChipScan = () => {
   });
 
   useEffect(() => {
-    // getBlockHash();
+    getBlockHash();
     getOwner();
   }, []);
   useEffect(() => {
