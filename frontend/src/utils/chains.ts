@@ -17,7 +17,6 @@ export const { chains, provider } = configureChains(
   // [mainnet, gnosis, polygon, arbitrum, optimism, goerli, sepolia, hardhat],
   [goerli],
   [
-    infuraProvider({ apiKey: process.env.NEXT_PUBLIC_RPC_KEY }),
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY }),
     jsonRpcProvider({
       rpc: (localChain: Chain) => ({
