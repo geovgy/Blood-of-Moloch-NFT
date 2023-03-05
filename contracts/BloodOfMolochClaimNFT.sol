@@ -147,7 +147,7 @@ contract BloodOfMolochClaimNFT is
      * by default, can be overridden in child contracts.
      */
     function _baseURI() internal view override returns (string memory) {
-        return "ipfs://bafybeie5js6d3laop3adpe4bmpxuwpbpwyp4mjkthtt24havk4ghfzqery/";
+        return "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
     }
 
     receive() payable external {}
