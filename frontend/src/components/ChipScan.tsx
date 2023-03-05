@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, Button, Box, VStack, Flex } from "@chakra-ui/react";
+import { Text, Button, VStack } from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
@@ -8,7 +8,6 @@ import {
 import React from "react";
 import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
-import Web3 from "web3";
 import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
 import { Network, Alchemy } from "alchemy-sdk";
 import { ethers } from "ethers";
@@ -26,7 +25,7 @@ const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
   const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
-  const claimTokenId = 1;
+  const claimTokenId = 2;
   const { address } = useAccount();
   const {
     blockHashUsedInSig,
