@@ -10,7 +10,7 @@ main().catch((error) => {
 });
 
 async function main() {
-  const baseURI = "ipfs://bafybeie5js6d3laop3adpe4bmpxuwpbpwyp4mjkthtt24havk4ghfzqery/";
+  const baseURI = "ipfs://bafybeidjo64lsehekut7n3lr6xi36f74qf6z5fusx3rm6rk6dibnadnchu/";
   const contractName = "BloodOfMolochPBT";
 
   const { name: networkName } = hre.network
