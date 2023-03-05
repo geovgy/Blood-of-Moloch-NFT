@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, VStack, Text, Flex, Box, Image } from "@chakra-ui/react";
+import { Container, VStack, Flex, Image } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";

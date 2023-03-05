@@ -13,7 +13,7 @@ const ClaimNFTPanel = () => {
   const { isApproved, setIsApproved } = useAppState();
   const [claimNFT, setClaimNFT] = useState<any>(null);
   const { data: signer, isSuccess } = useSigner();
-  const { address, connector, isConnected } = useAccount();
+  const { address } = useAccount();
   const ClaimContract = process.env.NEXT_PUBLIC_DEV_MODE
     ? MockERC721
     : BloodOfMolochClaimNFT;
@@ -37,51 +37,15 @@ const ClaimNFTPanel = () => {
     if (claimNFT) {
       checkClaimNFTBalance();
       getTokenURI();
-      // getClaimNFTOwners();
-      // checkIfIsApprovedForAll();
     }
   }, [claimNFT]);
 
   const [claimNFTBalance, setClaimNFTBalance] = useState<string>("0");
 
-  const approveClaimNFT = async () => {
-    if (claimNFT) {
-      const tx = await claimNFT.setApprovalForAll(
-        process.env.NEXT_PUBLIC_CLAIM_ADDRESS,
-        true
-      );
-    }
-  };
-  const getClaimNFTOwners = async () => {
-    if (claimNFT) {
-      for (let i = 2; i < 12; i++) {
-        const tx = await claimNFT.ownerOf(i);
-        console.log(`getClaimNFTOwners claimNFT tx: ${i} -  ${tx.toString()}`);
-      }
-      // const tx = await claimNFT.ownerOf(2);
-      // console.log("getClaimNFTOwners claimNFT tx: ", tx.toString());
-
-      // const tx = await claimNFT.ownerOf(2);
-      // console.log("getClaimNFTOwners claimNFT tx: ", tx.toString());
-    }
-  };
-
   const checkClaimNFTBalance = async () => {
     const tx = await claimNFT.balanceOf(address);
     const result = tx.toString();
     setClaimNFTBalance(result);
-  };
-
-  const checkIfIsApprovedForAll = async () => {
-    if (address && claimNFT) {
-      const tx = await claimNFT.isApprovedForAll(
-        address, // owner
-        process.env.NEXT_PUBLIC_PBT_ADDRESS // operator
-      );
-      console.log("checkIfIsApprovedForAll claimNFT tx: ", tx.toString());
-
-      setIsApproved(tx);
-    }
   };
 
   const getTokenURI = async () => {

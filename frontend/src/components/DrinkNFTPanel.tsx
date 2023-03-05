@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { VStack, Text } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { useSigner, useContract } from "wagmi";
@@ -14,10 +14,6 @@ const DrinkNFTPanel = () => {
     abi: BloodOfMolochPBT.abi,
     signerOrProvider: signer,
   });
-
-  // 1. scan
-  // 2. approve
-  // 3. mint
 
   const claimDrink = async () => {
     if (claimNFT) {

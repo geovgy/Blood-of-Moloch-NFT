@@ -16,14 +16,10 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { CgProfile } from "react-icons/cg";
 import { FiKey, FiChevronDown, FiXCircle } from "react-icons/fi";
 import { truncateAddress } from "../utils/general";
-import Link from "./ChakraNextLink";
 
 const ConnectWallet: React.FC = () => {
-  const { address } = useAccount();
-  const { disconnect } = useDisconnect();
   const showNetwork = false; // maybe unhide, in some cases
 
   return (

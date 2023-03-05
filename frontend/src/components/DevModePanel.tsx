@@ -47,14 +47,11 @@ const DevModePanel = () => {
     console.log(`getWalletClaimNFTs result: ${JSON.stringify(result)}`);
   };
 
-  const primaryPublicKeyHash =
-    "0xa02a09aeb3b6be84ccaecfb052621dbf36a46a98b92695c9744e8b94f9332030";
   const primaryPublicKeyRaw =
     "04bd0a24bbfc3bcd1586a5d02a0c8190330a097aef1dd08deb665bf63cc98b228e2da269970789bbef7d39439cfd6d2ec8576065cd40aaf8810e7f0ef70462e5f4";
 
   const getAddress = () => {
     const chipAddress = EthCrypto.publicKey.toAddress(primaryPublicKeyRaw);
-    // const chipAddress = web3.utils.soliditySha3(primaryPublicKeyRaw);
     console.log(`chipAddress: ${chipAddress}`);
     setChipAddress(chipAddress);
   };
@@ -93,19 +90,6 @@ const DevModePanel = () => {
     const receipt = await tx?.wait();
     console.log("receipt", JSON.stringify(receipt));
   };
-
-  const hardcodeMint = async () => {
-    const sigHardcode =
-      "0x85c7134cd7ac01f2984530eda5e4cdbf3b7cabcca9e7f39711570eced48381534628c4b74dda63eb194bf9c8b652c0e31629e394e2544ce874c250bf12f8ae0c1c";
-    const blockHashHardcode =
-      "0xf8bcf752743e928060fa0606ec8ab9d34f03bef47dcc21d1e9e0cde37b35a080";
-    const tx = await bomPBT?.mint(1, sigHardcode, blockHashHardcode);
-
-    console.log("hardcodeMint tx", JSON.stringify(tx));
-    const receipt = await tx?.wait();
-    console.log("receipt", JSON.stringify(receipt));
-  };
-
   return (
     <Flex
       border="solid 1px pink"
@@ -138,9 +122,6 @@ const DevModePanel = () => {
         </Button>
         <Button m={4} onClick={setClaimToken}>
           setClaimToken
-        </Button>
-        <Button m={4} onClick={hardcodeMint}>
-          hardcode mint
         </Button>
       </Flex>
     </Flex>

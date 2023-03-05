@@ -15,11 +15,6 @@ import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 import { AppStateProvider } from "../context/AppContext";
 import theme from "../styles/theme";
-import { SessionProvider } from "next-auth/react";
-
-// const theme = extendBaseTheme({
-//   components: {},
-// });
 
 export default function App({
   Component,
