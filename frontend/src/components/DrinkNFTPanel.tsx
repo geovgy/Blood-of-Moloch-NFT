@@ -23,7 +23,8 @@ const DrinkNFTPanel = () => {
         blockHashUsedInSig
       );
       const result = tx.wait();
-      console.log(`mint PBT result ${result}`);
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(`mint PBT result ${result}`);
     }
   };
   const canMint = claimTokenId && signatureFromChip && blockHashUsedInSig;

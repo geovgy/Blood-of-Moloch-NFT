@@ -10,13 +10,9 @@ import { useAppState } from "@/context/AppContext";
 import { FaCheckCircle } from "react-icons/fa";
 
 const ClaimNFTPanel = () => {
-  const { isApproved, setIsApproved } = useAppState();
   const [claimNFT, setClaimNFT] = useState<any>(null);
   const { data: signer, isSuccess } = useSigner();
   const { address } = useAccount();
-  const ClaimContract = process.env.NEXT_PUBLIC_DEV_MODE
-    ? MockERC721
-    : BloodOfMolochClaimNFT;
 
   const initContracts = () => {
     setClaimNFT(
@@ -32,12 +28,14 @@ const ClaimNFTPanel = () => {
     if (isSuccess) {
       initContracts();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess]);
   useEffect(() => {
     if (claimNFT) {
       checkClaimNFTBalance();
       getTokenURI();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claimNFT]);
 
   const [claimNFTBalance, setClaimNFTBalance] = useState<string>("0");

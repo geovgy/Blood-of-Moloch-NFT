@@ -20,7 +20,6 @@ const settings = {
 const alchemy = new Alchemy(settings);
 
 // Get the latest block
-const latestBlock = alchemy.core.getBlockNumber();
 const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
   const [blockNumber, setBlockNumber] = useState<number>(0);
@@ -35,19 +34,10 @@ const ChipScan = () => {
   } = useAppState();
   const [drinkNFTBalance, setDrinkNFTBalance] = useState<string>("0");
 
-  console.log(
-    `process.env.NEXT_PUBLIC_ALCHEMY_KEY: ${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`
-  );
-
   const getBlockHash = async () => {
-    console.log(`getBlockHash start`);
-
     const currBlockNumber = await alchemy.core.getBlockNumber();
 
-    console.log(`getBlockHash blockNumber: ${blockNumber}`);
     const block = await alchemy.core.getBlock(blockNumber);
-    console.log(`block.hash: ${block.hash}`);
-
     setBlockHashUsedInSig(block.hash);
     setBlockNumber(currBlockNumber);
     return [block.hash, currBlockNumber];
@@ -67,13 +57,8 @@ const ChipScan = () => {
     if (signer) {
       initContracts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer]);
-  console.log(
-    `process.env.NEXT_PUBLIC_PBT_ADDRESS: ${process.env.NEXT_PUBLIC_PBT_ADDRESS}`
-  );
-  console.log(
-    `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
-  );
 
   useEffect(() => {
     getBlockHash();
@@ -105,20 +90,23 @@ const ChipScan = () => {
   const initiateScan = async () => {
     try {
       const [currBlockHash, currBlockNumber] = await getBlockHash();
-      console.log(
-        `currBlockHash: ${currBlockHash} currBlockNumber: ${currBlockNumber}`
-      );
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(
+          `currBlockHash: ${currBlockHash} currBlockNumber: ${currBlockNumber}`
+        );
 
       const keys = await getPublicKeysFromScan({
         rpId: "raidbrood.xyz",
       });
       setChipPublicKey(keys?.primaryPublicKeyRaw);
-      console.log(`Public keys: ${JSON.stringify(keys)}`);
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(`Public keys: ${JSON.stringify(keys)}`);
       const sig = await getSignatureFromChip(
         keys?.primaryPublicKeyRaw,
         currBlockHash
       );
-      console.log(`sig: ${JSON.stringify(sig)}`);
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockNumber);
     } catch (e: any) {
       console.error(`error: ${JSON.stringify(e)}`);
@@ -128,12 +116,13 @@ const ChipScan = () => {
     publicKey: string,
     currBlockHash: string
   ) => {
-    console.log(
-      "inside getSignatureFromChip",
-      publicKey,
-      address,
-      currBlockHash
-    );
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log(
+        "inside getSignatureFromChip",
+        publicKey,
+        address,
+        currBlockHash
+      );
     const sig = await getSignatureFromScan({
       chipPublicKey: publicKey,
       address: address,
@@ -141,22 +130,23 @@ const ChipScan = () => {
     });
 
     setSignatureFromChip(sig);
-    console.log(` sig: ${JSON.stringify(sig)}`);
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log(` sig: ${JSON.stringify(sig)}`);
     return sig;
   };
   const mintPBT = async (sig: string, currBlockNumber: string) => {
-    console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
-
-    // const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber);
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
     const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
       gasLimit: 10000000,
     });
 
-    console.log("tx", JSON.stringify(tx));
+    process.env.NEXT_PUBLIC_DEV_MODE && console.log("tx", JSON.stringify(tx));
 
     const receipt = await tx?.wait();
-    console.log("mintPBT receipt", JSON.stringify(receipt));
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log("mintPBT receipt", JSON.stringify(receipt));
   };
 
   if (!signer) {
