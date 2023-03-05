@@ -25,7 +25,7 @@ const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
   const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
-  const claimTokenId = 2;
+  const claimTokenId = 3;
   const { address } = useAccount();
   const {
     setBlockHashUsedInSig,

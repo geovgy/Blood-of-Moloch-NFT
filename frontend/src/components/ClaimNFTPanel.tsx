@@ -37,6 +37,8 @@ const ClaimNFTPanel = () => {
     if (claimNFT) {
       checkClaimNFTBalance();
       getTokenURI();
+      // getClaimNFTOwners();
+      // checkIfIsApprovedForAll();
     }
   }, [claimNFT]);
 
@@ -50,6 +52,19 @@ const ClaimNFTPanel = () => {
       );
     }
   };
+  const getClaimNFTOwners = async () => {
+    if (claimNFT) {
+      for (let i = 2; i < 12; i++) {
+        const tx = await claimNFT.ownerOf(i);
+        console.log(`getClaimNFTOwners claimNFT tx: ${i} -  ${tx.toString()}`);
+      }
+      // const tx = await claimNFT.ownerOf(2);
+      // console.log("getClaimNFTOwners claimNFT tx: ", tx.toString());
+
+      // const tx = await claimNFT.ownerOf(2);
+      // console.log("getClaimNFTOwners claimNFT tx: ", tx.toString());
+    }
+  };
 
   const checkClaimNFTBalance = async () => {
     const tx = await claimNFT.balanceOf(address);
@@ -61,8 +76,10 @@ const ClaimNFTPanel = () => {
     if (address && claimNFT) {
       const tx = await claimNFT.isApprovedForAll(
         address, // owner
-        process.env.NEXT_PUBLIC_CLAIM_ADDRESS // operator
+        process.env.NEXT_PUBLIC_PBT_ADDRESS // operator
       );
+      console.log("checkIfIsApprovedForAll claimNFT tx: ", tx.toString());
+
       setIsApproved(tx);
     }
   };
