@@ -6,7 +6,7 @@ async function main() {
   const constructorArgs: any[] = [];
 
   const { name: networkName } = hre.network
-  const deployments = JSON.parse(await fs.readFile(`./deployments/${networkName}.json`, 'utf-8'))
+  const deployments = JSON.parse(await fs.readFile(`./deployments/deployments-${networkName}.json`, 'utf-8'))
   const address = deployments[contractName]
   const { chainId } = hre.network.config
 
