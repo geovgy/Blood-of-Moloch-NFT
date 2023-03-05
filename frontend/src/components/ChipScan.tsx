@@ -57,6 +57,12 @@ const ChipScan = () => {
     abi: BloodOfMolochPBT.abi,
     signerOrProvider: signer,
   });
+  console.log(
+    `process.env.NEXT_PUBLIC_PBT_ADDRESS: ${process.env.NEXT_PUBLIC_PBT_ADDRESS}`
+  );
+  console.log(
+    `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
+  );
 
   useEffect(() => {
     getBlockHash();
