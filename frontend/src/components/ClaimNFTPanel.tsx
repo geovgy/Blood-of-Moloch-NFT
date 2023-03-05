@@ -57,7 +57,7 @@ const ClaimNFTPanel = () => {
 
   const mintClaimNFT = async () => {
     const options = { value: ethers.utils.parseEther("0.05") };
-    const tx = await claimNFT?.mint(options);
+    const tx = await claimNFT?.mintClaimToken(options);
     const result = await tx.wait();
     console.log(`mint result: ${JSON.stringify(result)}`);
   };
