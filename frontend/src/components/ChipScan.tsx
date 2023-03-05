@@ -35,16 +35,15 @@ const ChipScan = () => {
   } = useAppState();
   const [drinkNFTBalance, setDrinkNFTBalance] = useState<string>("0");
 
-  const web3 = new Web3("https://cloudflare-eth.com");
+  console.log(
+    `process.env.NEXT_PUBLIC_ALCHEMY_KEY: ${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`
+  );
 
   const getBlockHash = async () => {
     const blockNumber = await alchemy.core.getBlockNumber();
 
-    // const blockNumber = await web3.eth.getBlockNumber();
     console.log(`getBlockHash blockNumber: ${blockNumber}`);
     const block = await alchemy.core.getBlock(blockNumber);
-
-    // const block = await web3.eth.getBlock(blockNumber);
     console.log(`block.hash: ${block.hash}`);
 
     setBlockHashUsedInSig(block.hash);
@@ -150,18 +149,7 @@ const ChipScan = () => {
           >
             Scan Your PBT Chip
           </Button>
-          {/* <Text fontSize="xs" my={4} color="gray.600">
-            This will grab the public key from the chip necessary for the next
-            step
-          </Text> */}
         </VStack>
-      </VStack>
-      <VStack>
-        {/* <Text fontSize="xs" my={4} color="gray.600">
-          This will initiate the chip to sign a message with contents of your
-          address: {signer?.getAddress()} and recent block number:{" "}
-          {blockHashUsedInSig}
-        </Text> */}
       </VStack>
     </VStack>
   );

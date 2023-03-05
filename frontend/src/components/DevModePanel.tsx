@@ -131,8 +131,6 @@ const DevModePanel = () => {
           hardcode mint
         </Button>
       </Flex>
-      <Text> chip address: {chipAddress}</Text>
-      <Text>{/* balance of PBT: <p>{getPBTBalance()}</p> */}</Text>
     </Flex>
   );
 };
