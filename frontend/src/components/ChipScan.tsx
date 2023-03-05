@@ -26,7 +26,7 @@ const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
   const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
-  const claimTokenId = 0;
+  const claimTokenId = 1;
   const { address } = useAccount();
   const {
     blockHashUsedInSig,
@@ -137,16 +137,12 @@ const ChipScan = () => {
     });
 
     setSignatureFromChip(sig);
-    // alert(` sig: ${JSON.stringify(sig)}`);
     console.log(` sig: ${JSON.stringify(sig)}`);
     return sig;
   };
   const mintPBT = async (sig: string, currBlockNumber: string) => {
     console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    // const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
-    //   gasLimit: 100000,
-    // });
     const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber);
 
     console.log("tx", JSON.stringify(tx));
