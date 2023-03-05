@@ -17,7 +17,6 @@ import { chains, provider } from "./chains";
 const connectors = connectorsForWallets([
   {
     groupName: "Popular",
-
     wallets: [
       injectedWallet({ chains }),
       metaMaskWallet({ chains, shimDisconnect: false }),
@@ -29,7 +28,7 @@ const connectors = connectorsForWallets([
     groupName: "Others",
     wallets: [
       rainbowWallet({ chains }),
-      coinbaseWallet({ chains, appName: "Dungeon Master" }),
+      coinbaseWallet({ chains, appName: "Blood of Moloch" }),
       argentWallet({ chains }),
       braveWallet({ chains }),
     ],

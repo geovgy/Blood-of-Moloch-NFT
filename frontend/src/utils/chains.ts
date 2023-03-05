@@ -9,7 +9,6 @@ import {
   sepolia,
   hardhat,
 } from "wagmi/chains";
-import { infuraProvider } from "wagmi/providers/infura";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 
