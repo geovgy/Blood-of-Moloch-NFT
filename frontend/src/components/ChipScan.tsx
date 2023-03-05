@@ -144,9 +144,10 @@ const ChipScan = () => {
   const mintPBT = async (sig: string, currBlockNumber: string) => {
     console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
-      gasLimit: 100000,
-    });
+    // const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
+    //   gasLimit: 100000,
+    // });
+    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber);
 
     console.log("tx", JSON.stringify(tx));
 
