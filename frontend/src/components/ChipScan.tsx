@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
-import { Text, Button, VStack } from "@chakra-ui/react";
+import { Text, Flex, Button, Box, Image } from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
 } from "pbt-chip-client/kong";
 import React from "react";
-import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
 import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
 import { Network, Alchemy } from "alchemy-sdk";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
@@ -62,28 +62,15 @@ const ChipScan = () => {
 
   useEffect(() => {
     getBlockHash();
-    getOwner();
   }, []);
   useEffect(() => {
     getPBTBalance();
-    getSupply();
   });
 
-  const getOwner = async () => {
-    const tx = await bomPBT?.owner();
-    console.log("tx", JSON.stringify(tx));
-  };
   const getPBTBalance = async () => {
     if (bomPBT) {
       const tx = await bomPBT?.balanceOf(address);
-      console.log("tx", tx.toString());
       setDrinkNFTBalance(tx.toString());
-    }
-  };
-  const getSupply = async () => {
-    if (bomPBT) {
-      const tx = await bomPBT?.supply();
-      console.log("supply", tx.toString());
     }
   };
 
@@ -110,6 +97,16 @@ const ChipScan = () => {
       mintPBT(sig, currBlockNumber);
     } catch (e: any) {
       console.error(`error: ${JSON.stringify(e)}`);
+      toast.warning("Oops! There was an error", {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
   const getSignatureFromChip = async (
@@ -147,6 +144,16 @@ const ChipScan = () => {
     const receipt = await tx?.wait();
     process.env.NEXT_PUBLIC_DEV_MODE &&
       console.log("mintPBT receipt", JSON.stringify(receipt));
+    toast.success("Successfully minted Drink NFT!", {
+      position: "top-right",
+      autoClose: 10000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
   };
 
   if (!signer) {
@@ -154,25 +161,58 @@ const ChipScan = () => {
   }
 
   return (
-    <VStack>
-      <VStack align="center">
-        <Text textAlign="center" fontSize="xl" my={6}>
-          Press button and bring your phone near your Blood of Moloch KONG chip.
-          Then you will be prompted to mint your physically backed token.
-        </Text>
-        <Text>You own {drinkNFTBalance} Drink NFTs</Text>
-
-        <VStack direction="column">
-          <Button
-            disabled={!!chipPublicKey}
-            onClick={initiateScan}
-            fontFamily="texturina"
-          >
-            Scan Your PBT Chip
-          </Button>
-        </VStack>
-      </VStack>
-    </VStack>
+    <Flex direction="column" alignItems="center" my={10} minH={"110vh"}>
+      <Text
+        id="mint-drink-nft"
+        fontSize="4xl"
+        textAlign="center"
+        fontFamily="texturina"
+        mb={12}
+      >
+        Mint Your Drink PBT
+      </Text>
+      <Text textAlign="center" fontSize="lg" my={6} fontFamily="texturina">
+        Bring your phone near your Blood of Moloch chip and tap scan below. Then
+        you will be prompted to mint your physically backed token.
+      </Text>
+      <Text fontSize="lg" my={6} fontFamily="texturina">
+        You own {drinkNFTBalance} Drink NFT
+        <span>{drinkNFTBalance === "1" ? "" : "s"}</span>
+      </Text>
+      <Flex height="100%" mt={12}>
+        <Box height={"308px"}>
+          <Image
+            borderRadius="xl"
+            src="/assets/drink-nft.png"
+            width="300px"
+            height="300px"
+            border="solid 1px white"
+            style={{
+              transition: "all 100ms ease-in-out",
+            }}
+            _hover={{
+              transform: "scale(1.04)",
+            }}
+          />
+        </Box>
+      </Flex>
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+        height="200px"
+        mb={"30px"}
+      >
+        <Button
+          disabled={!!chipPublicKey}
+          onClick={initiateScan}
+          fontFamily="texturina"
+          _hover={{ bg: "#ff3864", color: "white" }}
+        >
+          Scan Your PBT Chip
+        </Button>
+      </Flex>
+    </Flex>
   );
 };
 

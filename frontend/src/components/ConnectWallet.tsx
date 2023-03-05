@@ -16,7 +16,7 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { FiKey, FiChevronDown, FiXCircle } from "react-icons/fi";
+import { FiKey, FiChevronDown } from "react-icons/fi";
 import { truncateAddress } from "../utils/general";
 
 const ConnectWallet: React.FC = () => {

@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Container, VStack, Flex, Image } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
 import DevModePanel from "@/components/DevModePanel";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import ClaimNFTPanel from "@/components/ClaimNFTPanel";
+import { Hero } from "@/components/Hero";
+import { Footer } from "@/components/Footer";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -29,34 +30,19 @@ export default function ClaimBaBom() {
 
   return (
     <>
-      <Flex justify="center">
-        <Flex justify="flex-end" width="100%" mx={8} my={6} maxWidth="1200px">
-          <ConnectWallet />
-        </Flex>
-      </Flex>
+      <Hero />
       <Container>
-        <Flex direction="column" align="center" justify="center" m={8}>
+        {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
+          <DevModePanel />
+        )}
+        {_isConnected && (
           <VStack>
-            <Image
-              src="/assets/logo_header.svg"
-              alt="RaidBrood Logo"
-              width="120px"
-              height="120px"
-            />
+            <ClaimNFTPanel />
+            <ChipScan />
           </VStack>
-          <Flex direction="column" align="center" justify="center" m={8}>
-            {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE && (
-              <DevModePanel />
-            )}
-            {_isConnected && (
-              <VStack>
-                <ClaimNFTPanel />
-                <ChipScan />
-              </VStack>
-            )}
-          </Flex>
-        </Flex>
+        )}
       </Container>
+      <Footer />
     </>
   );
 }

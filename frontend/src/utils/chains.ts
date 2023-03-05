@@ -13,8 +13,7 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 
 export const { chains, provider } = configureChains(
-  // [mainnet, gnosis, polygon, arbitrum, optimism, goerli, sepolia, hardhat],
-  [goerli],
+  [goerli, mainnet],
   [
     alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY }),
     jsonRpcProvider({
