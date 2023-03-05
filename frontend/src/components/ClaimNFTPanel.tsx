@@ -30,15 +30,13 @@ const ClaimNFTPanel = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      checkClaimNFTBalance();
-      // checkIfIsApprovedForAll();
-      getTokenURI();
       initContracts();
     }
   }, [isSuccess]);
   useEffect(() => {
     if (claimNFT) {
       checkClaimNFTBalance();
+      getTokenURI();
     }
   }, [claimNFT]);
 
