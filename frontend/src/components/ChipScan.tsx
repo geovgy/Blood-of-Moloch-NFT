@@ -81,6 +81,7 @@ const ChipScan = () => {
   }, []);
   useEffect(() => {
     getPBTBalance();
+    getSupply();
   });
 
   const getOwner = async () => {
@@ -92,6 +93,12 @@ const ChipScan = () => {
       const tx = await bomPBT?.balanceOf(address);
       console.log("tx", tx.toString());
       setDrinkNFTBalance(tx.toString());
+    }
+  };
+  const getSupply = async () => {
+    if (bomPBT) {
+      const tx = await bomPBT?.supply();
+      console.log("supply", tx.toString());
     }
   };
 
