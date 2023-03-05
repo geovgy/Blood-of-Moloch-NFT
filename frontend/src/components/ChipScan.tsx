@@ -24,6 +24,7 @@ const alchemy = new Alchemy(settings);
 const latestBlock = alchemy.core.getBlockNumber();
 const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
+  const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
   const claimTokenId = 0;
   const { address } = useAccount();
@@ -44,14 +45,15 @@ const ChipScan = () => {
   const getBlockHash = async () => {
     console.log(`getBlockHash start`);
 
-    const blockNumber = await alchemy.core.getBlockNumber();
+    const currBlockNumber = await alchemy.core.getBlockNumber();
 
     console.log(`getBlockHash blockNumber: ${blockNumber}`);
     const block = await alchemy.core.getBlock(blockNumber);
     console.log(`block.hash: ${block.hash}`);
 
     setBlockHashUsedInSig(block.hash);
-    return block.hash;
+    setBlockNumber(currBlockNumber);
+    return [block.hash, currBlockNumber];
   };
 
   const initContracts = () => {
@@ -98,8 +100,10 @@ const ChipScan = () => {
 
   const initiateScan = async () => {
     try {
-      const currBlockHash = await getBlockHash();
-      console.log(`currBlockHash: ${currBlockHash}`);
+      const [currBlockHash, currBlockNumber] = await getBlockHash();
+      console.log(
+        `currBlockHash: ${currBlockHash} currBlockNumber: ${currBlockNumber}`
+      );
 
       const keys = await getPublicKeysFromScan({
         rpId: "raidbrood.xyz",
@@ -111,7 +115,7 @@ const ChipScan = () => {
         currBlockHash
       );
       console.log(`sig: ${JSON.stringify(sig)}`);
-      mintPBT(sig, currBlockHash);
+      mintPBT(sig, currBlockNumber);
     } catch (e: any) {
       console.error(`error: ${JSON.stringify(e)}`);
     }
@@ -137,12 +141,13 @@ const ChipScan = () => {
     console.log(` sig: ${JSON.stringify(sig)}`);
     return sig;
   };
-  const mintPBT = async (sig: string, currBlockHash: string) => {
-    console.log(`mintPBT sig: ${sig} currBlockHash: ${currBlockHash}`);
+  const mintPBT = async (sig: string, currBlockNumber: string) => {
+    console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockHash, {
+    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
       gasLimit: 100000,
     });
+
     console.log("tx", JSON.stringify(tx));
 
     const receipt = await tx?.wait();

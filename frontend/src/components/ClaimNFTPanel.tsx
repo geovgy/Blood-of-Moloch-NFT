@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, Flex, Icon, HStack } from "@chakra-ui/react";
+import { Text, Flex } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
@@ -75,7 +75,8 @@ const ClaimNFTPanel = () => {
   };
 
   const mintClaimNFT = async () => {
-    const tx = await claimNFT?.mint();
+    const options = { value: ethers.utils.parseEther("0.05") };
+    const tx = await claimNFT?.mint(options);
     const result = await tx.wait();
     console.log(`mint result: ${JSON.stringify(result)}`);
   };
