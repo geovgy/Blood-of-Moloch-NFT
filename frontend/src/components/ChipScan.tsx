@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
-  network: Network.ETH_GOERLI,
+  network: Network.ETH_MAINNET,
 };
 
 const alchemy = new Alchemy(settings);
@@ -22,9 +22,9 @@ const alchemy = new Alchemy(settings);
 // Get the latest block
 const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
+  const [claimNFTTokenId, setClaimNFTTokenId] = useState<string>("");
   const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
-  const claimTokenId = 3;
   const { address } = useAccount();
   const {
     setBlockHashUsedInSig,
@@ -66,6 +66,25 @@ const ChipScan = () => {
   useEffect(() => {
     getPBTBalance();
   });
+  useEffect(() => {
+    getNFTsOfWallet();
+  }, [address]);
+
+  const getNFTsOfWallet = async () => {
+    if (address) {
+      const nfts = await alchemy.nft.getNftsForOwner(address);
+      console.log(`nfts: ${JSON.stringify(nfts)}`);
+      const ownedNFT: any = nfts.ownedNfts.find(
+        (nft: any) =>
+          nft.contract.address === process.env.NEXT_PUBLIC_CLAIM_ADDRESS
+      );
+      console.log(`ownedNFT: ${JSON.stringify(ownedNFT.tokenId)}`);
+
+      if (ownedNFT) {
+        setClaimNFTTokenId(ownedNFT);
+      }
+    }
+  };
 
   const getPBTBalance = async () => {
     if (bomPBT) {
@@ -75,6 +94,19 @@ const ChipScan = () => {
   };
 
   const initiateScan = async () => {
+    if (!claimNFTTokenId) {
+      toast.warning("You must own 1 Claim NFT to mint", {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
     try {
       const [currBlockHash, currBlockNumber] = await getBlockHash();
       process.env.NEXT_PUBLIC_DEV_MODE &&
@@ -107,6 +139,7 @@ const ChipScan = () => {
         progress: undefined,
         theme: "dark",
       });
+      return;
     }
   };
   const getSignatureFromChip = async (
@@ -135,7 +168,7 @@ const ChipScan = () => {
     process.env.NEXT_PUBLIC_DEV_MODE &&
       console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
+    const tx = await bomPBT?.mint(claimNFTTokenId, sig, currBlockNumber, {
       gasLimit: 10000000,
     });
 
@@ -186,6 +219,7 @@ const ChipScan = () => {
             src="/assets/drink-nft.png"
             width="300px"
             height="300px"
+            alt="A color graphic of a drink"
             border="solid 1px white"
             style={{
               transition: "all 100ms ease-in-out",

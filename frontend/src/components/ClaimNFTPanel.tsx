@@ -102,6 +102,7 @@ const ClaimNFTPanel = () => {
           width="300px"
           height="300px"
           border="solid 1px white"
+          alt="Graphic of a drink in black and white"
           style={{
             transition: "all 100ms ease-in-out",
           }}
