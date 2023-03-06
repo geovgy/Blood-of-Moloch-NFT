@@ -18,7 +18,7 @@ contract BloodOfMolochClaimNFT is
 
     uint256 public supply;
     uint256 public constant MAX_SUPPLY = 350;
-    uint256 public constant MIN_PRICE = 0.069 ether;
+    uint256 public constant MIN_PRICE = 0.05 ether;
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
