@@ -181,7 +181,7 @@ describe("Claim NFT", function() {
   it("Should setMinPrice as minter role", async function () {
     const { contract, rando, minter } = await deploy()
 
-		const quantity = 3
+    expect(await contract.MIN_PRICE()).to.equal(parseEther("0.069"))
 		const receipt = contract.connect(minter).setMinPrice(parseEther("0.096"))
 		await expect(receipt).to.be.not.reverted
     expect(await contract.MIN_PRICE()).to.equal(parseEther("0.096"))
@@ -190,7 +190,6 @@ describe("Claim NFT", function() {
   it("Should revert setMinPrice if not minter role", async function () {
     const { contract, rando, minter } = await deploy()
 
-		const quantity = 3
 		const receipt = contract.connect(rando).setMinPrice(parseEther("0.096"))
 		await expect(receipt).to.be.reverted
   })
