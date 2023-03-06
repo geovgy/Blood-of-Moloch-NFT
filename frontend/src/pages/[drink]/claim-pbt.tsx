@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Container, VStack, Text, Flex, Box, Image } from "@chakra-ui/react";
+import { Container, VStack, Flex, Image } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
-import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
-import MintMockNFT from "@/components/DevModePanel";
+import DevModePanel from "@/components/DevModePanel";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
+import ClaimNFTPanel from "@/components/ClaimNFTPanel";
+import { Hero } from "@/components/Hero";
+import { Footer } from "@/components/Footer";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -28,38 +30,19 @@ export default function ClaimBaBom() {
 
   return (
     <>
-      <Flex
-        mt={8}
-        mb={4}
-        justify="flex-end"
-        width="100%"
-        mx={8}
-        maxWidth="1200px"
-      >
-        <ConnectWallet />
-      </Flex>
+      <Hero />
       <Container>
-        <Flex direction="column" align="center" justify="center" m={8}>
+        {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
+          <DevModePanel />
+        )}
+        {_isConnected && (
           <VStack>
-            <Image
-              src="/assets/logo_header.svg"
-              alt="RaidBrood Logo"
-              width="180px"
-              height="180px"
-            />
+            <ClaimNFTPanel />
+            <ChipScan />
           </VStack>
-          <Flex direction="column" align="center" justify="center" m={8}>
-            {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE && (
-              <MintMockNFT />
-            )}
-            {_isConnected && (
-              <VStack>
-                <ChipScan />
-              </VStack>
-            )}
-          </Flex>
-        </Flex>
+        )}
       </Container>
+      <Footer />
     </>
   );
 }

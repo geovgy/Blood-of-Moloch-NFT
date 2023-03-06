@@ -1,91 +1,124 @@
 import { useState, useEffect } from "react";
-import { Text, Flex, Icon, HStack } from "@chakra-ui/react";
+import { Text, Flex, Image } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/react";
-import { useSigner, useContract, useAccount } from "wagmi";
+import { useSigner, useAccount } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
-import MockERC721 from "../artifacts/contracts/mock/MockERC721.sol/MockERC721.json";
 import React from "react";
-import { useAppState } from "@/context/AppContext";
-import { FaCheckCircle } from "react-icons/fa";
+import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
 const ClaimNFTPanel = () => {
-  const { isApproved, setIsApproved } = useAppState();
+  const [claimNFT, setClaimNFT] = useState<any>(null);
   const { data: signer, isSuccess } = useSigner();
-  const { address, connector, isConnected } = useAccount();
-  const ClaimContract = process.env.NEXT_PUBLIC_DEV_MODE
-    ? MockERC721
-    : BloodOfMolochClaimNFT;
-  const claimNFT = useContract({
-    address: process.env.NEXT_PUBLIC_CLAIM_ADDRESS,
-    abi: ClaimContract.abi,
-    signerOrProvider: signer,
-  });
+  const { address } = useAccount();
+
+  const initContracts = () => {
+    setClaimNFT(
+      new ethers.Contract(
+        process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "",
+        BloodOfMolochClaimNFT.abi,
+        signer
+      )
+    );
+  };
 
   useEffect(() => {
     if (isSuccess) {
-      checkClaimNFTBalance();
-      checkIfIsApprovedForAll();
-      getTokenURI();
+      initContracts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSuccess]);
+  useEffect(() => {
+    if (claimNFT) {
+      checkClaimNFTBalance();
+      // getTokenURI();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimNFT]);
 
   const [claimNFTBalance, setClaimNFTBalance] = useState<string>("0");
 
-  const approveClaimNFT = async () => {
-    if (claimNFT) {
-      const tx = await claimNFT.setApprovalForAll(
-        process.env.NEXT_PUBLIC_CLAIM_ADDRESS,
-        true
-      );
-    }
-  };
-
   const checkClaimNFTBalance = async () => {
-    if (address && claimNFT) {
-      const tx = await claimNFT.balanceOf(address);
-      const result = tx.toString();
-      setClaimNFTBalance(result);
-    }
-  };
-
-  const checkIfIsApprovedForAll = async () => {
-    if (address && claimNFT) {
-      const tx = await claimNFT.isApprovedForAll(
-        address, // owner
-        process.env.NEXT_PUBLIC_CLAIM_ADDRESS // operator
-      );
-      console.log("is approved for all ", tx);
-      setIsApproved(tx);
-    }
+    const tx = await claimNFT.balanceOf(address);
+    const result = tx.toString();
+    setClaimNFTBalance(result);
   };
 
   const getTokenURI = async () => {
     if (address && claimNFT) {
       const tx = await claimNFT.tokenURI(2);
-      console.log("getTokenURI claimNFT tx: ", tx.toString());
+    }
+  };
+
+  const mintClaimNFT = async () => {
+    try {
+      const options = { value: ethers.utils.parseEther("0.05") };
+      const tx = await claimNFT?.mintClaimToken(options);
+      const result = await tx.wait();
+      console.log(`mint result: ${JSON.stringify(result)}`);
+      toast.success("Successfully minted Claim NFT!", {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } catch (err: any) {
+      toast.warning("Oops! There was an error", {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 
   return (
-    <Flex direction="column" m={10}>
-      <Text fontSize="xl" textAlign="center" fontFamily="texturina" mb={6}>
-        Step 1. Approve the contract to burn your CLAIM NFT
+    <Flex direction="column" alignItems="center" m={10} minH={"110vh"}>
+      <Text
+        id="mint-claim-nft"
+        fontSize="4xl"
+        textAlign="center"
+        fontFamily="texturina"
+        mb={6}
+      >
+        Mint your CLAIM NFT
       </Text>
-      <Text textAlign="center">You have {claimNFTBalance} CLAIM NFTs</Text>
-      {!isApproved && (
-        <Button fontFamily="texturina" my={8} onClick={approveClaimNFT}>
-          Set Approval
-        </Button>
-      )}
-      {isApproved ? <Text>Approved to Burn</Text> : <Text>Not Approved</Text>}
-      {isApproved && (
-        <HStack>
-          <Text fontSize="2xl" fontFamily="texturina" mr={4}>
-            Done
-          </Text>
-          <Icon as={FaCheckCircle} />
-        </HStack>
-      )}
+      <Text textAlign="center" fontFamily="texturina" fontSize="lg" my="8">
+        You own {claimNFTBalance} CLAIM NFT
+        <span>{claimNFTBalance === "1" ? "" : "s"}</span>
+      </Text>
+      <Flex height={"308px"}>
+        <Image
+          borderRadius="xl"
+          src="/assets/claim-nft.png"
+          width="300px"
+          height="300px"
+          border="solid 1px white"
+          style={{
+            transition: "all 100ms ease-in-out",
+          }}
+          _hover={{
+            transform: "scale(1.04)",
+          }}
+        />
+      </Flex>
+      <Button
+        fontFamily="texturina"
+        my={8}
+        onClick={mintClaimNFT}
+        _hover={{ bg: "#ff3864", color: "white" }}
+        mb={"120px"}
+      >
+        Mint for 0.05 ETH
+      </Button>
     </Flex>
   );
 };
