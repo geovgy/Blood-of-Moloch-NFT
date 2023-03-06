@@ -18,7 +18,7 @@ contract BloodOfMolochClaimNFT is
 
     uint256 public supply;
     uint256 public constant MAX_SUPPLY = 350;
-    uint256 public constant MIN_PRICE = 0.05 ether;
+    uint256 public MIN_PRICE = 0.069 ether;
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
@@ -131,6 +131,10 @@ contract BloodOfMolochClaimNFT is
             return true;
         }
         return _operatorApprovals[owner][operator];
+    }
+
+    function setMinPrice(uint256 _minPrice) external onlyRole(MINTER_ROLE) {
+        MIN_PRICE = _minPrice;
     }
 
     function _mintClaimToken() internal {

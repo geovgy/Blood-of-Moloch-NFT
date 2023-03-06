@@ -4,7 +4,7 @@ import fs from "fs/promises";
 async function main() {
   const [minter] = await ethers.getSigners();
   const contractName = "BloodOfMolochClaimNFT";
-  const constructorArgs: any[] = [minter.address];
+  const constructorArgs: any[] = ["0x9db771F6972c29bf8778c52ae9dee6A917664c16"];
 
   const { name: networkName } = hre.network
   const deployments = JSON.parse(await fs.readFile(`./deployments/deployments-${networkName}.json`, 'utf-8'))
