@@ -64,16 +64,13 @@ const ChipScan = () => {
     getBlockHash();
   }, []);
   useEffect(() => {
-    getPBTBalance();
-  });
-  useEffect(() => {
     getNFTsOfWallet();
+    getPBTBalance();
   }, [address]);
 
   const getNFTsOfWallet = async () => {
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
-      console.log(`nfts: ${JSON.stringify(nfts)}`);
       const ownedNFT: any = nfts.ownedNfts.find(
         (nft: any) =>
           nft.contract.address === process.env.NEXT_PUBLIC_CLAIM_ADDRESS
