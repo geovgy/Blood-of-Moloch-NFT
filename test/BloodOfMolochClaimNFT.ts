@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { LazyMinter } from "../lib/lazyMinter";
@@ -164,7 +165,7 @@ describe("Claim NFT", function () {
 
     const receipt = contract
       .connect(rando)
-      .mintClaimToken({ value: parseEther("0.069") });
+      .mintClaimToken({ value: parseEther("0.07") });
     await expect(receipt).to.emit(contract, "Minted").withArgs(0);
   });
 
@@ -185,7 +186,7 @@ describe("Claim NFT", function () {
     const quantity = 3;
     const receipt = contract
       .connect(rando)
-      .batchMintClaimTokens(quantity, { value: parseEther("0.15") });
+      .batchMintClaimTokens(quantity, { value: parseEther("0.21") });
     for (let i = 0; i < quantity; i++) {
       await expect(receipt)
         .to.emit(contract, "Minted")
@@ -205,5 +206,21 @@ describe("Claim NFT", function () {
     await expect(receipt).to.be.revertedWith(
       "BloodOfMolochClaimNFT: msg.value below min price"
     );
+  });
+
+  it("Should setMinPrice as minter role", async function () {
+    const { contract, rando, minter } = await deploy();
+
+    expect(await contract.MIN_PRICE()).to.equal(parseEther("0.069"));
+    const receipt = contract.connect(minter).setMinPrice(parseEther("0.096"));
+    await expect(receipt).to.be.not.reverted;
+    expect(await contract.MIN_PRICE()).to.equal(parseEther("0.096"));
+  });
+
+  it("Should revert setMinPrice if not minter role", async function () {
+    const { contract, rando, minter } = await deploy();
+
+    const receipt = contract.connect(rando).setMinPrice(parseEther("0.096"));
+    await expect(receipt).to.be.reverted;
   });
 });
