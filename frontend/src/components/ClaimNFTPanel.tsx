@@ -52,7 +52,7 @@ const ClaimNFTPanel = () => {
 
   const mintClaimNFT = async () => {
     try {
-      const options = { value: ethers.utils.parseEther("0.05") };
+      const options = { value: ethers.utils.parseEther("0.069") };
       const tx = await claimNFT?.mintClaimToken(options);
       const result = await tx.wait();
       console.log(`mint result: ${JSON.stringify(result)}`);
@@ -118,7 +118,7 @@ const ClaimNFTPanel = () => {
         _hover={{ bg: "#ff3864", color: "white" }}
         mb={"120px"}
       >
-        Mint for 0.05 ETH
+        Mint for 0.069 ETH
       </Button>
     </Flex>
   );

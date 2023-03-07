@@ -78,9 +78,11 @@ const ChipScan = () => {
         (nft: any) =>
           nft.contract.address === process.env.NEXT_PUBLIC_CLAIM_ADDRESS
       );
-      console.log(`ownedNFT: ${JSON.stringify(ownedNFT.tokenId)}`);
 
       if (ownedNFT) {
+        process.env.NEXT_PUBLIC_DEV_MODE &&
+          console.log(`ownedNFT: ${JSON.stringify(ownedNFT?.tokenId)}`);
+
         setClaimNFTTokenId(ownedNFT);
       }
     }
