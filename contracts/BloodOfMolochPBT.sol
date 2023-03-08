@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chiru-labs/pbt/src/PBTSimple.sol";
-import "./BloodOfMolochClaimNFT.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -35,7 +34,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
     function mint(
         uint256 claimTokenId,
         bytes calldata signatureFromChip,
-        uint256 blockNumberUsedInSig
+        uint256 blockHashUsedInSig
     ) external nonReentrant {
         if (!canMint) {
             revert MintNotOpen();
@@ -51,7 +50,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
             IERC721(_claimToken).isApprovedForAll(_msgSender(), address(this)) || IERC721(_claimToken).getApproved(claimTokenId) == address(this),
             "BloodOfMoloch: not approved"
         );
-        _mintTokenWithChip(signatureFromChip, blockNumberUsedInSig);
+        _mintTokenWithChip(signatureFromChip, blockHashUsedInSig);
         _burnClaimToken(claimTokenId);
         unchecked {
             ++supply;

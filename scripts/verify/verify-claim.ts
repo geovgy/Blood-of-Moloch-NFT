@@ -2,12 +2,15 @@ import hre, { ethers } from "hardhat";
 import fs from "fs/promises";
 
 async function main() {
+  const [minter] = await ethers.getSigners();
   const contractName = "BloodOfMolochClaimNFT";
-  const constructorArgs: any[] = [];
+  const constructorArgs: any[] = ["0x9db771F6972c29bf8778c52ae9dee6A917664c16"];
 
   const { name: networkName } = hre.network
-  const deployments = JSON.parse(await fs.readFile(`./deployments/${networkName}.json`, 'utf-8'))
+  const deployments = JSON.parse(await fs.readFile(`./deployments/deployments-${networkName}.json`, 'utf-8'))
   const address = deployments[contractName]
+  const bomAddress = deployments["BloodOfMolochPBT"]
+  constructorArgs.push(bomAddress)
   const { chainId } = hre.network.config
 
   if (chainId !== 31337) {

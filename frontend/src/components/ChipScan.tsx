@@ -1,103 +1,218 @@
 import { useState, useEffect } from "react";
-import { Text, HStack, Icon, VStack } from "@chakra-ui/react";
-import { useBlockNumber, useSigner } from "wagmi";
-import { Button } from "@chakra-ui/react";
+import { Text, Flex, Button, Box, Image } from "@chakra-ui/react";
+import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
   getSignatureFromScan,
 } from "pbt-chip-client/kong";
 import React from "react";
-import DoneIcon from "./DoneIcon";
 import { useAppState } from "../context/AppContext";
+import BloodOfMolochPBT from "../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json";
+import { Network, Alchemy } from "alchemy-sdk";
+import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
+const settings = {
+  apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
+  network: Network.ETH_GOERLI,
+};
+
+const alchemy = new Alchemy(settings);
+
+// Get the latest block
 const ChipScan = () => {
+  const [bomPBT, setBomPBT] = useState<any>(null);
+  const [blockNumber, setBlockNumber] = useState<number>(0);
+  const { data: signer } = useSigner();
+  const claimTokenId = 3;
+  const { address } = useAccount();
   const {
-    blockNumberUsedInSig,
-    setBlockNumberUsedInSig,
-    signatureFromChip,
+    setBlockHashUsedInSig,
     setSignatureFromChip,
     setChipPublicKey,
     chipPublicKey,
   } = useAppState();
-  const [blockNumber, setBlockNumber] = useState<string>("");
-  const [keys, setKeys] = useState<any>(null);
-  const [sig, setSig] = useState<any>(null);
-  const {
-    data: blockNumberData,
-    isLoading,
-    error,
-    refetch,
-  } = useBlockNumber({
-    enabled: false,
-  });
-  const { data: signer } = useSigner();
-  useEffect(() => {
-    if (!blockNumberUsedInSig && blockNumberData) {
-      console.log(`block number data: ${blockNumberData}`);
-      setBlockNumberUsedInSig(blockNumberData);
-    }
-  }, [blockNumberData]);
+  const [drinkNFTBalance, setDrinkNFTBalance] = useState<string>("0");
 
-  console.log(`keys: ${keys} sig: ${sig}`);
-  console.log(`blockNumber: ${blockNumberData} `);
+  const getBlockHash = async () => {
+    const currBlockNumber = await alchemy.core.getBlockNumber();
+
+    const block = await alchemy.core.getBlock(blockNumber);
+    setBlockHashUsedInSig(block.hash);
+    setBlockNumber(currBlockNumber);
+    return [block.hash, currBlockNumber];
+  };
+
+  const initContracts = () => {
+    setBomPBT(
+      new ethers.Contract(
+        process.env.NEXT_PUBLIC_PBT_ADDRESS || "",
+        BloodOfMolochPBT.abi,
+        signer
+      )
+    );
+  };
+
+  useEffect(() => {
+    if (signer) {
+      initContracts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signer]);
+
+  useEffect(() => {
+    getBlockHash();
+  }, []);
+  useEffect(() => {
+    getPBTBalance();
+  });
+
+  const getPBTBalance = async () => {
+    if (bomPBT) {
+      const tx = await bomPBT?.balanceOf(address);
+      setDrinkNFTBalance(tx.toString());
+    }
+  };
+
+  const initiateScan = async () => {
+    try {
+      const [currBlockHash, currBlockNumber] = await getBlockHash();
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(
+          `currBlockHash: ${currBlockHash} currBlockNumber: ${currBlockNumber}`
+        );
+
+      const keys = await getPublicKeysFromScan({
+        rpId: "raidbrood.xyz",
+      });
+      setChipPublicKey(keys?.primaryPublicKeyRaw);
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(`Public keys: ${JSON.stringify(keys)}`);
+      const sig = await getSignatureFromChip(
+        keys?.primaryPublicKeyRaw,
+        currBlockHash
+      );
+      process.env.NEXT_PUBLIC_DEV_MODE &&
+        console.log(`sig: ${JSON.stringify(sig)}`);
+      mintPBT(sig, currBlockNumber);
+    } catch (e: any) {
+      console.error(`error: ${JSON.stringify(e)}`);
+      toast.warning("Oops! There was an error", {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
+  const getSignatureFromChip = async (
+    publicKey: string,
+    currBlockHash: string
+  ) => {
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log(
+        "inside getSignatureFromChip",
+        publicKey,
+        address,
+        currBlockHash
+      );
+    const sig = await getSignatureFromScan({
+      chipPublicKey: publicKey,
+      address: address,
+      hash: currBlockHash,
+    });
+
+    setSignatureFromChip(sig);
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log(` sig: ${JSON.stringify(sig)}`);
+    return sig;
+  };
+  const mintPBT = async (sig: string, currBlockNumber: string) => {
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
+
+    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
+      gasLimit: 10000000,
+    });
+
+    process.env.NEXT_PUBLIC_DEV_MODE && console.log("tx", JSON.stringify(tx));
+
+    const receipt = await tx?.wait();
+    process.env.NEXT_PUBLIC_DEV_MODE &&
+      console.log("mintPBT receipt", JSON.stringify(receipt));
+    toast.success("Successfully minted Drink NFT!", {
+      position: "top-right",
+      autoClose: 10000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
 
   if (!signer) {
     return null;
   }
 
   return (
-    <VStack>
-      <VStack align="center">
-        <Text fontSize="lg" my={6}>
-          Part A. Get public key from Chip
-        </Text>
-        {chipPublicKey && <DoneIcon />}
-
+    <Flex direction="column" alignItems="center" my={10} minH={"110vh"}>
+      <Text
+        id="mint-drink-nft"
+        fontSize="4xl"
+        textAlign="center"
+        fontFamily="texturina"
+        mb={12}
+      >
+        Mint Your Drink PBT
+      </Text>
+      <Text textAlign="center" fontSize="lg" my={6} fontFamily="texturina">
+        Bring your phone near your Blood of Moloch chip and tap scan below. Then
+        you will be prompted to mint your physically backed token.
+      </Text>
+      <Text fontSize="lg" my={6} fontFamily="texturina">
+        You own {drinkNFTBalance} Drink NFT
+        <span>{drinkNFTBalance === "1" ? "" : "s"}</span>
+      </Text>
+      <Flex height="100%" mt={12}>
+        <Box height={"308px"}>
+          <Image
+            borderRadius="xl"
+            src="/assets/drink-nft.png"
+            width="300px"
+            height="300px"
+            border="solid 1px white"
+            style={{
+              transition: "all 100ms ease-in-out",
+            }}
+            _hover={{
+              transform: "scale(1.04)",
+            }}
+          />
+        </Box>
+      </Flex>
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        direction="column"
+        height="200px"
+        mb={"30px"}
+      >
         <Button
           disabled={!!chipPublicKey}
-          onClick={() => {
-            getPublicKeysFromScan().then((keys: any) => {
-              setKeys(keys);
-              setChipPublicKey(keys?.primaryPublicKeyRaw);
-            });
-          }}
-          mb={8}
+          onClick={initiateScan}
           fontFamily="texturina"
+          _hover={{ bg: "#ff3864", color: "white" }}
         >
-          Initiate Scan
+          Scan Your PBT Chip
         </Button>
-        <Text fontSize="xs" my={4} color="gray.600">
-          This will grab the public key from the chip necessary for the next
-          step
-        </Text>
-      </VStack>
-      <VStack>
-        <Text fontSize="lg" my={6}>
-          Part B. Get Signature
-        </Text>
-        {signatureFromChip && <DoneIcon />}
-        <Button
-          disabled={!!signatureFromChip}
-          onClick={() => {
-            getSignatureFromScan({
-              chipPublicKey: keys?.primaryPublicKeyRaw,
-              address: signer?.getAddress(),
-              hash: blockNumberUsedInSig,
-            }).then((sig) => {
-              setSig(sig);
-              setSignatureFromChip(sig);
-            });
-          }}
-        >
-          Get Signature from Chip
-        </Button>
-        {/* <Text fontSize="xs" my={4} color="gray.600">
-          This will initiate the chip to sign a message with contents of your
-          address: {signer?.getAddress()} and recent block number:{" "}
-          {blockNumberUsedInSig}
-        </Text> */}
-      </VStack>
-    </VStack>
+      </Flex>
+    </Flex>
   );
 };
 

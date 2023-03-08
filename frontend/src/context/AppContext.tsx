@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState, createContext } from "react";
+import React, { useContext, useState, createContext } from "react";
 const AppContext = createContext({});
 
 const AppStateProvider = ({ children }: any): any => {
   const [claimTokenId, setClaimTokenId] = useState<string>("");
-  const [blockNumberUsedInSig, setBlockNumberUsedInSig] = useState<string>("");
+  const [blockHashUsedInSig, setBlockHashUsedInSig] = useState<string>("");
   const [signatureFromChip, setSignatureFromChip] = useState<string>("");
   const [chipPublicKey, setChipPublicKey] = useState<string>("");
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -11,8 +11,8 @@ const AppStateProvider = ({ children }: any): any => {
   const appState = {
     claimTokenId,
     setClaimTokenId,
-    blockNumberUsedInSig,
-    setBlockNumberUsedInSig,
+    blockHashUsedInSig,
+    setBlockHashUsedInSig,
     signatureFromChip,
     setSignatureFromChip,
     chipPublicKey,

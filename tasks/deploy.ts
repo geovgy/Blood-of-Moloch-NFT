@@ -1,6 +1,7 @@
 import { task } from 'hardhat/config';
 import * as fs from 'fs';
-import { ContractFactory } from 'ethers/lib/ethers';
+import { Contract, ContractFactory } from 'ethers/lib/ethers';
+import { BloodOfMolochClaimNFT, BloodOfMolochPBT } from '../types';
 
 type Contracts = 'BloodOfMolochClaimNFT' | 'BloodOfMolochPBT';
 
@@ -10,33 +11,37 @@ task('deploy', 'Deploy contracts and verify')
     const [admin] = await ethers.getSigners();
 
     const contracts: Record<Contracts, ContractFactory> = {
+      BloodOfMolochPBT: await ethers.getContractFactory('BloodOfMolochPBT'),
       BloodOfMolochClaimNFT: await ethers.getContractFactory(
         'BloodOfMolochClaimNFT'
       ),
-      BloodOfMolochPBT: await ethers.getContractFactory('BloodOfMolochPBT'),
     };
 
     const deployments: Record<Contracts, string> = {
-      BloodOfMolochClaimNFT: '',
       BloodOfMolochPBT: '',
+      BloodOfMolochClaimNFT: '',
     };
 
     const constructorArguments: Record<Contracts, string[]> = {
-      BloodOfMolochClaimNFT: [minter? minter : admin.address],
       BloodOfMolochPBT: [],
+      BloodOfMolochClaimNFT: [minter? minter : admin.address],
     };
 
     const toFile = (path: string, deployment: Record<Contracts, string>) => {
       fs.writeFileSync(path, JSON.stringify(deployment), { encoding: 'utf-8' });
     };
 
+    let bomContract: BloodOfMolochPBT
     for (const [name, contract] of Object.entries(contracts)) {
       console.log(`Starting deployment of ${name}`);
       const factory = contract;
 
-      const constructorArgs = Object.entries(constructorArguments).find(
+      let constructorArgs = Object.entries(constructorArguments).find(
         (entry) => entry[0] === name
       )?.[1];
+      if (name === "BloodOfMolochClaimNFT") {
+        constructorArgs = [...constructorArgs, bomContract.address]
+      }
       console.log(`Constructor arguments: ${constructorArgs}`);
 
       const instance = constructorArgs
@@ -49,7 +54,12 @@ task('deploy', 'Deploy contracts and verify')
 
       deployments[name as Contracts] = instance.address;
 
+      if (name === "BloodOfMolochPBT") {
+        bomContract = instance
+      }
+
       toFile(`deployments/deployments-${hre.network.name}.json`, deployments);
+
 
       if (hre.network.name !== ('localhost' || 'hardhat')) {
         try {
