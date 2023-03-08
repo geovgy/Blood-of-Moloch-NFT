@@ -9,10 +9,11 @@ import * as fs from 'fs';
 async function main() {
   const signers = await getDefaultSigners();
   const claimNft = new ethers.Contract(addresses.BloodOfMolochClaimNFT, BloodOfMolochClaimNFTABI.abi, signers.admin) as BloodOfMolochClaimNFT;
-  const tokenUri = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi";
+  const tokenUri = "ipfs://bafybeihbro4dzhpiz6mqlnumxxszxdxrjzn54dfbynt5mrz4elqpiw2t7u";
   const minPrice = ethers.utils.parseEther(".001");
   const lazyMinter = new LazyMinter(claimNft, signers.admin);
   const vouchersWSig = [];
+
   for(let i = 0; i<350; i++){
     const {voucher, signature} = await lazyMinter.createVoucher(i, tokenUri, minPrice);
     const voucherWsig = {
@@ -30,7 +31,7 @@ async function main() {
   toFile(`vouchers/vouchers-${hre.network.name}.json`, vouchersWSig);
  
   
-
+  
 }
 
 // We recommend this pattern to be able to use async/await everywhere

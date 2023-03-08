@@ -1,3 +1,4 @@
+import { BloodOfMolochPBT } from './../types/contracts/BloodOfMolochPBT';
 import hre from "hardhat"
 const { ethers } = hre
 import fs from "fs/promises"
@@ -25,7 +26,7 @@ async function main() {
         address,
         bomInterface.abi,
         signer
-      )
+      ) as BloodOfMolochPBT;
 
       const chipAddresses = await parseHaloScans()
       const tokenIds = chipAddresses.map((addr, i) => i + 1)

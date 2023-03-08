@@ -40,7 +40,7 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
         if (!canMint) {
             revert MintNotOpen();
         }
-        if (supply == TOTAL_SUPPLY) {
+        if (supply >= TOTAL_SUPPLY) {
             revert TotalSupplyReached();
         }
         if (_claimToken == address(0)) {
