@@ -17,31 +17,31 @@ async function main() {
   const address = deployments[contractName]
   const { chainId } = hre.network.config
 
-  if (chainId !== 31337) {
-    try {
-      const [signer] = await ethers.getSigners()
-      let bomInterface = require("../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json")
-      const bomContract: BloodOfMolochPBT = new Contract(
-        address,
-        bomInterface.abi,
-        signer
-      )
+  try {
+    const [signer] = await ethers.getSigners()
+    console.log("Signer:", signer.address)
+    let bomInterface = require("../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json")
+    // const bomContract: BloodOfMolochPBT = new Contract(
+    //   address,
+    //   bomInterface.abi,
+    //   signer
+    // )
 
-      const chipAddresses = await parseHaloScans()
-      const tokenIds = chipAddresses.map((addr, i) => i + 1)
+    const chipAddresses = await parseHaloScans()
+    const tokenIds = chipAddresses.map((addr, i) => i)
+    console.log("tokenIds:", tokenIds.length)
 
-      await bomContract.seedChipToTokenMapping(chipAddresses, tokenIds, true)
-      console.log("Chips seeded")
-    } catch (error: any) {
-      console.error(error);
-    }
+    // await bomContract.seedChipToTokenMapping(chipAddresses, tokenIds, true)
+    // console.log("Chips seeded")
+  } catch (error: any) {
+    console.error(error);
   }
 }
 
 async function parseHaloScans() {
   const chipAddresses = []
   const dir = await fs.readdir("./kongchips");
-  for(let i=1; i < dir.length; i++) {
+  for(let i=1; i <= dir.length; i++) {
     const file = JSON.parse(await fs.readFile(`./kongchips/scanned-halos-${i}.json`, 'utf-8'))
     
     for (var key in file) {
