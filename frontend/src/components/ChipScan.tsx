@@ -216,7 +216,7 @@ const ChipScan = () => {
         fontFamily="texturina"
         mb={12}
       >
-        Mint Your Drink PBT
+        Mint Your Drink PBT [staging]
       </Text>
       <Text textAlign="center" fontSize="lg" my={6} fontFamily="texturina">
         Bring your phone near your Blood of Moloch chip and tap scan below. Then
