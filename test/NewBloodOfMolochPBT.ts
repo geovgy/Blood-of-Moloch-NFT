@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { BloodOfMolochClaimNFT, BloodOfMolochPBT, MockERC721 } from "../types";
+import { BloodOfMolochClaimNFT, BloodOfMolochPBT, NewBloodOfMolochPBT, MockERC721 } from "../types";
 import { BigNumber, Signer } from "ethers";
 import { LazyMinter } from "../lib/lazyMinter";
 import { parseEther } from "ethers/lib/utils";
@@ -9,10 +9,10 @@ import fs from "fs/promises";
 describe("BloodOfMolochPBT", function () {
   const BOM_NAME = "Blood of Moloch";
   const BOM_SYMBOL = "BoM";
-  const BOM_TOTAL_SUPPLY = 350;
+  const BOM_TOTAL_SUPPLY = 300;
   const BOM_BASE_URI = "ipfs://<METADATA>/";
 
-  let bomContract: BloodOfMolochPBT;
+  let bomContract: NewBloodOfMolochPBT;
   let claimContract: MockERC721;
   let signers: Signer[];
   let addresses: string[];
@@ -23,9 +23,9 @@ describe("BloodOfMolochPBT", function () {
     claimContract = await MockClaimNFT.deploy();
 
     const BloodOfMolochNFT = await ethers.getContractFactory(
-      "BloodOfMolochPBT"
+      "NewBloodOfMolochPBT"
     );
-    bomContract = await BloodOfMolochNFT.deploy();
+    bomContract = await BloodOfMolochNFT.deploy(BOM_TOTAL_SUPPLY);
 
     signers = await ethers.getSigners();
     addresses = await Promise.all(
@@ -53,11 +53,9 @@ describe("BloodOfMolochPBT", function () {
     await bomContract.setBaseURI(BOM_BASE_URI);
     await bomContract.setClaimToken(claimContract.address);
     const chipAddresses = await parseHaloScans()
-    const tokenIds = chipAddresses.map((signer, index) => index);
+    // const tokenIds = signers.map((signer, index) => index).slice(1);
     await bomContract.seedChipToTokenMapping(
-      chipAddresses,
-      tokenIds,
-      true
+      chipAddresses
     );
     if (enableMint) {
       await bomContract.openMint();
@@ -122,18 +120,16 @@ describe("BloodOfMolochPBT", function () {
         const tokenIds = chipAddresses.map((chip, i) => i)
 
         const tx = bomContract.seedChipToTokenMapping(
-          chipAddresses,
-          tokenIds,
-          true
+          chipAddresses
         );
         await expect(tx).to.not.be.reverted;
       });
       it("Should revert seedChipToTokenMapping if not owner", async function () {
+        const tokenIds = signers.map((signer, index) => index).slice(1);
         const chipAddresses = await parseHaloScans()
-        const tokenIds = chipAddresses.map((signer, index) => index);
         const tx = bomContract
           .connect(signers[1])
-          .seedChipToTokenMapping(chipAddresses, tokenIds, true);
+          .seedChipToTokenMapping(chipAddresses);
         await expect(tx).to.be.revertedWith("Ownable: caller is not the owner");
       });
     });
@@ -154,11 +150,9 @@ describe("BloodOfMolochPBT", function () {
       it("Should revert openMint if missing _baseTokenURI", async function () {
         await bomContract.setClaimToken(claimContract.address);
         const chipAddresses = await parseHaloScans()
-        const tokenIds = chipAddresses.map((signer, index) => index);
+        // const tokenIds = signers.map((signer, index) => index).slice(1);
         await bomContract.seedChipToTokenMapping(
-          chipAddresses,
-          tokenIds,
-          true
+          chipAddresses
         );
         const tx = bomContract.openMint();
         expect(tx).to.be.revertedWith("BloodOfMoloch: no base URI");
@@ -166,11 +160,9 @@ describe("BloodOfMolochPBT", function () {
       it("Should revert openMint if missing claimToken", async function () {
         await bomContract.setBaseURI(BOM_BASE_URI);
         const chipAddresses = await parseHaloScans()
-        const tokenIds = chipAddresses.map((signer, index) => index);
+        const tokenIds = signers.map((signer, index) => index).slice(1);
         await bomContract.seedChipToTokenMapping(
-          chipAddresses,
-          tokenIds,
-          true
+          chipAddresses
         );
         const tx = bomContract.openMint();
         expect(tx).to.be.revertedWith("BloodOfMoloch: no claim token");
@@ -185,19 +177,6 @@ describe("BloodOfMolochPBT", function () {
   });
 
   describe("Mint", function () {
-    async function deployClaimContract(pbtAddress: string) {
-      const [minter, rando] = await ethers.getSigners();
-    
-      let factory = await ethers.getContractFactory("BloodOfMolochClaimNFT", minter)
-      const contract = await factory.deploy(minter.address, pbtAddress) as BloodOfMolochClaimNFT;
-    
-      return {
-        minter,
-        rando,
-        contract,
-      }
-    }
-
     it("Should mint", async function () {
       const claimTokenId = 1;
       await claimContract.mint(addresses[0]);
@@ -237,8 +216,9 @@ describe("BloodOfMolochPBT", function () {
       await expect(tx).to.not.be.reverted;
       await expect(tx)
         .to.emit(bomContract, "PBTMint")
-        .withArgs(0, addresses[1]);
-      expect(await bomContract.tokenIdFor(await chip.getAddress())).to.equal(0);
+        // .withArgs(1, addresses[1]);
+      // expect(await bomContract.tokenIdFor(await chip.getAddress())).to.equal(1);
+      expect(await bomContract.ownerOf(await bomContract.tokenIdFor(await chip.getAddress()))).to.equal(addresses[0])
     });
     it("Should burn correct claim tokenId", async function () {
       const claimTokenId = 1;
@@ -334,7 +314,7 @@ describe("BloodOfMolochPBT", function () {
       const tx = bomContract.mint(claimTokenId, chipSig, block.number);
       await expect(tx).to.be.revertedWithCustomError(
         bomContract,
-        "InvalidSignature"
+        "InvalidChipAddress"
       );
       expect(await claimContract.balanceOf(addresses[0])).to.equal(
         BigNumber.from(1)
@@ -368,7 +348,7 @@ describe("BloodOfMolochPBT", function () {
 
       const tokenId = await bomContract.tokenIdFor(await chip.getAddress());
       const owner = await bomContract.ownerOf(tokenId);
-      expect(tokenId).to.equal(0);
+      expect(tokenId).to.be.lessThan(BOM_TOTAL_SUPPLY);
       expect(owner).to.equal(addresses[0]);
     });
   });
@@ -399,7 +379,7 @@ describe("BloodOfMolochPBT", function () {
 
       const tokenId = await bomContract.tokenIdFor(await chip.getAddress());
       const uri = await bomContract.tokenURI(tokenId);
-      expect(tokenId).to.equal(9);
+      expect(tokenId).to.be.lessThanOrEqual(BOM_TOTAL_SUPPLY);
       expect(uri).to.equal(BOM_BASE_URI + `${tokenId}`);
     });
   });
@@ -444,11 +424,9 @@ describe("BloodOfMolochPBT", function () {
       await bomContract.setBaseURI(BOM_BASE_URI);
       await bomContract.setClaimToken(claimContract.address);
       const chipAddresses = await parseHaloScans()
-      const tokenIds = chipAddresses.map((signer, index) => index);
+
       await bomContract.seedChipToTokenMapping(
-        chipAddresses,
-        tokenIds,
-        true
+        chipAddresses
       );
       await bomContract.openMint();
 
