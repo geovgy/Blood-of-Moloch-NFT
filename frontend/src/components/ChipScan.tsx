@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
-  network: Network.ETH_MAINNET,
+  network: Network.ETH_GOERLI,
 };
 
 const alchemy = new Alchemy(settings);
@@ -68,14 +68,24 @@ const ChipScan = () => {
     getPBTBalance();
   }, [address]);
   console.log(`address: ${address}`);
+  console.log(
+    `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
+  );
 
   const getNFTsOfWallet = async () => {
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
-      const ownedNFT: any = nfts.ownedNfts.find(
-        (nft: any) =>
-          nft.contract.address === process.env.NEXT_PUBLIC_CLAIM_ADDRESS
-      );
+      const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
+        console.log(
+          `nft.contract.address: ${nft.contract.address}`,
+          nft.contract.address ===
+            process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
+        );
+        return (
+          nft.contract.address ===
+          process.env.NEXT_PUBLIC_CLAIM_ADDRESS.toLowerCase()
+        );
+      });
       console.log(`nfts: ${JSON.stringify(nfts)}`);
       console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
 
