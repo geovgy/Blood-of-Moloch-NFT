@@ -21,18 +21,20 @@ async function main() {
     const [signer] = await ethers.getSigners()
     console.log("Signer:", signer.address)
     let bomInterface = require("../artifacts/contracts/BloodOfMolochPBT.sol/BloodOfMolochPBT.json")
-    // const bomContract: BloodOfMolochPBT = new Contract(
-    //   address,
-    //   bomInterface.abi,
-    //   signer
-    // )
+    const bomContract: BloodOfMolochPBT = new Contract(
+      address,
+      bomInterface.abi,
+      signer
+    )
 
     const chipAddresses = await parseHaloScans()
     const tokenIds = chipAddresses.map((addr, i) => i)
     console.log("tokenIds:", tokenIds.length)
+    console.log("First:", tokenIds[0])
+    console.log("Last:", tokenIds[tokenIds.length - 1])
 
-    // await bomContract.seedChipToTokenMapping(chipAddresses, tokenIds, true)
-    // console.log("Chips seeded")
+    await bomContract.seedChipToTokenMapping(chipAddresses, tokenIds, true)
+    console.log("Chips seeded")
   } catch (error: any) {
     console.error(error);
   }
