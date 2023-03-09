@@ -67,6 +67,7 @@ const ChipScan = () => {
     getNFTsOfWallet();
     getPBTBalance();
   }, [address]);
+  console.log(`address: ${address}`);
 
   const getNFTsOfWallet = async () => {
     if (address) {
@@ -75,6 +76,8 @@ const ChipScan = () => {
         (nft: any) =>
           nft.contract.address === process.env.NEXT_PUBLIC_CLAIM_ADDRESS
       );
+      console.log(`nfts: ${JSON.stringify(nfts)}`);
+      console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
 
       if (ownedNFT) {
         process.env.NEXT_PUBLIC_DEV_MODE &&
@@ -191,6 +194,7 @@ const ChipScan = () => {
   if (!signer) {
     return null;
   }
+  console.log(`claimNFTTokenId: ${claimNFTTokenId}`);
 
   return (
     <Flex direction="column" alignItems="center" my={10} minH={"110vh"}>
