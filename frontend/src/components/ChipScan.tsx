@@ -204,6 +204,7 @@ const ChipScan = () => {
   if (!signer) {
     return null;
   }
+  console.log("this is staging");
   console.log(`claimNFTTokenId: ${claimNFTTokenId}`);
 
   return (
