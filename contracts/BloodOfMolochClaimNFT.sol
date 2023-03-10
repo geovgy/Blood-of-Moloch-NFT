@@ -23,10 +23,6 @@ contract BloodOfMolochClaimNFT is
     uint256 public MIN_PRICE = 0.069 ether;
     string private BASE_URI = "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
 
-    /// @dev Event to emit on signature mint with the `tokenId`.
-    event MintedUsingSignature(uint256 tokenId);
-    event Minted(uint256 tokenId);
-
     mapping(address => uint256) pendingWithdrawals;
 
     /**
@@ -45,7 +41,7 @@ contract BloodOfMolochClaimNFT is
 
     function mintClaimToken() payable public {
         require(msg.value >= MIN_PRICE, "BloodOfMolochClaimNFT: msg.value below min price");
-        _mintClaimToken(_msgSender());
+        _mintClaimToken(msg.sender);
     }
 
     function batchMintClaimTokens(uint256 _quantity) payable public {
@@ -53,7 +49,7 @@ contract BloodOfMolochClaimNFT is
         uint256 payment = MIN_PRICE * _quantity;
         require(msg.value >= payment, "BloodOfMolochClaimNFT: msg.value below min price");
         for(uint i=0; i<_quantity; i++) {
-            _mintClaimToken(_msgSender());
+            _mintClaimToken(msg.sender);
         }
     }
 
@@ -100,7 +96,7 @@ contract BloodOfMolochClaimNFT is
             "Only authorized minters can withdraw"
         );
 
-        address receiver = _msgSender();
+        address receiver = msg.sender;
         uint balance = IERC20(_token).balanceOf(address(this));
         IERC20(_token).transfer(receiver, balance);
     }
@@ -120,7 +116,7 @@ contract BloodOfMolochClaimNFT is
     function burn(uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
+            _isApprovedOrOwner(msg.sender, tokenId),
             "ERC721: caller is not token owner or approved"
         );
         _burn(tokenId);
@@ -163,7 +159,6 @@ contract BloodOfMolochClaimNFT is
         require(tokenId + 1 <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
         supply++;
         _mint(to, tokenId);
-        emit Minted(tokenId);
     }
 
     /**
