@@ -67,27 +67,27 @@ const ChipScan = () => {
     getNFTsOfWallet();
     getPBTBalance();
   }, [address]);
-  console.log(`address: ${address}`);
-  console.log(
-    `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
-  );
+  // console.log(`address: ${address}`);
+  // console.log(
+  //   `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
+  // );
 
   const getNFTsOfWallet = async () => {
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
       const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
-        console.log(
-          `nft.contract.address: ${nft.contract.address}`,
-          nft.contract.address ===
-            process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
-        );
+        // console.log(
+        //   `nft.contract.address: ${nft.contract.address}`,
+        //   nft.contract.address ===
+        //     process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
+        // );
         return (
           nft.contract.address ===
           process.env.NEXT_PUBLIC_CLAIM_ADDRESS.toLowerCase()
         );
       });
-      console.log(`nfts: ${JSON.stringify(nfts)}`);
-      console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
+      // console.log(`nfts: ${JSON.stringify(nfts)}`);
+      // console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
 
       if (ownedNFT) {
         process.env.NEXT_PUBLIC_DEV_MODE &&
@@ -136,14 +136,13 @@ const ChipScan = () => {
         keys?.primaryPublicKeyRaw,
         currBlockHash
       );
-      console.log("pre mint", sig, claimNFTTokenId);
+      // console.log("pre mint", sig, claimNFTTokenId);
 
       process.env.NEXT_PUBLIC_DEV_MODE &&
         console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockNumber);
-      console.log("post mint", sig, claimNFTTokenId);
+      // console.log("post mint", sig, claimNFTTokenId);
     } catch (e: any) {
-      console.error(`error: ${JSON.stringify(e)}`);
       console.error(`error: ${e}`);
       toast.warning("Oops! There was an error", {
         position: "top-right",
@@ -184,10 +183,10 @@ const ChipScan = () => {
     process.env.NEXT_PUBLIC_DEV_MODE &&
       console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    const tx = await bomPBT?.mint("1", sig, currBlockNumber, {
+    const tx = await bomPBT?.mint(claimNFTTokenId, sig, currBlockNumber, {
       gasLimit: 10000000,
     });
-    console.log("inside mint");
+    // console.log("inside mint");
 
     process.env.NEXT_PUBLIC_DEV_MODE && console.log("tx", JSON.stringify(tx));
 
@@ -209,8 +208,8 @@ const ChipScan = () => {
   if (!signer) {
     return null;
   }
-  console.log("this is staging");
-  console.log(`claimNFTTokenId: ${claimNFTTokenId}`);
+  // console.log("this is staging");
+  // console.log(`claimNFTTokenId: ${claimNFTTokenId}`);
 
   return (
     <Flex direction="column" alignItems="center" my={10} minH={"110vh"}>
@@ -221,7 +220,7 @@ const ChipScan = () => {
         fontFamily="texturina"
         mb={12}
       >
-        Mint Your Drink PBT [staging]
+        Mint Your Drink PBT
       </Text>
       <Text textAlign="center" fontSize="lg" my={6} fontFamily="texturina">
         Bring your phone near your Blood of Moloch chip and tap scan below. Then
