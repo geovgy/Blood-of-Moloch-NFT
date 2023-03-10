@@ -230,4 +230,20 @@ describe("Claim NFT", function() {
 		const receipt = contract.connect(rando).setBaseURI("ipfs://<CID>/")
 		await expect(receipt).to.be.reverted
   })
+
+  it("Should setMaxSupply as minter role", async function () {
+    const { contract, rando, minter } = await deploy()
+
+		const receipt = contract.connect(minter).setMaxSupply(800)
+		await expect(receipt).to.not.be.reverted
+    expect(await contract.MAX_SUPPLY()).to.equal(800)
+  })
+
+  it("Should revert setMaxSupply if not minter role", async function () {
+    const { contract, rando, minter } = await deploy()
+
+    const receipt = contract.connect(rando).setMaxSupply(800)
+		await expect(receipt).to.be.reverted
+    expect(await contract.MAX_SUPPLY()).to.equal(300)
+  })
 });

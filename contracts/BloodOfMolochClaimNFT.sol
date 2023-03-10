@@ -19,7 +19,7 @@ contract BloodOfMolochClaimNFT is
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     uint256 public supply;
-    uint256 public constant MAX_SUPPLY = 300;
+    uint256 public MAX_SUPPLY = 300;
     uint256 public MIN_PRICE = 0.069 ether;
     string private BASE_URI = "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
 
@@ -142,6 +142,10 @@ contract BloodOfMolochClaimNFT is
 
     function setBaseURI(string memory _newBaseUri) external onlyRole(MINTER_ROLE) {
         BASE_URI = _newBaseUri;
+    }
+
+    function setMaxSupply(uint256 _newMax) external onlyRole(MINTER_ROLE) {
+        MAX_SUPPLY = _newMax;
     }
 
     /**
