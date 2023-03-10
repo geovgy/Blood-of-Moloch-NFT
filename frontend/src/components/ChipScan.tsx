@@ -136,11 +136,15 @@ const ChipScan = () => {
         keys?.primaryPublicKeyRaw,
         currBlockHash
       );
+      console.log("pre mint", sig, claimNFTTokenId);
+
       process.env.NEXT_PUBLIC_DEV_MODE &&
         console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockNumber);
+      console.log("post mint", sig, claimNFTTokenId);
     } catch (e: any) {
       console.error(`error: ${JSON.stringify(e)}`);
+      console.error(`error: ${e}`);
       toast.warning("Oops! There was an error", {
         position: "top-right",
         autoClose: 10000,
@@ -183,6 +187,7 @@ const ChipScan = () => {
     const tx = await bomPBT?.mint(claimNFTTokenId, sig, currBlockNumber, {
       gasLimit: 10000000,
     });
+    console.log("inside mint");
 
     process.env.NEXT_PUBLIC_DEV_MODE && console.log("tx", JSON.stringify(tx));
 
