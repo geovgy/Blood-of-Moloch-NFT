@@ -184,7 +184,7 @@ const ChipScan = () => {
     process.env.NEXT_PUBLIC_DEV_MODE &&
       console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    const tx = await bomPBT?.mint(claimNFTTokenId, sig, currBlockNumber, {
+    const tx = await bomPBT?.mint("1", sig, currBlockNumber, {
       gasLimit: 10000000,
     });
     console.log("inside mint");
