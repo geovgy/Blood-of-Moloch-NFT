@@ -93,7 +93,7 @@ const ChipScan = () => {
         process.env.NEXT_PUBLIC_DEV_MODE &&
           console.log(`ownedNFT: ${JSON.stringify(ownedNFT?.tokenId)}`);
 
-        setClaimNFTTokenId(ownedNFT);
+        setClaimNFTTokenId(ownedNFT?.tokenId);
       }
     }
   };
