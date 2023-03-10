@@ -19,8 +19,10 @@ describe("Claim NFT", function() {
       contract,
     }
   }
+
   let minPrice = ethers.utils.parseEther(".001");
   const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
+  const BASE_URI = "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
 
   it("Should deploy", async function() {
     const signers = await ethers.getSigners();
@@ -191,6 +193,36 @@ describe("Claim NFT", function() {
     const { contract, rando, minter } = await deploy()
 
 		const receipt = contract.connect(rando).setMinPrice(parseEther("0.096"))
+		await expect(receipt).to.be.reverted
+  })
+
+  it("Should return tokenURI with correct output (with .json)", async function () {
+    const { contract, rando, minter } = await deploy()
+
+		const receipt = contract.connect(rando).mintClaimToken({ value: parseEther("0.07") })
+		await expect(receipt).to.emit(contract, "Minted").withArgs(0)
+
+    const tokenUri = await contract.tokenURI(0)
+    console.log(tokenUri)
+    expect(tokenUri).to.equal(`ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/${0}.json`)
+  })
+
+  it("Should setBaseURI as minter role", async function () {
+    const { contract, rando, minter } = await deploy()
+
+		const receipt = contract.connect(minter).setBaseURI("ipfs://<CID>/")
+		await expect(receipt).to.not.be.reverted
+
+    contract.connect(rando).mintClaimToken({ value: parseEther("0.07") })
+    const tokenUri = await contract.tokenURI(0)
+    console.log(tokenUri)
+    expect(tokenUri).to.equal(`ipfs://<CID>/${0}.json`)
+  })
+  
+  it("Should revert setBaseURI if not minter role", async function () {
+    const { contract, rando, minter } = await deploy()
+
+		const receipt = contract.connect(rando).setBaseURI("ipfs://<CID>/")
 		await expect(receipt).to.be.reverted
   })
 });

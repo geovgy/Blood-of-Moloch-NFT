@@ -7,18 +7,21 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract BloodOfMolochClaimNFT is
     ERC721,
     AccessControl,
     IBurnable
 {
+    using Strings for uint256;
     address private PBT_ADDRESS;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     uint256 public supply;
     uint256 public constant MAX_SUPPLY = 350;
     uint256 public MIN_PRICE = 0.069 ether;
+    string private BASE_URI = "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
 
     /// @dev Event to emit on signature mint with the `tokenId`.
     event MintedUsingSignature(uint256 tokenId);
@@ -137,6 +140,20 @@ contract BloodOfMolochClaimNFT is
         MIN_PRICE = _minPrice;
     }
 
+    function setBaseURI(string memory _newBaseUri) external onlyRole(MINTER_ROLE) {
+        BASE_URI = _newBaseUri;
+    }
+
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        _requireMinted(tokenId);
+
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+    }
+
     function _mintClaimToken() internal {
         uint tokenId = supply;
         require(tokenId + 1 <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
@@ -151,7 +168,7 @@ contract BloodOfMolochClaimNFT is
      * by default, can be overridden in child contracts.
      */
     function _baseURI() internal view override returns (string memory) {
-        return "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
+        return BASE_URI;
     }
 
     receive() payable external {}
