@@ -82,7 +82,8 @@ describe("Claim NFT", function() {
 		const { contract, mockPBT, minter } = await deploy()
 
     const multi = [...addresses, ...addresses, ...addresses, ...addresses, ...addresses]
-    const recipients = [...multi, ...multi, ...multi, ...addresses, ...addresses, ...addresses.slice(0,10)]
+    // const recipients = [...multi, ...multi, ...multi, ...addresses, ...addresses, ...addresses.slice(0,10)]
+    const recipients = [...multi, ...multi, ...multi]
     await contract.connect(minter).batchMint(recipients)
 
 		let revertedTx = contract.connect(minter).mint(addresses[0])
