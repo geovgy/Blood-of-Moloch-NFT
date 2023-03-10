@@ -45,7 +45,7 @@ contract BloodOfMolochClaimNFT is
 
     function mintClaimToken() payable public {
         require(msg.value >= MIN_PRICE, "BloodOfMolochClaimNFT: msg.value below min price");
-        _mintClaimToken();
+        _mintClaimToken(_msgSender());
     }
 
     function batchMintClaimTokens(uint256 _quantity) payable public {
@@ -53,18 +53,18 @@ contract BloodOfMolochClaimNFT is
         uint256 payment = MIN_PRICE * _quantity;
         require(msg.value >= payment, "BloodOfMolochClaimNFT: msg.value below min price");
         for(uint i=0; i<_quantity; i++) {
-            _mintClaimToken();
+            _mintClaimToken(_msgSender());
         }
     }
 
-    function mint() public onlyRole(MINTER_ROLE) {
-        _mintClaimToken();
+    function mint(address _to) public onlyRole(MINTER_ROLE) {
+        _mintClaimToken(_to);
     }
 
-    function batchMint(uint256 _quantity) external onlyRole(MINTER_ROLE) {
-        require(_quantity > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
-        for(uint i=0; i<_quantity; i++) {
-            _mintClaimToken();
+    function batchMint(address[] calldata _recipients) external onlyRole(MINTER_ROLE) {
+        require(_recipients.length > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
+        for(uint i=0; i < _recipients.length; i++) {
+            _mintClaimToken(_recipients[i]);
         }
     }
 
@@ -154,11 +154,11 @@ contract BloodOfMolochClaimNFT is
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
     }
 
-    function _mintClaimToken() internal {
+    function _mintClaimToken(address to) internal {
         uint tokenId = supply;
         require(tokenId + 1 <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
         supply++;
-        _mint(_msgSender(), tokenId);
+        _mint(to, tokenId);
         emit Minted(tokenId);
     }
 

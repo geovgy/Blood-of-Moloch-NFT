@@ -23,10 +23,12 @@ describe("Claim NFT", function() {
   let minPrice = ethers.utils.parseEther(".001");
   const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
   const BASE_URI = "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
+  let addresses: string[]
 
   it("Should deploy", async function() {
     const signers = await ethers.getSigners();
     const minter = signers[0];
+    addresses = signers.map(signer => signer.address)
 
     const LazyNFT = await ethers.getContractFactory("BloodOfMolochClaimNFT");
     const lazynft = await LazyNFT.deploy(minter.address, signers[1].address);
@@ -36,7 +38,7 @@ describe("Claim NFT", function() {
   it("Should mint an NFT from minter role", async function() {
     const { contract, mockPBT, minter } = await deploy()
 
-    const receipt = contract.connect(minter).mint()
+    const receipt = contract.connect(minter).mint(minter.address)
 
     const tokenId = 0
     await expect(receipt)
@@ -47,7 +49,7 @@ describe("Claim NFT", function() {
   it("Should revert mint if not minter role", async function () {
     const { contract, mockPBT, minter, rando } = await deploy()
 
-    const receipt = contract.connect(rando).mint()
+    const receipt = contract.connect(rando).mint(rando.address)
 
     await expect(receipt)
       .to.be.reverted
@@ -56,20 +58,21 @@ describe("Claim NFT", function() {
   it("Should batchMint quantity of NFTs as minter role", async function () {
     const { contract, mockPBT, minter } = await deploy()
 
-    const quantity = 10
-    const receipt = contract.connect(minter).batchMint(quantity)
+    const recipients = addresses.slice(1,11)
+    const receipt = contract.connect(minter).batchMint(recipients)
 
-    for(let i=0; i < quantity; i++) {
+    for(let i=0; i < recipients.length; i++) {
       await expect(receipt)
         .to.emit(contract, "Minted").withArgs(i)
-        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, i)
+        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, recipients[i], i)
     }
   })
 
   it("Should revert batchMint if not minter role", async function () {
     const { contract, mockPBT, minter, rando } = await deploy()
 
-    const receipt = contract.connect(rando).batchMint(10)
+    const recipients = addresses.slice(1,11)
+    const receipt = contract.connect(rando).batchMint(recipients)
 
     await expect(receipt)
       .to.be.reverted
@@ -78,19 +81,20 @@ describe("Claim NFT", function() {
 	it("Should revert mint/batchMint if supply is 350", async function () {
 		const { contract, mockPBT, minter } = await deploy()
 
-    const quantity = 350
-    await contract.connect(minter).batchMint(quantity)
+    const multi = [...addresses, ...addresses, ...addresses, ...addresses, ...addresses]
+    const recipients = [...multi, ...multi, ...multi, ...addresses, ...addresses, ...addresses.slice(0,10)]
+    await contract.connect(minter).batchMint(recipients)
 
-		let revertedTx = contract.connect(minter).mint()
+		let revertedTx = contract.connect(minter).mint(addresses[0])
 		await expect(revertedTx).to.be.revertedWith("BloodOfMolochClaimNFT: cannot exceed max supply")
 
-		revertedTx = contract.connect(minter).batchMint(5)
+		revertedTx = contract.connect(minter).batchMint(addresses)
 		await expect(revertedTx).to.be.revertedWith("BloodOfMolochClaimNFT: cannot exceed max supply")
 	})
 
 	it("Should burn if operator is PBT", async function () {
 		const { contract, mockPBT, minter } = await deploy()
-		await contract.connect(minter).mint()
+		await contract.connect(minter).mint(addresses[0])
 
 		const tokenId = 0
 		const receipt = contract.connect(mockPBT).burn(tokenId)
@@ -100,7 +104,7 @@ describe("Claim NFT", function() {
 
 	it("Should revert burn if not PBT or token owner", async function () {
 		const { contract, mockPBT, minter, rando } = await deploy()
-		await contract.connect(minter).mint()
+		await contract.connect(minter).mint(addresses[0])
 
 		const tokenId = 1
 		const receipt = contract.connect(rando).burn(tokenId)
@@ -218,7 +222,7 @@ describe("Claim NFT", function() {
     console.log(tokenUri)
     expect(tokenUri).to.equal(`ipfs://<CID>/${0}.json`)
   })
-  
+
   it("Should revert setBaseURI if not minter role", async function () {
     const { contract, rando, minter } = await deploy()
 
