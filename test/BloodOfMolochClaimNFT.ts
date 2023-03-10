@@ -42,8 +42,7 @@ describe("Claim NFT", function() {
 
     const tokenId = 0
     await expect(receipt)
-      .to.emit(contract, "Minted").withArgs(tokenId)
-      .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, tokenId)
+      .to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, minter.address, tokenId)
   });
 
   it("Should revert mint if not minter role", async function () {
@@ -63,8 +62,7 @@ describe("Claim NFT", function() {
 
     for(let i=0; i < recipients.length; i++) {
       await expect(receipt)
-        .to.emit(contract, "Minted").withArgs(i)
-        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, recipients[i], i)
+        .to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, recipients[i], i)
     }
   })
 
@@ -155,7 +153,7 @@ describe("Claim NFT", function() {
 		const { contract, rando, minter } = await deploy()
 
 		const receipt = contract.connect(rando).mintClaimToken({ value: parseEther("0.07") })
-		await expect(receipt).to.emit(contract, "Minted").withArgs(0)
+		await expect(receipt).to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, rando.address, 0)
 	})
 
 	it("Should revert mint if below min price", async function () {
@@ -172,8 +170,7 @@ describe("Claim NFT", function() {
 		const receipt = contract.connect(rando).batchMintClaimTokens(quantity, { value: parseEther("0.21") })
 		for(let i=0; i < quantity; i++) {
       await expect(receipt)
-        .to.emit(contract, "Minted").withArgs(i)
-        .and.to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, rando.address, i)
+        .to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, rando.address, i)
     }
 	})
 
@@ -205,7 +202,7 @@ describe("Claim NFT", function() {
     const { contract, rando, minter } = await deploy()
 
 		const receipt = contract.connect(rando).mintClaimToken({ value: parseEther("0.07") })
-		await expect(receipt).to.emit(contract, "Minted").withArgs(0)
+		await expect(receipt).to.emit(contract, "Transfer").withArgs(NULL_ADDRESS, rando.address, 0)
 
     const tokenUri = await contract.tokenURI(0)
     console.log(tokenUri)
