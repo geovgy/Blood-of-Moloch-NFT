@@ -28,7 +28,6 @@ describe("Claim NFT", function () {
 
   let minPrice = ethers.utils.parseEther(".001");
   const NULL_ADDRESS = "0x0000000000000000000000000000000000000000";
-  const BASE_URI = "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
   let addresses: string[]
 
   it("Should deploy", async function () {
@@ -224,7 +223,7 @@ describe("Claim NFT", function () {
 
     const tokenUri = await contract.tokenURI(0)
     console.log(tokenUri)
-    expect(tokenUri).to.equal(`ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/${0}.json`)
+    expect(tokenUri).to.equal(`ipfs://bafybeigrwwow5fzoew4q2ixfwjnpfl4rug6vvk26n2426gkmbhqx6c6g6q/${0}.json`)
   })
 
   it("Should setBaseURI as minter role", async function () {
