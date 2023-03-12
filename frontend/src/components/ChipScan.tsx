@@ -22,9 +22,9 @@ const alchemy = new Alchemy(settings);
 // Get the latest block
 const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
+  const [claimNFTTokenId, setClaimNFTTokenId] = useState<string>("");
   const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
-  const claimTokenId = 3;
   const { address } = useAccount();
   const {
     setBlockHashUsedInSig,
@@ -64,8 +64,39 @@ const ChipScan = () => {
     getBlockHash();
   }, []);
   useEffect(() => {
+    getNFTsOfWallet();
     getPBTBalance();
-  });
+  }, [address]);
+  // console.log(`address: ${address}`);
+  // console.log(
+  //   `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
+  // );
+
+  const getNFTsOfWallet = async () => {
+    if (address) {
+      const nfts = await alchemy.nft.getNftsForOwner(address);
+      const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
+        // console.log(
+        //   `nft.contract.address: ${nft.contract.address}`,
+        //   nft.contract.address ===
+        //     process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
+        // );
+        return (
+          nft.contract.address ===
+          process.env.NEXT_PUBLIC_CLAIM_ADDRESS.toLowerCase()
+        );
+      });
+      // console.log(`nfts: ${JSON.stringify(nfts)}`);
+      // console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
+
+      if (ownedNFT) {
+        process.env.NEXT_PUBLIC_DEV_MODE &&
+          console.log(`ownedNFT: ${JSON.stringify(ownedNFT?.tokenId)}`);
+
+        setClaimNFTTokenId(ownedNFT?.tokenId);
+      }
+    }
+  };
 
   const getPBTBalance = async () => {
     if (bomPBT) {
@@ -75,6 +106,19 @@ const ChipScan = () => {
   };
 
   const initiateScan = async () => {
+    if (!claimNFTTokenId) {
+      toast.warning("You must own 1 Claim NFT to mint", {
+        position: "top-right",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
     try {
       const [currBlockHash, currBlockNumber] = await getBlockHash();
       process.env.NEXT_PUBLIC_DEV_MODE &&
@@ -92,11 +136,14 @@ const ChipScan = () => {
         keys?.primaryPublicKeyRaw,
         currBlockHash
       );
+      // console.log("pre mint", sig, claimNFTTokenId);
+
       process.env.NEXT_PUBLIC_DEV_MODE &&
         console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockNumber);
+      // console.log("post mint", sig, claimNFTTokenId);
     } catch (e: any) {
-      console.error(`error: ${JSON.stringify(e)}`);
+      console.error(`error: ${e}`);
       toast.warning("Oops! There was an error", {
         position: "top-right",
         autoClose: 10000,
@@ -107,6 +154,7 @@ const ChipScan = () => {
         progress: undefined,
         theme: "dark",
       });
+      return;
     }
   };
   const getSignatureFromChip = async (
@@ -135,9 +183,10 @@ const ChipScan = () => {
     process.env.NEXT_PUBLIC_DEV_MODE &&
       console.log(`mintPBT sig: ${sig} currBlockNumber: ${currBlockNumber}`);
 
-    const tx = await bomPBT?.mint(claimTokenId, sig, currBlockNumber, {
+    const tx = await bomPBT?.mint(claimNFTTokenId, sig, currBlockNumber, {
       gasLimit: 10000000,
     });
+    // console.log("inside mint");
 
     process.env.NEXT_PUBLIC_DEV_MODE && console.log("tx", JSON.stringify(tx));
 
@@ -159,6 +208,8 @@ const ChipScan = () => {
   if (!signer) {
     return null;
   }
+  // console.log("this is staging");
+  // console.log(`claimNFTTokenId: ${claimNFTTokenId}`);
 
   return (
     <Flex direction="column" alignItems="center" my={10} minH={"110vh"}>
@@ -186,6 +237,7 @@ const ChipScan = () => {
             src="/assets/drink-nft.png"
             width="300px"
             height="300px"
+            alt="A color graphic of a drink"
             border="solid 1px white"
             style={{
               transition: "all 100ms ease-in-out",

@@ -52,7 +52,7 @@ const ClaimNFTPanel = () => {
 
   const mintClaimNFT = async () => {
     try {
-      const options = { value: ethers.utils.parseEther("0.05") };
+      const options = { value: ethers.utils.parseEther("0.069") };
       const tx = await claimNFT?.mintClaimToken(options);
       const result = await tx.wait();
       console.log(`mint result: ${JSON.stringify(result)}`);
@@ -102,6 +102,7 @@ const ClaimNFTPanel = () => {
           width="300px"
           height="300px"
           border="solid 1px white"
+          alt="Graphic of a drink in black and white"
           style={{
             transition: "all 100ms ease-in-out",
           }}
@@ -117,7 +118,7 @@ const ClaimNFTPanel = () => {
         _hover={{ bg: "#ff3864", color: "white" }}
         mb={"120px"}
       >
-        Mint for 0.05 ETH
+        Mint for 0.069 ETH
       </Button>
     </Flex>
   );
