@@ -74,10 +74,10 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: false,
     },
     goerli: {
-      // accounts: {
-      //   mnemonic,
-      // },
-      accounts: [process.env.PRIVATE_KEY || ""],
+      accounts: {
+        mnemonic,
+      },
+      // accounts: [process.env.PRIVATE_KEY || ""],
       url:`https://rpc.ankr.com/eth_goerli`,
       chainId: 5,
       allowUnlimitedContractSize: false,
