@@ -24,14 +24,14 @@ task('deploy', 'Deploy contracts and verify')
 
     const constructorArguments: Record<Contracts, string[]> = {
       BloodOfMolochPBT: [],
-      BloodOfMolochClaimNFT: [minter? minter : admin.address],
+      BloodOfMolochClaimNFT: [minter? minter : admin.address ],
     };
 
     const toFile = (path: string, deployment: Record<Contracts, string>) => {
       fs.writeFileSync(path, JSON.stringify(deployment), { encoding: 'utf-8' });
     };
 
-    let bomContract: BloodOfMolochPBT
+    let bomContract: BloodOfMolochPBT;
     for (const [name, contract] of Object.entries(contracts)) {
       console.log(`Starting deployment of ${name}`);
       const factory = contract;

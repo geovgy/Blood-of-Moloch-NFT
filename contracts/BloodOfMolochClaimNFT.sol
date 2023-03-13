@@ -7,22 +7,21 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract BloodOfMolochClaimNFT is
     ERC721,
     AccessControl,
     IBurnable
 {
+    using Strings for uint256;
     address private PBT_ADDRESS;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     uint256 public supply;
-    uint256 public constant MAX_SUPPLY = 350;
+    uint256 public MAX_SUPPLY = 300;
     uint256 public MIN_PRICE = 0.069 ether;
-
-    /// @dev Event to emit on signature mint with the `tokenId`.
-    event MintedUsingSignature(uint256 tokenId);
-    event Minted(uint256 tokenId);
+    string private BASE_URI = "ipfs://bafybeigrwwow5fzoew4q2ixfwjnpfl4rug6vvk26n2426gkmbhqx6c6g6q/";
 
     mapping(address => uint256) pendingWithdrawals;
 
@@ -42,7 +41,7 @@ contract BloodOfMolochClaimNFT is
 
     function mintClaimToken() payable public {
         require(msg.value >= MIN_PRICE, "BloodOfMolochClaimNFT: msg.value below min price");
-        _mintClaimToken();
+        _mintClaimToken(msg.sender);
     }
 
     function batchMintClaimTokens(uint256 _quantity) payable public {
@@ -50,18 +49,18 @@ contract BloodOfMolochClaimNFT is
         uint256 payment = MIN_PRICE * _quantity;
         require(msg.value >= payment, "BloodOfMolochClaimNFT: msg.value below min price");
         for(uint i=0; i<_quantity; i++) {
-            _mintClaimToken();
+            _mintClaimToken(msg.sender);
         }
     }
 
-    function mint() public onlyRole(MINTER_ROLE) {
-        _mintClaimToken();
+    function mint(address _to) public onlyRole(MINTER_ROLE) {
+        _mintClaimToken(_to);
     }
 
-    function batchMint(uint256 _quantity) external onlyRole(MINTER_ROLE) {
-        require(_quantity > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
-        for(uint i=0; i<_quantity; i++) {
-            _mintClaimToken();
+    function batchMint(address[] calldata _recipients) external onlyRole(MINTER_ROLE) {
+        require(_recipients.length > 0, "BloodOfMolochClaimNFT: quantity cannot be zero");
+        for(uint i=0; i < _recipients.length; i++) {
+            _mintClaimToken(_recipients[i]);
         }
     }
 
@@ -97,7 +96,7 @@ contract BloodOfMolochClaimNFT is
             "Only authorized minters can withdraw"
         );
 
-        address receiver = _msgSender();
+        address receiver = msg.sender;
         uint balance = IERC20(_token).balanceOf(address(this));
         IERC20(_token).transfer(receiver, balance);
     }
@@ -117,7 +116,7 @@ contract BloodOfMolochClaimNFT is
     function burn(uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
+            _isApprovedOrOwner(msg.sender, tokenId),
             "ERC721: caller is not token owner or approved"
         );
         _burn(tokenId);
@@ -137,12 +136,29 @@ contract BloodOfMolochClaimNFT is
         MIN_PRICE = _minPrice;
     }
 
-    function _mintClaimToken() internal {
+    function setBaseURI(string memory _newBaseUri) external onlyRole(MINTER_ROLE) {
+        BASE_URI = _newBaseUri;
+    }
+
+    function setMaxSupply(uint256 _newMax) external onlyRole(MINTER_ROLE) {
+        MAX_SUPPLY = _newMax;
+    }
+
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        _requireMinted(tokenId);
+
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+    }
+
+    function _mintClaimToken(address to) internal {
         uint tokenId = supply;
         require(tokenId + 1 <= MAX_SUPPLY, "BloodOfMolochClaimNFT: cannot exceed max supply");
         supply++;
-        _mint(_msgSender(), tokenId);
-        emit Minted(tokenId);
+        _mint(to, tokenId);
     }
 
     /**
@@ -151,7 +167,7 @@ contract BloodOfMolochClaimNFT is
      * by default, can be overridden in child contracts.
      */
     function _baseURI() internal view override returns (string memory) {
-        return "ipfs://bafybeia2wrcgdy7kux3q32anm4c4t2khagvaaz2vceg6ofptjgdj3xd6s4/";
+        return BASE_URI;
     }
 
     receive() payable external {}
