@@ -81,7 +81,7 @@ const ClaimNFTPanel = () => {
   };
 
   return (
-    <Flex direction="column" alignItems="center" m={10} minH={"110vh"}>
+    <Flex direction="column" alignItems="center" m={10} minH={"90vh"}>
       <Text
         id="mint-claim-nft"
         fontSize="4xl"
