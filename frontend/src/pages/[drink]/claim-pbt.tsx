@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, VStack, Flex, Image } from "@chakra-ui/react";
+import { Container, VStack, Flex, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
@@ -26,6 +26,15 @@ export default function ClaimBaBom() {
   }, [router.query.drink]);
   if (is404) {
     return <ErrorPage statusCode={404} />;
+  }
+  if (process.env.NEXT_PUBLIC_DISABLED === "true") {
+    return (
+      <Container>
+        <Flex direction="column" align="center" justify="center" m={8}>
+          <Text>Mint is not open yet, check back soon.</Text>
+        </Flex>
+      </Container>
+    );
   }
 
   return (

@@ -67,27 +67,16 @@ const ChipScan = () => {
     getNFTsOfWallet();
     getPBTBalance();
   }, [address]);
-  // console.log(`address: ${address}`);
-  // console.log(
-  //   `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
-  // );
 
   const getNFTsOfWallet = async () => {
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
       const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
-        // console.log(
-        //   `nft.contract.address: ${nft.contract.address}`,
-        //   nft.contract.address ===
-        //     process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
-        // );
         return (
           nft.contract.address ===
-          process.env.NEXT_PUBLIC_CLAIM_ADDRESS.toLowerCase()
+          process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
         );
       });
-      // console.log(`nfts: ${JSON.stringify(nfts)}`);
-      // console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
 
       if (ownedNFT) {
         process.env.NEXT_PUBLIC_DEV_MODE &&
@@ -136,12 +125,10 @@ const ChipScan = () => {
         keys?.primaryPublicKeyRaw,
         currBlockHash
       );
-      // console.log("pre mint", sig, claimNFTTokenId);
 
       process.env.NEXT_PUBLIC_DEV_MODE &&
         console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockNumber);
-      // console.log("post mint", sig, claimNFTTokenId);
     } catch (e: any) {
       console.error(`error: ${e}`);
       toast.warning("Oops! There was an error", {
@@ -186,7 +173,6 @@ const ChipScan = () => {
     const tx = await bomPBT?.mint(claimNFTTokenId, sig, currBlockNumber, {
       gasLimit: 10000000,
     });
-    // console.log("inside mint");
 
     process.env.NEXT_PUBLIC_DEV_MODE && console.log("tx", JSON.stringify(tx));
 
@@ -208,8 +194,12 @@ const ChipScan = () => {
   if (!signer) {
     return null;
   }
-  // console.log("this is staging");
-  // console.log(`claimNFTTokenId: ${claimNFTTokenId}`);
+  console.log(
+    `process.env.NEXT_PUBLIC_CLAIM_ADDRESS: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}`
+  );
+  console.log(
+    `process.env.NEXT_PUBLIC_PBT_ADDRESS: ${process.env.NEXT_PUBLIC_PBT_ADDRESS}`
+  );
 
   return (
     <Flex direction="column" alignItems="center" my={10} minH={"110vh"}>
