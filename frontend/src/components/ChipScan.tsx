@@ -65,8 +65,10 @@ const ChipScan = () => {
   }, []);
   useEffect(() => {
     getNFTsOfWallet();
-    getPBTBalance();
   }, [address]);
+  useEffect(() => {
+    getPBTBalance();
+  }, [bomPBT]);
 
   const getNFTsOfWallet = async () => {
     if (address) {

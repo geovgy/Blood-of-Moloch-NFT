@@ -50,6 +50,13 @@ export default function ClaimBaBom() {
             <ChipScan />
           </VStack>
         )}
+        {!_isConnected && (
+          <Flex direction="column" align="center" justify="center" m={8}>
+            <Text fontSize="28px" as="h1" fontFamily="texturina">
+              Connect your wallet to claim your PBT
+            </Text>
+          </Flex>
+        )}
       </Container>
       <Footer />
     </>
