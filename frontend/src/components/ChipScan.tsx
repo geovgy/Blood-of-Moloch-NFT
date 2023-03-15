@@ -210,7 +210,7 @@ const ChipScan = () => {
         fontSize="4xl"
         textAlign="center"
         fontFamily="texturina"
-        mb={6}
+        mt={4}
       >
         Mint Your Drink PBT
       </Text>
@@ -225,13 +225,13 @@ const ChipScan = () => {
           Remove wax seal from the Blood of Moloch can and expose foil-wrapped
           KONG chip.
         </Text>
-        <Text fontFamily="texturina" fontSize="42px">
+        <Text fontFamily="texturina" fontSize="24px">
           •
         </Text>
         <Text fontFamily="texturina" fontSize="18px">
           Bring your phone near your chip and tap “scan” below.
         </Text>
-        <Text fontFamily="texturina" fontSize="42px">
+        <Text fontFamily="texturina" fontSize="24px">
           •
         </Text>
         <Text fontFamily="texturina" fontSize="18px">

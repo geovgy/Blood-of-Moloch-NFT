@@ -14,7 +14,7 @@ const StyledInnerFlex = styled(Flex)`
   height: 100%;
 `;
 const StyledHeroText = styled(Text)`
-  font-family: "texturina";
+  font-family: "Uncial Antiqua";
   letter-spacing: 1.2px;
   color: white;
   text-align: center;
@@ -45,7 +45,6 @@ export const Hero = () => {
         <StyledHeroText
           fontSize={{ lg: "72px", base: "48px" }}
           lineHeight={{ lg: "96px", sm: "48px" }}
-          fontFamily="Uncial Antiqua"
         >
           Beer for Slayers of Moloch
         </StyledHeroText>

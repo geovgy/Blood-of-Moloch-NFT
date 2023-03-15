@@ -67,6 +67,7 @@ const ClaimNFTPanel = () => {
         theme: "dark",
       });
     } catch (err: any) {
+      console.error(err);
       toast.warning("Oops! There was an error", {
         position: "top-right",
         autoClose: 10000,
