@@ -45,6 +45,7 @@ export const Hero = () => {
         <StyledHeroText
           fontSize={{ lg: "72px", base: "48px" }}
           lineHeight={{ lg: "96px", sm: "48px" }}
+          fontFamily="Uncial Antiqua"
         >
           Beer for Slayers of Moloch
         </StyledHeroText>

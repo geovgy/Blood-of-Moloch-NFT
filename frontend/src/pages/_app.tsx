@@ -9,6 +9,8 @@ import "../styles/globals.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "@fontsource/texturina";
 import "@fontsource/space-mono";
+import "@fontsource/space-mono";
+import "@fontsource/uncial-antiqua";
 import "@rainbow-me/rainbowkit/styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
