@@ -17,7 +17,11 @@ const StyledNavLink = styled(Link)`
 
 export const Footer = () => {
   return (
-    <StyledContainer px={{ lg: "8rem", md: "4rem", base: "2rem" }} py={12}>
+    <StyledContainer
+      px={{ lg: "8rem", md: "4rem", base: "2rem" }}
+      py={12}
+      mt={"80px"}
+    >
       <Grid
         templateColumns={{ base: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
         templateAreas={{

@@ -67,6 +67,7 @@ const ClaimNFTPanel = () => {
         theme: "dark",
       });
     } catch (err: any) {
+      console.error(err);
       toast.warning("Oops! There was an error", {
         position: "top-right",
         autoClose: 10000,
@@ -81,7 +82,7 @@ const ClaimNFTPanel = () => {
   };
 
   return (
-    <Flex direction="column" alignItems="center" m={10} minH={"110vh"}>
+    <Flex direction="column" alignItems="center" m={10} minH={"90vh"}>
       <Text
         id="mint-claim-nft"
         fontSize="4xl"

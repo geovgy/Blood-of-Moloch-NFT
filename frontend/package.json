@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.10.6",
     "@fontsource/space-mono": "^4.5.12",
     "@fontsource/texturina": "^4.5.12",
+    "@fontsource/uncial-antiqua": "^4.5.10",
     "@rainbow-me/rainbowkit": "^0.11.0",
     "@types/node": "18.14.1",
     "@types/react": "18.0.28",

@@ -1791,6 +1791,11 @@
   resolved "https://registry.yarnpkg.com/@fontsource/texturina/-/texturina-4.5.12.tgz#f0c9db06647b7589af6543e69067061702553951"
   integrity sha512-Jz+hxWTfMbUDc76ndGOHLtICqPPoA4edf6/vUbTCjhKZTACjdUn807r8wuDkRgBSUahRuRdLEnP9+68v5cJsKw==
 
+"@fontsource/uncial-antiqua@^4.5.10":
+  version "4.5.10"
+  resolved "https://registry.yarnpkg.com/@fontsource/uncial-antiqua/-/uncial-antiqua-4.5.10.tgz#ee86ccd852810b62d451ae9afe929b0d9efc1e38"
+  integrity sha512-FRM+PUZHv7q84vG4iMzy+UdeE2bz6vOaB48edOex/B8S4z/OzGn0FE1fb537kPWYIg1EsodTskksHlYvKtEw4Q==
+
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.8.tgz#03595ac2075a4dc0f191cc2131de14fbd7d410b9"

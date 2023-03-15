@@ -6,10 +6,6 @@ import { MEDIA_FILES } from "../utils/constants";
 const StyledFlex = styled(Flex)`
   flex-direction: column;
   align-items: center;
-  background-image: url("/assets/hero_banner.svg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: bottom;
 `;
 const StyledInnerFlex = styled(Flex)`
   flex-direction: column;
@@ -18,7 +14,7 @@ const StyledInnerFlex = styled(Flex)`
   height: 100%;
 `;
 const StyledHeroText = styled(Text)`
-  font-family: "texturina";
+  font-family: "Uncial Antiqua";
   letter-spacing: 1.2px;
   color: white;
   text-align: center;
@@ -36,18 +32,14 @@ export const Hero = () => {
     <StyledFlex
       minH={{ lg: "110vh", base: "90vh" }}
       px={{ lg: "8rem", md: "4rem", base: "2rem" }}
+      py={{ lg: "8rem", md: "4rem", base: "2rem" }}
     >
-      <Flex justify="center" width="100%">
-        <Flex justify="flex-end" width="100%" mx={{ base: 0, md: 6 }} my={6}>
-          <ConnectWallet />
-        </Flex>
-      </Flex>
       <StyledInnerFlex>
         <Image
           src={MEDIA_FILES.logos.header}
           alt="RaidBrood Logo"
-          width={{ base: "180px", md: "220px" }}
-          height={{ base: "180px", md: "220px" }}
+          width={{ base: "80px", md: "110px" }}
+          height={{ base: "80px", md: "110px" }}
           mb={{ base: 6, md: 12 }}
         />
         <StyledHeroText
@@ -57,10 +49,14 @@ export const Hero = () => {
           Beer for Slayers of Moloch
         </StyledHeroText>
         <StyledSloganText fontSize={{ lg: "28px", base: "24px" }}>
-          Pooling our Web3 powers to conspire against Moloch in taverns around
-          the world.
+          The first Beer connnected to a physically-backed NFT
         </StyledSloganText>
         <br />
+        <Flex justify="center" width="100%">
+          <Flex justify="center" width="100%" mx={{ base: 0, md: 6 }} my={6}>
+            <ConnectWallet />
+          </Flex>
+        </Flex>
       </StyledInnerFlex>
     </StyledFlex>
   );

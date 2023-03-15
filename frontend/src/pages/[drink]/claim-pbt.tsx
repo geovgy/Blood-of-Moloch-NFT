@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, VStack, Flex, Image } from "@chakra-ui/react";
+import { Container, VStack, Flex, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
@@ -27,6 +27,15 @@ export default function ClaimBaBom() {
   if (is404) {
     return <ErrorPage statusCode={404} />;
   }
+  if (process.env.NEXT_PUBLIC_DISABLED === "true") {
+    return (
+      <Container>
+        <Flex direction="column" align="center" justify="center" m={8}>
+          <Text>Mint is not open yet, check back soon.</Text>
+        </Flex>
+      </Container>
+    );
+  }
 
   return (
     <>
@@ -40,6 +49,13 @@ export default function ClaimBaBom() {
             <ClaimNFTPanel />
             <ChipScan />
           </VStack>
+        )}
+        {!_isConnected && (
+          <Flex direction="column" align="center" justify="center" m={8}>
+            <Text fontSize="28px" as="h1" fontFamily="texturina">
+              Connect your wallet to claim your PBT
+            </Text>
+          </Flex>
         )}
       </Container>
       <Footer />
