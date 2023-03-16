@@ -40,8 +40,8 @@ export default function ClaimBaBom() {
 
   return (
     <>
-      <Hero />
       <BeerPanel />
+      <Hero />
       <Container>
         {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
           <DevModePanel />

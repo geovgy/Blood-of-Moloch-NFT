@@ -30,12 +30,12 @@ const StyledSloganText = styled(Text)`
 export const Hero = () => {
   return (
     <StyledFlex
-      minH={{ lg: "110vh", base: "90vh" }}
+      // minH={{ lg: "110vh", base: "90vh" }}
       px={{ lg: "8rem", md: "4rem", base: "2rem" }}
       py={{ lg: "8rem", md: "4rem", base: "2rem" }}
     >
       <StyledInnerFlex>
-        <Image
+        {/* <Image
           src={MEDIA_FILES.logos.header}
           alt="RaidBrood Logo"
           width={{ base: "80px", md: "110px" }}
@@ -47,7 +47,7 @@ export const Hero = () => {
           lineHeight={{ lg: "96px", sm: "48px" }}
         >
           Beer for Slayers of Moloch
-        </StyledHeroText>
+        </StyledHeroText> */}
         <StyledSloganText fontSize={{ lg: "28px", base: "24px" }}>
           The first Beer connnected to a physically-backed NFT
         </StyledSloganText>
