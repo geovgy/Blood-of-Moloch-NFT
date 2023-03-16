@@ -1,4 +1,4 @@
-import { VStack, Heading, Text, Flex, Image } from "@chakra-ui/react";
+import { VStack, Image } from "@chakra-ui/react";
 import BeerInfo from "./BeerInfo";
 import copy from "../utils/copy.json";
 
