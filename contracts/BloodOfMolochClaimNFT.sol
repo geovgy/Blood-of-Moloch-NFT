@@ -21,7 +21,7 @@ contract BloodOfMolochClaimNFT is
     uint256 public supply;
     uint256 public MAX_SUPPLY = 300;
     uint256 public MIN_PRICE = 0.069 ether;
-    string private BASE_URI = "ipfs://bafybeigrwwow5fzoew4q2ixfwjnpfl4rug6vvk26n2426gkmbhqx6c6g6q/";
+    string private BASE_URI = "ipfs://bafybeifaq3z5fnaunzqzbuxlzpclccoocdgy2atteympxfpjntxqb3p77u/";
 
     mapping(address => uint256) pendingWithdrawals;
 
