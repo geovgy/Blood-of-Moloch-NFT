@@ -9,6 +9,7 @@ import ErrorPage from "next/error";
 import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import { Hero } from "@/components/Hero";
 import { Footer } from "@/components/Footer";
+import BeerPanel from "@/components/BeerPanel";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -40,6 +41,7 @@ export default function ClaimBaBom() {
   return (
     <>
       <Hero />
+      <BeerPanel />
       <Container>
         {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
           <DevModePanel />
