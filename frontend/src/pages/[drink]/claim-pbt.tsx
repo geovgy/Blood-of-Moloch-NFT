@@ -42,9 +42,9 @@ export default function ClaimBaBom() {
 
   return (
     <>
-      <LogoHeader path={`/assets/bomba.png`} />
-      <BeerPanel />
+      <LogoHeader path={`/assets/babom.png`} />
       <Hero />
+      <BeerPanel />
       <Container>
         {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
           <DevModePanel />
