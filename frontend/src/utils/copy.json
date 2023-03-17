@@ -1,0 +1,13 @@
+{
+  "barrel-aged": {
+    "name": "Barrel Aged Imperial Stout",
+    "heading": { "title": "Barrel Aged", "subtitle": "Imperial Stout" },
+    "style": "Barrel Aged Imperial Stout",
+    "beer": "From below his sacrificial altar, we drove our blade into the demon’s flesh. The harvest of battle is blood, intense, complex and rich, with flavors of roasted malts, dark chocolate, dark fruits and espresso. Drink its poison, all 14% abv of it!",
+    "traits": { "abv": 14, "ibu": 24 },
+    "lore": {
+      "first": "The blood that we harvested back in February 2022 was put into bourbon barrels from our friends at Foundry Distilling. Over the last year the liquid mellowed and gained complexity, evolving from the hard-biting, brash and bold Blood of Moloch Imperial stout to the bottomlessly rich, unbelievably chocolatey and vanilla laced potion harnessed and sealed in wax. No alterations or flavor were added. Simply quality ingredients, skill and time. Indulgence awaits."
+    },
+    "canImage": ""
+  }
+}

@@ -89,6 +89,7 @@ const ClaimNFTPanel = () => {
         textAlign="center"
         fontFamily="texturina"
         mb={6}
+        mt={8}
       >
         Mint your CLAIM NFT
       </Text>
