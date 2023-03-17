@@ -10,6 +10,8 @@ import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import { Hero } from "@/components/Hero";
 import { Footer } from "@/components/Footer";
 import BeerPanel from "@/components/BeerPanel";
+import LogoHeader from "@/components/LogoHeader";
+import ReceiveBeer from "@/components/ReceiveBeer";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -40,6 +42,7 @@ export default function ClaimBaBom() {
 
   return (
     <>
+      <LogoHeader path={`/assets/babom.png`} />
       <Hero />
       <BeerPanel />
       <Container>
@@ -59,6 +62,7 @@ export default function ClaimBaBom() {
             </Text>
           </Flex>
         )}
+        <ReceiveBeer />
       </Container>
       <Footer />
     </>
