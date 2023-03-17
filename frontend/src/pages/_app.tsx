@@ -48,8 +48,6 @@ export default function App({
         draggable
         pauseOnHover
       />
-      {/* // eslint-disable-next-line @next/next/no-sync-scripts */}
-      <script src="//embed.typeform.com/next/embed.js"></script>
     </ChakraProvider>
   );
 }

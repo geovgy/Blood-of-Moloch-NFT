@@ -98,8 +98,8 @@ const ClaimNFTPanel = () => {
         NFT is good for one 16oz bourbon-barrel-aged imperial stout
       </Text>
       <Text my={4} fontFamily="texturina" fontSize="lg" textAlign="center">
-        Note: CLAIM NFT's may be sold/traded/transferred until they are use to
-        claim a can of Blood
+        Note: CLAIM NFT&apos;s may be sold/traded/transferred until they are use
+        to claim a can of Blood
       </Text>
       <Text textAlign="center" fontFamily="texturina" fontSize="lg" my="8">
         You own {claimNFTBalance} CLAIM NFT
