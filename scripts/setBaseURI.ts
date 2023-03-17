@@ -10,7 +10,7 @@ main().catch((error) => {
 });
 
 async function main() {
-  // URL link for reference: https://nftstorage.link/ipfs/bafybeiapruulwobvtckt7kllbnb6mdijgvm7alivsox5sqdjzksuk5snsy
+  // URL link for reference: https://nftstorage.link/ipfs/bafybeibeqbridcvpivk3dy2tpofxjwcwkj3a732a727yr7roohrn7kwgqy
   const baseURI = "ipfs://bafybeibeqbridcvpivk3dy2tpofxjwcwkj3a732a727yr7roohrn7kwgqy/";
   const contractName = "BloodOfMolochPBT";
 

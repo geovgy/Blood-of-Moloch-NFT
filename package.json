@@ -32,7 +32,10 @@
     "mint:local": "npx hardhat mint --network localhost --quantity 350",
     "mint:test": "npx hardhat mint --network goerli --quantity 10",
     "mint:main": "npx hardhat mint --network mainnet --quantity 20",
-    "setup:test": "npx hardhat run --network goerli scripts/readyPBT.ts && npx hardhat run --network goerli scripts/setBaseURI.ts",
+    "setclaim:test": "npx hardhat run --network goerli scripts/readyPBT.ts",
+    "setclaim:main": "npx hardhat run --network mainnet scripts/readyPBT.ts",
+    "uri:test": "npx hardhat run --network goerli scripts/setBaseURI.ts",
+    "uri:main": "npx hardhat run --network mainnet scripts/setBaseURI.ts",
     "compile": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "clean": "npx hardhat clean"
   },
