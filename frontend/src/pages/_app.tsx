@@ -16,7 +16,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import React from "react";
 import { AppStateProvider } from "../context/AppContext";
-import theme from "../styles/theme";
+import { theme } from "../styles/theme";
 
 export default function App({
   Component,

@@ -158,9 +158,11 @@ const ClaimNFTPanel = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Your Claim NFTs</ModalHeader>
+          <ModalHeader fontFamily="texturina">Your Claim NFTs</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>this is the body</ModalBody>
+          <ModalBody>
+            <Text>this is the body</Text>
+          </ModalBody>
 
           <ModalFooter>
             <Button mr={3} onClick={onClose}>
