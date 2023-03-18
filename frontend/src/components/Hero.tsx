@@ -6,6 +6,7 @@ import { MEDIA_FILES } from "../utils/constants";
 const StyledFlex = styled(Flex)`
   flex-direction: column;
   align-items: center;
+  background-color: #2b2c34;
 `;
 const StyledInnerFlex = styled(Flex)`
   flex-direction: column;

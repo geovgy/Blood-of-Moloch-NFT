@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import BeerPanel from "@/components/BeerPanel";
 import LogoHeader from "@/components/LogoHeader";
 import ReceiveBeer from "@/components/ReceiveBeer";
+import Label from "@/components/Label";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -59,6 +60,7 @@ export default function ClaimBaBom() {
         <DevModePanel />
       )}
       <ReceiveBeer />
+      <Label path={`/assets/babom-label-sm.png`} bgColor={"black"} />
       <Footer />
     </>
   );
