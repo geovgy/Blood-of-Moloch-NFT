@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, Flex, Button, Box, Image } from "@chakra-ui/react";
+import { Text, Flex, Button, Box, Image, Container } from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
 import {
   getPublicKeysFromScan,
@@ -204,79 +204,81 @@ const ChipScan = () => {
   );
 
   return (
-    <Flex direction="column" alignItems="center" my={10} minH={"90vh"}>
-      <Text
-        id="mint-drink-nft"
-        fontSize="4xl"
-        textAlign="center"
-        fontFamily="texturina"
-        mt={4}
-      >
-        Mint Your Drink PBT
-      </Text>
-      <Text
-        textAlign="center"
-        fontSize="lg"
-        my={6}
-        fontFamily="texturina"
-        maxWidth="400px"
-      >
-        <Text fontFamily="texturina" fontSize="18px">
-          Remove wax seal from the Blood of Moloch can and expose foil-wrapped
-          KONG chip.
-        </Text>
-        <Text fontFamily="texturina" fontSize="24px">
-          •
-        </Text>
-        <Text fontFamily="texturina" fontSize="18px">
-          Bring your phone near your chip and tap “scan” below.
-        </Text>
-        <Text fontFamily="texturina" fontSize="24px">
-          •
-        </Text>
-        <Text fontFamily="texturina" fontSize="18px">
-          Sign the transaction to burn your CLAIM NFT and mint your DRINK NFT
-        </Text>
-      </Text>
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        direction="column"
-        height="100px"
-        mb={"10px"}
-      >
-        <Button
-          disabled={!!chipPublicKey}
-          onClick={initiateScan}
+    <Container p={10} minH={"90vh"}>
+      <Flex direction="column" alignItems="center">
+        <Text
+          id="mint-drink-nft"
+          fontSize="4xl"
+          textAlign="center"
           fontFamily="texturina"
-          _hover={{ bg: "#ff3864", color: "white" }}
+          mt={4}
         >
-          Scan Your PBT Chip
-        </Button>
+          Mint Your Drink PBT
+        </Text>
+        <Text
+          textAlign="center"
+          fontSize="lg"
+          my={6}
+          fontFamily="texturina"
+          maxWidth="400px"
+        >
+          <Text fontFamily="texturina" fontSize="18px">
+            Remove wax seal from the Blood of Moloch can and expose foil-wrapped
+            KONG chip.
+          </Text>
+          <Text fontFamily="texturina" fontSize="24px">
+            •
+          </Text>
+          <Text fontFamily="texturina" fontSize="18px">
+            Bring your phone near your chip and tap “scan” below.
+          </Text>
+          <Text fontFamily="texturina" fontSize="24px">
+            •
+          </Text>
+          <Text fontFamily="texturina" fontSize="18px">
+            Sign the transaction to burn your CLAIM NFT and mint your DRINK NFT
+          </Text>
+        </Text>
+        <Flex
+          justifyContent="center"
+          alignItems="center"
+          direction="column"
+          height="100px"
+          mb={"10px"}
+        >
+          <Button
+            disabled={!!chipPublicKey}
+            onClick={initiateScan}
+            fontFamily="texturina"
+            _hover={{ bg: "#ff3864", color: "white" }}
+          >
+            Scan Your PBT Chip
+          </Button>
+        </Flex>
+        <Flex height="100%" mt={2}>
+          <Box height={"308px"}>
+            <Image
+              borderRadius="xl"
+              src="/assets/drink-nft.png"
+              width="300px"
+              height="300px"
+              alt="A color graphic of a drink"
+              border="solid 1px white"
+              style={{
+                transition: "all 100ms ease-in-out",
+              }}
+              _hover={{
+                transform: "scale(1.04)",
+              }}
+            />
+          </Box>
+        </Flex>
+        <Text fontSize="lg" my={6} fontFamily="texturina">
+          You own {drinkNFTBalance} Drink NFT
+          <span>{drinkNFTBalance === "1" ? "" : "s"}</span>
+        </Text>
       </Flex>
-      <Flex height="100%" mt={2}>
-        <Box height={"308px"}>
-          <Image
-            borderRadius="xl"
-            src="/assets/drink-nft.png"
-            width="300px"
-            height="300px"
-            alt="A color graphic of a drink"
-            border="solid 1px white"
-            style={{
-              transition: "all 100ms ease-in-out",
-            }}
-            _hover={{
-              transform: "scale(1.04)",
-            }}
-          />
-        </Box>
-      </Flex>
-      <Text fontSize="lg" my={6} fontFamily="texturina">
-        You own {drinkNFTBalance} Drink NFT
-        <span>{drinkNFTBalance === "1" ? "" : "s"}</span>
-      </Text>
-    </Flex>
+    </Container>
   );
 };
 

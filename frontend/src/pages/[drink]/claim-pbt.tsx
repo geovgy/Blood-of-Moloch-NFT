@@ -45,25 +45,20 @@ export default function ClaimBaBom() {
       <LogoHeader path={`/assets/babom.png`} />
       <Hero />
       <BeerPanel />
-      <Container>
-        {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
-          <DevModePanel />
-        )}
-        {_isConnected && (
-          <VStack>
-            <ClaimNFTPanel />
-            <ChipScan />
-          </VStack>
-        )}
-        {!_isConnected && (
-          <Flex direction="column" align="center" justify="center" m={8}>
-            <Text fontSize="28px" as="h1" fontFamily="texturina">
-              Connect your wallet to claim your PBT
-            </Text>
-          </Flex>
-        )}
-        <ReceiveBeer />
-      </Container>
+
+      {!_isConnected && (
+        <Flex direction="column" align="center" justify="center" m={8}>
+          <Text fontSize="28px" as="h1" fontFamily="texturina">
+            Connect your wallet to claim your PBT
+          </Text>
+        </Flex>
+      )}
+      {_isConnected && <ClaimNFTPanel />}
+      {_isConnected && <ChipScan />}
+      {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
+        <DevModePanel />
+      )}
+      <ReceiveBeer />
       <Footer />
     </>
   );
