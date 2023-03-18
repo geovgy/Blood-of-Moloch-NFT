@@ -55,11 +55,11 @@ export default function ClaimBaBom() {
         </Flex>
       )}
       {_isConnected && <ClaimNFTPanel />}
+      <ReceiveBeer />
       {_isConnected && <ChipScan />}
       {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
         <DevModePanel />
       )}
-      <ReceiveBeer />
       <Label path={`/assets/babom-label-sm.png`} bgColor={"black"} />
       <Footer />
     </>

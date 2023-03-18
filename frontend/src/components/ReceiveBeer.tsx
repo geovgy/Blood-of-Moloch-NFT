@@ -18,7 +18,7 @@ const StyledPopupButton = styled(PopupButton)`
 
 const ReceiveBeer = () => {
   return (
-    <Box py={20} backgroundColor="#2b2c34">
+    <Box py={20} backgroundColor="black">
       <Container>
         <VStack mb={20}>
           <Text fontFamily="texturina" textAlign="center" fontSize="4xl">
