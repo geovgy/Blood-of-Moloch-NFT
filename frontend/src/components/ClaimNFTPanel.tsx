@@ -1,5 +1,20 @@
 import { useState, useEffect } from "react";
-import { Button, Box, Text, Flex, Image, Container } from "@chakra-ui/react";
+import {
+  Button,
+  Box,
+  Text,
+  Flex,
+  Image,
+  Container,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useSigner, useAccount } from "wagmi";
 import BloodOfMolochClaimNFT from "../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
 import React from "react";
@@ -7,6 +22,7 @@ import { ethers } from "ethers";
 import { toast } from "react-toastify";
 
 const ClaimNFTPanel = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [claimNFT, setClaimNFT] = useState<any>(null);
   const { data: signer, isSuccess } = useSigner();
   const { address } = useAccount();
@@ -102,10 +118,14 @@ const ClaimNFTPanel = () => {
             Note: CLAIM NFT&apos;s may be sold/traded/transferred until they are
             use to claim a can of Blood
           </Text>
-          <Text textAlign="center" fontFamily="texturina" fontSize="lg" my="8">
-            You own {claimNFTBalance} CLAIM NFT
-            <span>{claimNFTBalance === "1" ? "" : "s"}</span>
-          </Text>
+          <Button
+            fontFamily="texturina"
+            my={8}
+            onClick={mintClaimNFT}
+            _hover={{ bg: "#ff3864", color: "white" }}
+          >
+            Mint for 0.069 ETH
+          </Button>
           <Flex height={"308px"}>
             <Image
               borderRadius="xl"
@@ -122,17 +142,33 @@ const ClaimNFTPanel = () => {
               }}
             />
           </Flex>
-          <Button
+          <Text
+            textAlign="center"
             fontFamily="texturina"
-            my={8}
-            onClick={mintClaimNFT}
-            _hover={{ bg: "#ff3864", color: "white" }}
-            mb={"120px"}
+            fontSize="lg"
+            my="8"
+            // onClick={onOpen}
           >
-            Mint for 0.069 ETH
-          </Button>
+            You own {claimNFTBalance} CLAIM NFT
+            <span>{claimNFTBalance === "1" ? "" : "s"}</span>
+          </Text>
         </Flex>
       </Container>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Your Claim NFTs</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>this is the body</ModalBody>
+
+          <ModalFooter>
+            <Button mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
