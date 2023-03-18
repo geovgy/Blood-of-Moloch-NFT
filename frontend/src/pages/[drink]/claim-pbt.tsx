@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import BeerPanel from "@/components/BeerPanel";
 import LogoHeader from "@/components/LogoHeader";
 import ReceiveBeer from "@/components/ReceiveBeer";
+import Label from "@/components/Label";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
@@ -45,25 +46,21 @@ export default function ClaimBaBom() {
       <LogoHeader path={`/assets/babom.png`} />
       <Hero />
       <BeerPanel />
-      <Container>
-        {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
-          <DevModePanel />
-        )}
-        {_isConnected && (
-          <VStack>
-            <ClaimNFTPanel />
-            <ChipScan />
-          </VStack>
-        )}
-        {!_isConnected && (
-          <Flex direction="column" align="center" justify="center" m={8}>
-            <Text fontSize="28px" as="h1" fontFamily="texturina">
-              Connect your wallet to claim your PBT
-            </Text>
-          </Flex>
-        )}
-        <ReceiveBeer />
-      </Container>
+
+      {!_isConnected && (
+        <Flex direction="column" align="center" justify="center" m={8}>
+          <Text fontSize="28px" as="h1" fontFamily="texturina">
+            Connect your wallet to claim your PBT
+          </Text>
+        </Flex>
+      )}
+      {_isConnected && <ClaimNFTPanel />}
+      <ReceiveBeer />
+      {_isConnected && <ChipScan />}
+      {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
+        <DevModePanel />
+      )}
+      <Label path={`/assets/babom-label-sm.png`} bgColor={"black"} />
       <Footer />
     </>
   );

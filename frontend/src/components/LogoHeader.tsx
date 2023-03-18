@@ -7,9 +7,7 @@ const LogoHeader = ({ path }) => {
     <VStack w={"100%"} py={"3em"} bgGradient="linear(to-b, #2b2c34, black)">
       <HStack w={"80%"}>
         <NextLink href="/" passHref>
-          <Link>
-            <Image src={MEDIA_FILES.logos.footer} alt="logo" boxSize={"4xs"} />
-          </Link>
+          <Image src={MEDIA_FILES.logos.footer} alt="logo" boxSize={"4xs"} />
         </NextLink>
         <Spacer />
         <HStack justifyContent={"flex-end"} gap={2}>
@@ -31,7 +29,13 @@ const LogoHeader = ({ path }) => {
       </HStack>
 
       <Center>
-        <Image src={path} objectFit="contain" boxSize={"md"} alt="drink logo" />
+        <Image
+          src={path}
+          objectFit="contain"
+          boxSize={"md"}
+          alt="drink logo"
+          py={12}
+        />
       </Center>
     </VStack>
   );
