@@ -22,7 +22,7 @@ import { toast } from "react-toastify";
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
-  network: Network.ETH_GOERLI,
+  network: Network[process.env.NEXT_PUBLIC_NETWORK],
 };
 
 const alchemy = new Alchemy(settings);
