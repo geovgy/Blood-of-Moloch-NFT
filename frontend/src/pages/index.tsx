@@ -32,9 +32,6 @@ export default function Home() {
             Blood of Moloch NFT
           </Text>
           <Flex direction="column" align="center" justify="center" m={8}>
-            {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
-              <DevModePanel />
-            )}
             {_isConnected && <ClaimNFTPanel />}
           </Flex>
         </Flex>
