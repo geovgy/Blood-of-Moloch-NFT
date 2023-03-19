@@ -73,12 +73,16 @@ const ChipScan = () => {
   }, []);
   useEffect(() => {
     getNFTsOfWallet();
-  }, [address]);
+  });
   useEffect(() => {
     getPBTBalance();
   }, [bomPBT]);
 
   const getNFTsOfWallet = async () => {
+    if (claimNFTTokenId) {
+      return;
+    }
+
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
       const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {

@@ -3,7 +3,6 @@ import { Container, VStack, Flex, Text } from "@chakra-ui/react";
 import { useAccount } from "wagmi";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
-import DevModePanel from "@/components/DevModePanel";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import ClaimNFTPanel from "@/components/ClaimNFTPanel";
@@ -57,9 +56,6 @@ export default function ClaimBaBom() {
       {_isConnected && <ClaimNFTPanel />}
       <ReceiveBeer />
       {_isConnected && <ChipScan />}
-      {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
-        <DevModePanel />
-      )}
       <Label path={`/assets/babom-label-sm.png`} bgColor={"black"} />
       <Footer />
     </>
