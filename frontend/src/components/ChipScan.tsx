@@ -91,11 +91,10 @@ const ChipScan = () => {
           process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
         );
       });
+      process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+        console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
 
       if (ownedNFT) {
-        process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
-          console.log(`ownedNFT: ${JSON.stringify(ownedNFT?.tokenId)}`);
-
         setClaimNFTTokenId(ownedNFT?.tokenId);
       }
     }
@@ -216,6 +215,14 @@ const ChipScan = () => {
   process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
     console.log(
       `process.env.NEXT_PUBLIC_PBT_ADDRESS: ${process.env.NEXT_PUBLIC_PBT_ADDRESS}`
+    );
+  process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+    console.log(
+      `process.env.NEXT_PUBLIC_NETWORK: ${process.env.NEXT_PUBLIC_NETWORK}`
+    );
+  process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+    console.log(
+      `process.env.NEXT_PUBLIC_ALCHEMY_KEY: ${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`
     );
 
   return (
