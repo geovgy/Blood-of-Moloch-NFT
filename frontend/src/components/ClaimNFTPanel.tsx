@@ -83,7 +83,7 @@ const ClaimNFTPanel = () => {
       });
     } catch (err: any) {
       console.error(err);
-      toast.warning("Oops! There was an error", {
+      toast.warning(`Oops! There was an error. Message: ${err.message}`, {
         position: "top-right",
         autoClose: 10000,
         hideProgressBar: false,

@@ -30,6 +30,8 @@ const alchemy = new Alchemy(settings);
 // Get the latest block
 const ChipScan = () => {
   const [bomPBT, setBomPBT] = useState<any>(null);
+  const [walletNfts, setWalletNfts] = useState<any>(null);
+  const [blockHash, setBlockHash] = useState<any>(null);
   const [claimNFTTokenId, setClaimNFTTokenId] = useState<string>("");
   const [blockNumber, setBlockNumber] = useState<number>(0);
   const { data: signer } = useSigner();
@@ -73,7 +75,7 @@ const ChipScan = () => {
   }, []);
   useEffect(() => {
     getNFTsOfWallet();
-  });
+  }, [address]);
   useEffect(() => {
     getPBTBalance();
   }, [bomPBT]);
@@ -85,6 +87,7 @@ const ChipScan = () => {
 
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
+      setWalletNfts(nfts);
       const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
         return (
           nft.contract.address?.toLowerCase() ==
@@ -111,19 +114,31 @@ const ChipScan = () => {
 
   const initiateScan = async () => {
     if (!claimNFTTokenId) {
-      toast.warning(
-        `You must own 1 Claim NFT to mint in wallet with address: ${address}`,
-        {
-          position: "top-right",
-          autoClose: 10000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        }
-      );
+      // toast.warning(
+      //   `You must own 1 Claim NFT (address: ${process.env.NEXT_PUBLIC_CLAIM_ADDRESS}) to mint in wallet address: ${address}. Make sure you're logged in with the correct address and try again or contact us with this error message.`,
+      //   {
+      //     position: "top-right",
+      //     autoClose: 10000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //     theme: "dark",
+      //   }
+      // );
+      // getNFTsOfWallet();
+      if (walletNfts) {
+        alert(`
+The NFT with address ${
+          process.env.NEXT_PUBLIC_CLAIM_ADDRESS
+        } is not found in your wallet.
+We have detected that your wallet owns the following NFTs: ${JSON.stringify(
+          walletNfts
+        )}. 
+Try again or contact us with this error message.
+        `);
+      }
       return;
     }
     try {
@@ -148,21 +163,20 @@ const ChipScan = () => {
         console.log(`sig: ${JSON.stringify(sig)}`);
       mintPBT(sig, currBlockNumber);
     } catch (e: any) {
-      console.error(`error: ${e}`);
-      toast.warning(
-        `Oops! There was an error. Try again or please contact us with this error: ${JSON.stringify(
-          e
-        )}`,
-        {
-          position: "top-right",
-          autoClose: 10000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        }
+      console.error(`error: ${e.message}`);
+      alert(
+        `
+Oops! There was an error. Try again or please contact us with this information:
+error message: ${JSON.stringify(e.message)}
+
+chipPublicKey: ${chipPublicKey}
+
+blockHash: ${blockHash}
+
+blockNumber: ${blockNumber}
+
+claimNFTTokenId: ${claimNFTTokenId}
+        `
       );
       return;
     }
