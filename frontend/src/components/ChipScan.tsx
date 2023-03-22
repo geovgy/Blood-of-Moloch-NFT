@@ -144,16 +144,21 @@ const ChipScan = () => {
       mintPBT(sig, currBlockNumber);
     } catch (e: any) {
       console.error(`error: ${e}`);
-      toast.warning("Oops! There was an error", {
-        position: "top-right",
-        autoClose: 10000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+      toast.warning(
+        `Oops! There was an error. Try again or please contact us with this error: ${JSON.stringify(
+          e
+        )}`,
+        {
+          position: "top-right",
+          autoClose: 10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        }
+      );
       return;
     }
   };
