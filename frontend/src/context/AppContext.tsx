@@ -3,9 +3,13 @@ const AppContext = createContext({});
 
 const AppStateProvider = ({ children }: any): any => {
   const [claimTokenId, setClaimTokenId] = useState<string>("");
-  const [blockHashUsedInSig, setBlockHashUsedInSig] = useState<string>("");
-  const [signatureFromChip, setSignatureFromChip] = useState<string>("");
-  const [chipPublicKey, setChipPublicKey] = useState<string>("");
+  const [blockHashUsedInSig, setBlockHashUsedInSig] = useState<string | null>(
+    null
+  );
+  const [signatureFromChip, setSignatureFromChip] = useState<string | null>(
+    null
+  );
+  const [chipPublicKey, setChipPublicKey] = useState<string | null>(null);
   const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const appState = {
