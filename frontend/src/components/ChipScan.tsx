@@ -87,7 +87,7 @@ const ChipScan = () => {
       const nfts = await alchemy.nft.getNftsForOwner(address);
       const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
         return (
-          nft.contract.address ===
+          nft.contract.address?.toLowerCase() ==
           process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
         );
       });
@@ -97,6 +97,8 @@ const ChipScan = () => {
       if (ownedNFT) {
         setClaimNFTTokenId(ownedNFT?.tokenId);
       }
+    } else {
+      console.error(`getNFTsOfWallet: address is undefined`);
     }
   };
 
@@ -109,16 +111,19 @@ const ChipScan = () => {
 
   const initiateScan = async () => {
     if (!claimNFTTokenId) {
-      toast.warning("You must own 1 Claim NFT to mint", {
-        position: "top-right",
-        autoClose: 10000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+      toast.warning(
+        `You must own 1 Claim NFT to mint in wallet with address: ${address}`,
+        {
+          position: "top-right",
+          autoClose: 10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        }
+      );
       return;
     }
     try {
