@@ -220,10 +220,6 @@ const ChipScan = () => {
     console.log(
       `process.env.NEXT_PUBLIC_NETWORK: ${process.env.NEXT_PUBLIC_NETWORK}`
     );
-  process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
-    console.log(
-      `process.env.NEXT_PUBLIC_ALCHEMY_KEY: ${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`
-    );
 
   return (
     <Box p={10} minH={"90vh"} backgroundColor="#2b2c34">
