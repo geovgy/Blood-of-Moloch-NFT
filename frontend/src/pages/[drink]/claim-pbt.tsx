@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container, VStack, Flex, Text } from "@chakra-ui/react";
-import { useAccount } from "wagmi";
+import { useContractRead, useAccount, useBalance, useSignMessage } from "wagmi";
 import React from "react";
 import ChipScan from "@/components/ChipScan";
 import { useRouter } from "next/router";
@@ -12,11 +12,40 @@ import BeerPanel from "@/components/BeerPanel";
 import LogoHeader from "@/components/LogoHeader";
 import ReceiveBeer from "@/components/ReceiveBeer";
 import Label from "@/components/Label";
+import { verifyMessage } from "ethers/lib/utils.js";
+import { BigNumber } from "ethers";
+import BloodOfMolochClaimNFT from "../../artifacts/contracts/BloodOfMolochClaimNFT.sol/BloodOfMolochClaimNFT.json";
+
+const message =
+  "This signature verifies you own the account you are claiming from.";
 
 export default function ClaimBaBom() {
   const { address, isConnected } = useAccount();
+  const [canOpenForm, setCanOpenForm] = useState(false);
+
   const [is404, setIs404] = useState(false);
   const [_isConnected, _setIsConnected] = useState(false);
+  const { data: claimNFTBalance } = useContractRead({
+    abi: BloodOfMolochClaimNFT.abi,
+    address: process.env.NEXT_PUBLIC_CLAIM_ADDRESS as `0x${string}`,
+    args: [address],
+    functionName: "balanceOf",
+  });
+
+  const onSignSuccess = (data, variables) => {
+    const balance = claimNFTBalance || BigNumber.from(0);
+    const signedAddress = verifyMessage(variables.message, data);
+    setCanOpenForm(address === signedAddress && balance.gt(0));
+  };
+  const onSignError = () => {
+    setCanOpenForm(false);
+  };
+  const { signMessage } = useSignMessage({
+    message,
+    onSuccess: onSignSuccess,
+    onError: onSignError,
+  });
+
   const router = useRouter();
   // this fixes issue with NextJS: Error: Hydration failed
   useEffect(() => {
@@ -54,7 +83,11 @@ export default function ClaimBaBom() {
         </Flex>
       )}
       {_isConnected && <ClaimNFTPanel />}
-      <ReceiveBeer />
+      <ReceiveBeer
+        canOpenForm={canOpenForm}
+        signMessage={signMessage}
+        balance={claimNFTBalance}
+      />
       {_isConnected && <ChipScan />}
       <Label path={`/assets/babom-label-sm.png`} bgColor={"black"} />
       <Footer />
