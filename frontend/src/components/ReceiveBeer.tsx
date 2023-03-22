@@ -1,8 +1,10 @@
 import { VStack, Text, Container, Center, Box } from "@chakra-ui/react";
 import { PopupButton } from "@typeform/embed-react";
 import styled from "@emotion/styled";
+import { useRef, useEffect } from "react";
+import { BigNumber } from "alchemy-sdk";
 
-const StyledPopupButton = styled(PopupButton)`
+const StyledButton = styled.button`
   font-family: texturina;
   color: white;
   background-color: #ff3864;
@@ -14,9 +16,31 @@ const StyledPopupButton = styled(PopupButton)`
   :hover {
     opacity: 0.85;
   }
+  :disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
-const ReceiveBeer = () => {
+const StyledPopupButton = styled(PopupButton)`
+  visibility: hidden;
+`;
+
+const ReceiveBeer = ({
+  canOpenForm,
+  signMessage,
+  balance,
+}: {
+  canOpenForm: boolean;
+  signMessage: () => void;
+  balance: BigNumber | undefined;
+}) => {
+  const ref = useRef();
+  const openPopup = () => ref.current?.open();
+  useEffect(() => {
+    canOpenForm && openPopup();
+  }, [canOpenForm]);
+
   return (
     <Box py={20} backgroundColor="black">
       <Container>
@@ -38,9 +62,15 @@ const ReceiveBeer = () => {
           hand
         </Text>
         <Center>
-          <StyledPopupButton id="sOwDR7pF" className="my-button">
-            Beer Me Form
-          </StyledPopupButton>
+          <StyledButton
+            id="sOwDR7pF"
+            className="my-button"
+            disabled={!balance?.gt(0)}
+            onClick={() => signMessage()}
+          >
+            {balance?.gt(0) ? "Beer Me Form" : "Claim NFT Required"}
+          </StyledButton>
+          <StyledPopupButton id="sOwDR7pF" ref={ref} />
         </Center>
       </Container>
     </Box>
