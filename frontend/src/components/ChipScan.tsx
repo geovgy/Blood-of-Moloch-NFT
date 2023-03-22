@@ -22,7 +22,7 @@ import { toast } from "react-toastify";
 
 const settings = {
   apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY,
-  network: Network.ETH_GOERLI,
+  network: Network[process.env.NEXT_PUBLIC_NETWORK],
 };
 
 const alchemy = new Alchemy(settings);
@@ -73,12 +73,16 @@ const ChipScan = () => {
   }, []);
   useEffect(() => {
     getNFTsOfWallet();
-  }, [address]);
+  });
   useEffect(() => {
     getPBTBalance();
   }, [bomPBT]);
 
   const getNFTsOfWallet = async () => {
+    if (claimNFTTokenId) {
+      return;
+    }
+
     if (address) {
       const nfts = await alchemy.nft.getNftsForOwner(address);
       const ownedNFT: any = nfts.ownedNfts.find((nft: any) => {
@@ -87,11 +91,10 @@ const ChipScan = () => {
           process.env.NEXT_PUBLIC_CLAIM_ADDRESS?.toLowerCase()
         );
       });
+      process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+        console.log(`ownedNFT: ${JSON.stringify(ownedNFT)}`);
 
       if (ownedNFT) {
-        process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
-          console.log(`ownedNFT: ${JSON.stringify(ownedNFT?.tokenId)}`);
-
         setClaimNFTTokenId(ownedNFT?.tokenId);
       }
     }
@@ -212,6 +215,14 @@ const ChipScan = () => {
   process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
     console.log(
       `process.env.NEXT_PUBLIC_PBT_ADDRESS: ${process.env.NEXT_PUBLIC_PBT_ADDRESS}`
+    );
+  process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+    console.log(
+      `process.env.NEXT_PUBLIC_NETWORK: ${process.env.NEXT_PUBLIC_NETWORK}`
+    );
+  process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+    console.log(
+      `process.env.NEXT_PUBLIC_ALCHEMY_KEY: ${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`
     );
 
   return (

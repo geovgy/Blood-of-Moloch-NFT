@@ -5,7 +5,6 @@ import { useAccount } from "wagmi";
 import ClaimNFTPanel from "@/components/ClaimNFTPanel";
 import ConnectWallet from "@/components/ConnectWallet";
 import React from "react";
-import DevModePanel from "@/components/DevModePanel";
 
 export default function Home() {
   const { isConnected } = useAccount();
@@ -21,6 +20,8 @@ export default function Home() {
     _setIsConnected(isConnected);
   }, [isConnected]);
 
+  process.env.NEXT_PUBLIC_DEV_MODE === "true" &&
+    console.log(`process.env: ${JSON.stringify(process.env)}`);
   return (
     <>
       <Container>
@@ -32,9 +33,6 @@ export default function Home() {
             Blood of Moloch NFT
           </Text>
           <Flex direction="column" align="center" justify="center" m={8}>
-            {_isConnected && process.env.NEXT_PUBLIC_DEV_MODE === "true" && (
-              <DevModePanel />
-            )}
             {_isConnected && <ClaimNFTPanel />}
           </Flex>
         </Flex>

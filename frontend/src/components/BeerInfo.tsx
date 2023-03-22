@@ -3,7 +3,7 @@ import {
   Flex,
   Heading,
   Text,
-  HStack,
+  Link,
   VStack,
   Divider,
   Stack,
@@ -24,7 +24,22 @@ const Description = ({ name, content }: DescriptionProps) => {
     <Flex direction="column" minW={"250px"} px={"3em"} gap={2}>
       <Heading textTransform="uppercase">{name}</Heading>
       <Text w={"100%"} textAlign={"left"}>
-        {content}
+        The{" "}
+        <Link
+          href="https://brood.raidguild.org/bloodofmoloch"
+          rel="nofollow"
+          target="_blank"
+          color="#ff3864"
+        >
+          blood
+        </Link>{" "}
+        that we harvested back in February 2022 was put into bourbon barrels
+        from our friends at Foundry Distilling. Over the last year the liquid
+        mellowed and gained complexity, evolving from the hard-biting, brash and
+        bold Blood of Moloch Imperial stout to the bottomlessly rich,
+        unbelievably chocolatey and vanilla laced potion harnessed and sealed in
+        wax. No alterations or flavor were added. Simply quality ingredients,
+        skill and time. Indulgence awaits.
       </Text>
     </Flex>
   );
