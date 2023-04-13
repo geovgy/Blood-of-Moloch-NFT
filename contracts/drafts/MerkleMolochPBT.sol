@@ -55,6 +55,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         bool set;
     }
 
+
      // Mapping from chipAddress to TokenData
     mapping(address => TokenData) _tokenDatas;
 
@@ -74,8 +75,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         uint256 claimTokenId,
         bytes calldata signatureFromChip,
         uint256 blockHashUsedInSig,
-        bytes32 [] calldata proof,
-        bytes32 leaf
+        bytes32 [] calldata proof
     ) external nonReentrant {
         if (!canMint) {
             revert MintNotOpen();
@@ -91,7 +91,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
             IERC721(_claimToken).isApprovedForAll(_msgSender(), address(this)) || IERC721(_claimToken).getApproved(claimTokenId) == address(this),
             "BloodOfMoloch: not approved"
         );
-        _mintTokenWithChip(signatureFromChip, blockHashUsedInSig, proof, leaf);
+        _mintTokenWithChip(signatureFromChip, blockHashUsedInSig, proof);
         _burnClaimToken(claimTokenId);
         unchecked {
             ++supply;
@@ -173,12 +173,13 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
     //    signatureFromChip: signature(receivingAddress + recentBlockhash), signed by an approved chip
     //
     // Contract should check that (1) recentBlockhash is a recent blockhash, (2) receivingAddress === to, and (3) the signing chip is allowlisted.
-    function _mintTokenWithChip(bytes memory signatureFromChip, uint256 blockNumberUsedInSig, bytes32[] memory proof, bytes32 leaf)
+    function _mintTokenWithChip(bytes memory signatureFromChip, uint256 blockNumberUsedInSig, bytes32[] memory proof)
         internal
         returns (uint256)
     {
-        address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
 
+        address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
+        bytes32 leaf = keccak256(chipAddr);
         if (_tokenDatas[chipAddr].set) {
             revert ChipAlreadyLinkedToMintedToken();
         } else if (proof.verify(merkleRoot, leaf) == false ) {
