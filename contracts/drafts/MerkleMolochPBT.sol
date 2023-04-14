@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 // import "@chiru-labs/pbt/src/PBTRandom.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "../../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../IBurnable.sol";
 import "./IPBT.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "../../node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "../../node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "../../node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 error MintNotOpen();
 error TotalSupplyReached();
@@ -39,7 +39,6 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
 
     string private _baseTokenURI;
     address private _claimToken;
-    bool private _seeded;
 
     event Burn (
         address indexed from,
@@ -109,8 +108,9 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
 
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
+        require(merkleRoot, "merkle root not set");
         require(_claimToken != address(0), "BloodOfMoloch: no claim token");
-        require(_seeded, "BloodOfMoloch: no chips seeded");
+
         canMint = true;
     }
 
