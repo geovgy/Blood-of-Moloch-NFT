@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-// import "@chiru-labs/pbt/src/PBTRandom.sol";
-import "../../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "../../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "../IBurnable.sol";
 import "./IPBT.sol";
-import "../../node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "../../node_modules/@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "../../node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 error MintNotOpen();
 error TotalSupplyReached();
