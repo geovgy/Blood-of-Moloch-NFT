@@ -177,8 +177,8 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
     {
         //recover chip address from signed message
         address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
-        // hash chip address for merkle proof
-        bytes32 leaf = keccak256(abi.encode(chipAddr));
+        // hash chip address for merkle proof double hashed to prevent second preimage attacks
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(chipAddr))));
 
         if (_tokenDatas[chipAddr].set) {
             revert ChipAlreadyLinkedToMintedToken();
