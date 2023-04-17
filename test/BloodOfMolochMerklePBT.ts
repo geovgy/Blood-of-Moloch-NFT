@@ -103,11 +103,12 @@ describe('BloodOfMolochMerklePBT', function () {
           BigNumber.from(BOM_TOTAL_SUPPLY)
         );
       });
-    it(" set up to mint", async function () {
+      
+    it("Should set the Merkle Root", async function () {
         await setupForMint(true);
         expect(await bomContract.merkleRoot()).to.equal(merkleRoot);
     });
-    it("should mint with appropriate proof", async function () {
+    it("Should mint with appropriate proof", async function () {
         const claimTokenId = 1;
         await claimContract.mint(addresses[0]);
         await claimContract.approve(bomContract.address, claimTokenId);
