@@ -58,17 +58,9 @@ describe('BloodOfMolochMerklePBT', function () {
 
 
   function createMerkle(addresses: string[][]) {
-    // (1)
-    // const values = [addresses];
 
-
-    // (2)
     const tree = StandardMerkleTree.of(addresses, ['address']);
 
-    // (3)
-    // console.log('Merkle Root:', tree.root);
-
-    // (4)
     fs.writeFileSync('tree.json', JSON.stringify(tree.dump()));
     merkleTree = tree;
     return tree;
@@ -78,9 +70,13 @@ describe('BloodOfMolochMerklePBT', function () {
     await bomContract.setBaseURI(BOM_BASE_URI);
     await bomContract.setClaimToken(claimContract.address);
     chipAddresses = await parseHaloScans();
+
     let merkleInput: string[][]= []
+    //merkle library requires an array of arrays as input
     chipAddresses.map((address:string)=>{merkleInput.push([address])})as unknown as string[];
+    //create merkle tree out of array of addresses in arrays
     const merkleTree = createMerkle(merkleInput);
+
     merkleRoot =  merkleTree.root;
     const tokenIds = chipAddresses.map((signer, index) => index);
     await bomContract.setMerkleRoot(merkleRoot);
@@ -111,7 +107,7 @@ describe('BloodOfMolochMerklePBT', function () {
         await setupForMint(true);
         expect(await bomContract.merkleRoot()).to.equal(merkleRoot);
     });
-    it.only("should mint with appropriate proof", async function () {
+    it("should mint with appropriate proof", async function () {
         const claimTokenId = 1;
         await claimContract.mint(addresses[0]);
         await claimContract.approve(bomContract.address, claimTokenId);
@@ -132,32 +128,29 @@ describe('BloodOfMolochMerklePBT', function () {
         );
         const chipSig = await chip.signMessage(messageBytes);
   
-        const verifiedAddress = ethers.utils.verifyMessage(messageBytes, chipSig);
-        const recoveredAddress = ethers.utils.recoverAddress(
-          messageHash,
-          chipSig
-        );
+        // const verifiedAddress = ethers.utils.verifyMessage(messageBytes, chipSig);
+        // const recoveredAddress = ethers.utils.recoverAddress(
+        //   messageHash,
+        //   chipSig
+        // );
         
+        //get index of chip address in tree
         const index = merkleTree.leafLookup([chip.address])
-        console.log("INDEX: ", index)
+        // get merkle proof
         const proof = merkleTree.getProof(index);
-        // console.log("chipAddress", await chip.getAddress())
-        // console.log("verifiedAddress:", verifiedAddress)
-        // console.log("recoveredAddress:", recoveredAddress)
-  
-        // bytes32 blockHash = blockhash(blockHashUsedInSig);
-        // bytes32 signedHash = keccak256(abi.encodePacked(_msgSender(), blockHash)).toEthSignedMessageHash();
-        // address chipAddr = signedHash.recover(signatureFromChip);
+
   
         const tx = await bomContract.mint(claimTokenId, chipSig, block.number, proof);
         const promise = await tx.wait();
+
         const event = promise.events?.filter((event)=> event.event?.includes('PBTMint'));
         const tokenId = event![0].args?.tokenId;
+
         await expect(tx).to.not.be.reverted;
         await expect(tx)
           .to.emit(bomContract, "PBTMint")
           .withArgs(tokenId, chip.address);
-        expect(await bomContract.tokenIdFor(await chip.getAddress())).to.equal(event![0].args?.tokenId);
+        expect(await bomContract.tokenIdFor(await chip.getAddress())).to.equal(tokenId);
       });
     });
 });
