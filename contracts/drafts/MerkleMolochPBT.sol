@@ -106,7 +106,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
 
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
-        require(merkleRoot, "merkle root not set");
+        require(merkleRoot != bytes32(0), "merkle root not set");
         require(_claimToken != address(0), "BloodOfMoloch: no claim token");
 
         canMint = true;
@@ -175,9 +175,11 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         internal
         returns (uint256)
     {
-
+        //recover chip address from signed message
         address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
-        bytes32 leaf = keccak256(chipAddr);
+        // hash chip address for merkle proof
+        bytes32 leaf = keccak256(abi.encode(chipAddr));
+
         if (_tokenDatas[chipAddr].set) {
             revert ChipAlreadyLinkedToMintedToken();
         } else if (proof.verify(merkleRoot, leaf) == false ) {

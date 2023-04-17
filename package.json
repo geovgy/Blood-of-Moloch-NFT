@@ -9,6 +9,7 @@
   "scripts": {
     "mock": "npx hardhat mock-deploy --network localhost",
     "test:bom": "npx hardhat test test/BloodOfMolochPBT.ts",
+    "test:merkle": "npx hardhat test test/BloodofMOlochMerklePBT.ts.ts",
     "test:drink": "npx hardhat test test/NewBloodOfMolochPBT.ts",
     "test:claim" : "npx hardhat test test/BloodOfMolochClaimNFT.ts",
     "deploy:local": "npx hardhat deploy --network localhost",
