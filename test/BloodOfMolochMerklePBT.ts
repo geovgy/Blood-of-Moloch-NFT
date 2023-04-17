@@ -61,7 +61,7 @@ describe('BloodOfMolochMerklePBT', function () {
 
     const tree = StandardMerkleTree.of(addresses, ['address']);
 
-    fs.writeFileSync('tree.json', JSON.stringify(tree.dump()));
+    fs.writeFileSync('./merkleTree/testTree.json', JSON.stringify(tree.dump()));
     merkleTree = tree;
     return tree;
   }
@@ -103,7 +103,7 @@ describe('BloodOfMolochMerklePBT', function () {
           BigNumber.from(BOM_TOTAL_SUPPLY)
         );
       });
-      
+
     it("Should set the Merkle Root", async function () {
         await setupForMint(true);
         expect(await bomContract.merkleRoot()).to.equal(merkleRoot);
