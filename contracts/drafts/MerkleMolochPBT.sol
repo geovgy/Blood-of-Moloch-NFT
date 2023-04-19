@@ -20,10 +20,7 @@ error NoClaimToken();
 error InvalidSignature();
 error InvalidChipAddress();
 error NoMintedTokenForChip();
-error ArrayLengthMismatch();
 error ChipAlreadyLinkedToMintedToken();
-error UpdatingChipForUnsetChipMapping();
-error NoMoreTokenIds();
 error InvalidBlockNumber();
 error BlockNumberTooOld();
 
@@ -73,7 +70,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         if (!canMint) {
             revert MintNotOpen();
         }
-        if (supply == maxSupply) {
+        if (_tokenIdCounter.current() == maxSupply) {
             revert TotalSupplyReached();
         }
         if (_claimToken == address(0)) {
@@ -86,9 +83,6 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         );
         _mintTokenWithChip(signatureFromChip, blockHashUsedInSig, proof);
         _burnClaimToken(claimTokenId);
-        unchecked {
-            ++supply;
-        }
     }
 
     function setMerkleRoot(bytes32 root) external onlyOwner{
@@ -180,9 +174,6 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
             revert ChipAlreadyLinkedToMintedToken();
         } else if (proof.verify(merkleRoot, leaf) == false ) {
             revert InvalidChipAddress();
-        }
-        if( _tokenIdCounter.current() == maxSupply){
-            revert NoMoreTokenIds();
         }
         uint256 tokenId = _tokenIdCounter.current();
         _mint(_msgSender(), tokenId);
