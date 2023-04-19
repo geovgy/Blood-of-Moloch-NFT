@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 error MintNotOpen();
 error TotalSupplyReached();
@@ -27,6 +28,7 @@ error InvalidBlockNumber();
 error BlockNumberTooOld();
 
 contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
+    using Counters for Counters.Counter;
     using MerkleProof for bytes32[];
     using ECDSA for bytes32;
     uint256 public supply;
@@ -44,6 +46,8 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         address indexed claimToken
     );
 
+    Counters.Counter private _tokenIdCounter;
+
     event PBTMint (uint256 tokenId, address tokenAddr   );
 
       struct TokenData {
@@ -54,7 +58,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
 
 
      // Mapping from chipAddress to TokenData
-    mapping(address => TokenData) _tokenDatas;
+    mapping(address => uint256) _tokenIds;
 
     // Max token supply
     uint256 public immutable maxSupply;
@@ -146,24 +150,24 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
      **************************************/
 
       function tokenIdFor(address chipAddress) external view  returns (uint256) {
-        if (!_tokenDatas[chipAddress].set) {
+        if (_exists(_tokenIds[chipAddress]) == false) {
             revert NoMintedTokenForChip();
         }
-        return _tokenDatas[chipAddress].tokenId;
+        return _tokenIds[chipAddress];
     }
 
     // Returns true if the signer of the signature of the payload is the chip for the token id
     function isChipSignatureForToken(uint256 tokenId, bytes memory payload, bytes memory signature)
         public
         view
-        returns (bool)
+        returns (bool isForToken)
     {
         if (!_exists(tokenId)) {
             revert NoMintedTokenForChip();
         }
         bytes32 signedHash = keccak256(payload).toEthSignedMessageHash();
         address chipAddr = signedHash.recover(signature);
-        return _tokenDatas[chipAddr].set && _tokenDatas[chipAddr].tokenId == tokenId;
+        isForToken = _exists(_tokenIds[chipAddr]);
     }
 
     // Parameters:
@@ -180,97 +184,25 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         // hash chip address for merkle proof double hashed to prevent second preimage attacks
         bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(chipAddr))));
 
-        if (_tokenDatas[chipAddr].set) {
+        if (_exists(_tokenIds[chipAddr])) {
             revert ChipAlreadyLinkedToMintedToken();
         } else if (proof.verify(merkleRoot, leaf) == false ) {
             revert InvalidChipAddress();
         }
-
-        uint256 tokenId = _useRandomAvailableTokenId();
+        if( _tokenIdCounter.current() == maxSupply){
+            revert NoMoreTokenIds();
+        }
+        uint256 tokenId = _tokenIdCounter.current();
         _mint(_msgSender(), tokenId);
-        _tokenDatas[chipAddr] = TokenData(tokenId, chipAddr, true);
+        _tokenIds[chipAddr] = tokenId;
+
+        _tokenIdCounter.increment();
 
         emit PBTMint(tokenId, chipAddr);
 
         return tokenId;
     }
 
-    // Generates a pseudorandom number between [0,maxSupply) that has not yet been generated before, in O(1) time.
-    //
-    // Uses Durstenfeld's version of the Yates Shuffle https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-    // with a twist to avoid having to manually spend gas to preset an array's values to be values 0...n.
-    // It does this by interpreting zero-values for an index X as meaning that index X itself is an available value
-    // that is returnable.
-    //
-    // How it works:
-    //  - zero-initialize a mapping (_availableRemainingTokens) and track its length (_numAvailableRemainingTokens). functionally similar to an array with dynamic sizing
-    //    - this mapping will track all remaining valid values that haven't been generated yet, through a combination of its indices and values
-    //      - if _availableRemainingTokens[x] == 0, that means x has not been generated yet
-    //      - if _availableRemainingTokens[x] != 0, that means _availableRemainingTokens[x] has not been generated yet
-    //  - when prompted for a random number between [0,maxSupply) that hasn't already been used:
-    //    - generate a random index randIndex between [0,_numAvailableRemainingTokens)
-    //    - examine the value at _availableRemainingTokens[randIndex]
-    //        - if the value is zero, it means randIndex has not been used, so we can return randIndex
-    //        - if the value is non-zero, it means the value has not been used, so we can return _availableRemainingTokens[randIndex]
-    //    - update the _availableRemainingTokens mapping state
-    //        - set _availableRemainingTokens[randIndex] to either the index or the value of the last entry in the mapping (depends on the last entry's state)
-    //        - decrement _numAvailableRemainingTokens to mimic the shrinking of an array
-    function _useRandomAvailableTokenId() internal returns (uint256) {
-        uint256 numAvailableRemainingTokens = _numAvailableRemainingTokens;
-        if (numAvailableRemainingTokens == 0) {
-            revert NoMoreTokenIds();
-        }
-
-        uint256 randomNum = _getRandomNum(numAvailableRemainingTokens);
-        uint256 randomIndex = randomNum % numAvailableRemainingTokens;
-        uint256 valAtIndex = _availableRemainingTokens[randomIndex];
-
-        uint256 result;
-        if (valAtIndex == 0) {
-            // This means the index itself is still an available token
-            result = randomIndex;
-        } else {
-            // This means the index itself is not an available token, but the val at that index is.
-            result = valAtIndex;
-        }
-
-        uint256 lastIndex = numAvailableRemainingTokens - 1;
-        if (randomIndex != lastIndex) {
-            // Replace the value at randomIndex, now that it's been used.
-            // Replace it with the data from the last index in the array, since we are going to decrease the array size afterwards.
-            uint256 lastValInArray = _availableRemainingTokens[lastIndex];
-            if (lastValInArray == 0) {
-                // This means the index itself is still an available token
-                _availableRemainingTokens[randomIndex] = lastIndex;
-            } else {
-                // This means the index itself is not an available token, but the val at that index is.
-                _availableRemainingTokens[randomIndex] = lastValInArray;
-                delete _availableRemainingTokens[lastIndex];
-            }
-        }
-
-        _numAvailableRemainingTokens--;
-
-        return result;
-    }
-
-    // Devs can swap this out for something less gameable like chainlink if it makes sense for their use case.
-    function _getRandomNum(uint256 numAvailableRemainingTokens) internal view virtual returns (uint256) {
-        return uint256(
-            keccak256(
-                abi.encode(
-                    _msgSender(),
-                    tx.gasprice,
-                    block.number,
-                    block.timestamp,
-                    block.difficulty,
-                    blockhash(block.number - 1),
-                    address(this),
-                    numAvailableRemainingTokens
-                )
-            )
-        );
-    }
 
     function transferTokenWithChip(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig) public  {
         transferTokenWithChip(signatureFromChip, blockNumberUsedInSig, false);
@@ -289,8 +221,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         uint256 blockNumberUsedInSig,
         bool useSafeTransferFrom
     ) internal virtual {
-        TokenData memory tokenData = _getTokenDataForChipSignature(signatureFromChip, blockNumberUsedInSig);
-        uint256 tokenId = tokenData.tokenId;
+        uint256 tokenId = _getTokenIdForChipSignature(signatureFromChip, blockNumberUsedInSig);
         if (useSafeTransferFrom) {
             _safeTransfer(ownerOf(tokenId), _msgSender(), tokenId, "");
         } else {
@@ -298,15 +229,15 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         }
     }
 
-    function _getTokenDataForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig)
+    function _getTokenIdForChipSignature(bytes calldata signatureFromChip, uint256 blockNumberUsedInSig)
         internal
         view
-        returns (TokenData memory)
+        returns (uint256 tokenId)
     {
         address chipAddr = _getChipAddrForChipSignature(signatureFromChip, blockNumberUsedInSig);
-        TokenData memory tokenData = _tokenDatas[chipAddr];
-        if (tokenData.set) {
-            return tokenData;
+        tokenId = _tokenIds[chipAddr];
+        if (_exists(tokenId)) {
+            return tokenId;
         }
         revert InvalidSignature();
     }
