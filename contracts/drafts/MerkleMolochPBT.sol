@@ -46,30 +46,22 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
         address indexed claimToken
     );
 
-    Counters.Counter private _tokenIdCounter;
-
     event PBTMint (uint256 tokenId, address tokenAddr   );
-
-      struct TokenData {
-        uint256 tokenId;
-        address chipAddress;
-        bool set;
-    }
-
 
      // Mapping from chipAddress to TokenData
     mapping(address => uint256) _tokenIds;
 
     // Max token supply
     uint256 public immutable maxSupply;
-    uint256 private _numAvailableRemainingTokens;
 
     // Data structure used for Fisher Yates shuffle
     mapping(uint256 => uint256) internal _availableRemainingTokens;
 
+    //initialize counter
+    Counters.Counter private _tokenIdCounter;
+
     constructor(uint256 _maxSupply) ERC721("Blood of Moloch", "BoM") {
         maxSupply = _maxSupply;
-        _numAvailableRemainingTokens = _maxSupply;
     }
 
     function mint(
