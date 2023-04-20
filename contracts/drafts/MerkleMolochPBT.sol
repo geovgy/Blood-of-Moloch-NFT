@@ -96,7 +96,7 @@ contract MerkleBloodOfMolochPBT is ERC721, ReentrancyGuard, Ownable  {
 
     function openMint() external onlyOwner {
         require(bytes(_baseTokenURI).length > 0, "BloodOfMoloch: no base URI");
-        require(merkleRoot != bytes32(0), "merkle root not set");
+        require(merkleRoot != bytes32(0), "Merkle root not set");
         require(_claimToken != address(0), "BloodOfMoloch: no claim token");
 
         canMint = true;

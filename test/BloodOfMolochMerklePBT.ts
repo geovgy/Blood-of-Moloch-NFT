@@ -57,9 +57,11 @@ describe('BloodOfMolochMerklePBT', function () {
   }
 
 
-  function createMerkle(addresses: string[][]) {
+  function createMerkle(addresses: string[]) {
 
-    const tree = StandardMerkleTree.of(addresses, ['address']);
+    const addressInput = addresses.map((address:string)=> [address])as unknown as string [][];
+
+    const tree = StandardMerkleTree.of(addressInput, ['address']);
 
     fs.writeFileSync('./merkleTree/testTree.json', JSON.stringify(tree.dump()));
     merkleTree = tree;
@@ -71,11 +73,8 @@ describe('BloodOfMolochMerklePBT', function () {
     await bomContract.setClaimToken(claimContract.address);
     chipAddresses = await parseHaloScans();
 
-    let merkleInput: string[][]= []
-    //merkle library requires an array of arrays as input
-    chipAddresses.map((address:string)=>{merkleInput.push([address])})as unknown as string[];
     //create merkle tree out of array of addresses in arrays
-    const merkleTree = createMerkle(merkleInput);
+    const merkleTree = createMerkle(chipAddresses);
 
     merkleRoot =  merkleTree.root;
     const tokenIds = chipAddresses.map((signer, index) => index);
