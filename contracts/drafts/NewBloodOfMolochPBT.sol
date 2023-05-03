@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chiru-labs/pbt/src/PBTRandom.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "../IBurnable.sol";
+import "../interfaces/IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error MintNotOpen();
