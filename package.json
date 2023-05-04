@@ -13,6 +13,8 @@
     "test:drink": "npx hardhat test test/NewBloodOfMolochPBT.ts",
     "test:claim": "npx hardhat test test/BloodOfMolochClaimNFT.ts",
     "deploy:local": "npx hardhat deploy --network localhost",
+    "deploy:merkle:local": "npx hardhat deploy --pbtcontract BloodOfMolochMerklePBT --network localhost",
+    "deploy:merkle:mainnet": "npx hardhat clean && npx hardhat deploy --pbtcontract BloodOfMolochMerklePBT --network mainnet",
     "deploy:test": "npx hardhat deploy --network goerli",
     "deploy:main": "npx hardhat deploy --network mainnet",
     "deploy:bom:local": "npx hardhat run --network localhost scripts/deploy/bom-pbt.ts",
