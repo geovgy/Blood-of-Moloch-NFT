@@ -19,7 +19,7 @@ task('mint', 'mint claim NFTs by quantity')
       address,
       claimInterface.abi,
       admin
-    )
+    ) as BloodOfMolochClaimNFT;
 
     if (quantity <= 0) return console.error("quantity cannot be zero or negative");
     try {

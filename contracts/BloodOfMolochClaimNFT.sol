@@ -4,7 +4,7 @@ pragma abicoder v2; // required to accept structs as function parameters
 
 import "./ERC721.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./IBurnable.sol";
+import "./interfaces/IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";

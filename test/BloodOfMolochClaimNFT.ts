@@ -223,7 +223,7 @@ describe("Claim NFT", function () {
 
     const tokenUri = await contract.tokenURI(0)
     console.log(tokenUri)
-    expect(tokenUri).to.equal(`ipfs://bafybeigrwwow5fzoew4q2ixfwjnpfl4rug6vvk26n2426gkmbhqx6c6g6q/${0}.json`)
+    expect(tokenUri).to.equal(`ipfs://bafybeifaq3z5fnaunzqzbuxlzpclccoocdgy2atteympxfpjntxqb3p77u/${0}.json`)
   })
 
   it("Should setBaseURI as minter role", async function () {

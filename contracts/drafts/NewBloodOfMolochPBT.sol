@@ -2,9 +2,9 @@
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@chiru-labs/pbt/src/PBTSimple.sol";
+import "@chiru-labs/pbt/src/PBTRandom.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "./interfaces/IBurnable.sol";
+import "../interfaces/IBurnable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 error MintNotOpen();
@@ -13,8 +13,8 @@ error CannotUpdateDeadline();
 error CannotMakeChanges();
 error NoClaimToken();
 
-contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
-    uint256 public constant TOTAL_SUPPLY = 350;
+contract NewBloodOfMolochPBT is PBTRandom, Ownable, ReentrancyGuard {
+    uint256 public TOTAL_SUPPLY = 350;
     uint256 public supply;
     uint256 public changeDeadline;
     bool public canMint;
@@ -29,7 +29,9 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
         address indexed claimToken
     );
 
-    constructor() PBTSimple("Blood of Moloch", "BoM") {}
+    constructor(uint256 _maxSupply) PBTRandom("Blood of Moloch", "BoM", _maxSupply) {
+        TOTAL_SUPPLY = _maxSupply;
+    }
 
     function mint(
         uint256 claimTokenId,
@@ -62,15 +64,9 @@ contract BloodOfMolochPBT is PBTSimple, Ownable, ReentrancyGuard {
      **************************************/
 
     function seedChipToTokenMapping(
-        address[] calldata chipAddresses,
-        uint256[] calldata tokenIds,
-        bool throwIfTokenAlreadyMinted
+        address[] calldata chipAddresses
     ) external onlyOwner {
-        _seedChipToTokenMapping(
-            chipAddresses,
-            tokenIds,
-            throwIfTokenAlreadyMinted
-        );
+        _seedChipAddresses(chipAddresses);
         _seeded = true;
     }
 

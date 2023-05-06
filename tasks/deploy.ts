@@ -1,37 +1,66 @@
 import { task } from 'hardhat/config';
 import * as fs from 'fs';
-import { Contract, ContractFactory } from 'ethers/lib/ethers';
-import { BloodOfMolochClaimNFT, BloodOfMolochPBT } from '../types';
+import { BigNumber, Contract, ContractFactory } from 'ethers/lib/ethers';
+import { BloodOfMolochClaimNFT, BloodOfMolochPBT, BloodOfMolochMerklePBT } from '../types';
 
-type Contracts = 'BloodOfMolochClaimNFT' | 'BloodOfMolochPBT';
+type Contracts = 'BloodOfMolochClaimNFT' | 'BloodOfMolochPBT' | 'BloodOfMolochMerklePBT';
 
 task('deploy', 'Deploy contracts and verify')
+  .addOptionalParam('pbtcontract', 'the name of the contract to be deployed')
+  .addOptionalParam('maxSupply', 'the max supply of tokens being created')
   .addOptionalParam('minter', 'The address of the EOA assigned the minter role')
-  .setAction(async ({minter}, { ethers }) => {
+  .setAction(async ({minter, pbtcontract, maxSupply }, { ethers }) => {
     const [admin] = await ethers.getSigners();
+    let contracts: Record<typeof pbtcontract | BloodOfMolochClaimNFT, ContractFactory>;
+    let deployments: Record<typeof pbtcontract | BloodOfMolochClaimNFT, string>;
+    let constructorArguments: Record<typeof pbtcontract | BloodOfMolochClaimNFT, (string| BigNumber)[]>
+    let supply: BigNumber = maxSupply? BigNumber.from(maxSupply) : BigNumber.from(350);
 
-    const contracts: Record<Contracts, ContractFactory> = {
+    if(pbtcontract == 'BloodOfMolochMerklePBT'){
+    contracts = {
+      BloodOfMolochMerklePBT: await ethers.getContractFactory(pbtcontract),
+      BloodOfMolochClaimNFT: await ethers.getContractFactory(
+        'BloodOfMolochClaimNFT')
+    };
+    
+    deployments = {
+      BloodOfMolochMerklePBT: '',
+      BloodOfMolochClaimNFT: '',
+    };
+
+    constructorArguments = {
+      BloodOfMolochMerklePBT: [supply],
+      BloodOfMolochClaimNFT: [minter !== undefined ? minter : admin.address ],
+    };
+
+  } else {
+    contracts = {
       BloodOfMolochPBT: await ethers.getContractFactory('BloodOfMolochPBT'),
       BloodOfMolochClaimNFT: await ethers.getContractFactory(
         'BloodOfMolochClaimNFT'
       ),
     };
 
-    const deployments: Record<Contracts, string> = {
+    deployments = {
       BloodOfMolochPBT: '',
       BloodOfMolochClaimNFT: '',
     };
 
-    const constructorArguments: Record<Contracts, string[]> = {
+    constructorArguments = {
       BloodOfMolochPBT: [],
-      BloodOfMolochClaimNFT: [minter? minter : admin.address ],
+      BloodOfMolochClaimNFT: [minter !== undefined ? minter : admin.address ],
     };
+  }
+
+
+
 
     const toFile = (path: string, deployment: Record<Contracts, string>) => {
       fs.writeFileSync(path, JSON.stringify(deployment), { encoding: 'utf-8' });
     };
 
-    let bomContract: BloodOfMolochPBT;
+    let bomContract: BloodOfMolochPBT | BloodOfMolochMerklePBT;
+
     for (const [name, contract] of Object.entries(contracts)) {
       console.log(`Starting deployment of ${name}`);
       const factory = contract;
@@ -39,7 +68,8 @@ task('deploy', 'Deploy contracts and verify')
       let constructorArgs = Object.entries(constructorArguments).find(
         (entry) => entry[0] === name
       )?.[1];
-      if (name === "BloodOfMolochClaimNFT") {
+      
+      if (name === "BloodOfMolochClaimNFT" && bomContract && constructorArgs) {
         constructorArgs = [...constructorArgs, bomContract.address]
       }
       console.log(`Constructor arguments: ${constructorArgs}`);
@@ -54,11 +84,11 @@ task('deploy', 'Deploy contracts and verify')
 
       deployments[name as Contracts] = instance.address;
 
-      if (name === "BloodOfMolochPBT") {
-        bomContract = instance
+      if (name === "BloodOfMolochPBT" || 'BloodOfMolochMerklePBT') {
+        bomContract = instance as BloodOfMolochPBT
       }
 
-      toFile(`deployments/deployments-${hre.network.name}.json`, deployments);
+      toFile(`deployments/deployments-${pbtcontract == 'BloodOfMolochMerklePBT'? 'merklebom' : 'bom'}-${hre.network.name}.json`, deployments);
 
 
       if (hre.network.name !== ('localhost' || 'hardhat')) {
