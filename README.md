@@ -21,3 +21,10 @@ npx hardhat run scripts/deploy.ts
 - Copy the "CLIENT ID" for your application and set it to `KEYP_CLIENT_ID` in `.env`
 
 3. In the `.env`, set `TOKEN_SECRET` to a random string, which is used for `next-auth` session cookies. You can generate this using `openssl rand -base64 32`. (NOTE: Do not use your access token here)
+
+
+## Deploy
+to deploy the merkle implementation to mainnet.
+```shell
+yarn deploy:merkle:mainnet
+```
