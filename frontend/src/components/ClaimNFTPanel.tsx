@@ -24,10 +24,13 @@ import { toast } from "react-toastify";
 const ClaimNFTPanel = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [claimNFT, setClaimNFT] = useState<any>(null);
-  const { data: signer, isSuccess } = useSigner();
+  const { data: signer, error, isLoading, refetch } = useSigner();
   const { address } = useAccount();
 
   const initContracts = () => {
+    if(isLoading){
+      console.log('...Loading');
+    } else if(signer){
     setClaimNFT(
       new ethers.Contract(
         process.env.NEXT_PUBLIC_CLAIM_ADDRESS || "",
@@ -35,14 +38,19 @@ const ClaimNFTPanel = () => {
         signer
       )
     );
+    }
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isLoading){
+      console.log('...Loading');
+    } else if (signer) {
       initContracts();
+    } else if(error){
+      console.error(error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess]);
+  }, [signer, isLoading, error]);
   useEffect(() => {
     if (claimNFT) {
       checkClaimNFTBalance();

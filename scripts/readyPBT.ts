@@ -25,7 +25,7 @@ async function main() {
         address,
         bomInterface.abi,
         signer
-      )
+      ) as BloodOfMolochPBT;
 
       const claimAddress = deployments["BloodOfMolochClaimNFT"]
       if (!claimAddress) throw Error("No address of claim NFT contract")
