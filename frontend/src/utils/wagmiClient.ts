@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { createClient } from "wagmi";
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import {
   injectedWallet,
   metaMaskWallet,
@@ -11,33 +11,47 @@ import {
   coinbaseWallet,
   ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 
 import { chains, provider } from "./chains";
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_ID || '';
 
+const {wallets} = getDefaultWallets({
+  appName: "Blood-of-moloch-PBT",
+  projectId,
+  chains,
+})
 const connectors = connectorsForWallets([
-  {
-    groupName: "Popular",
-    wallets: [
-      injectedWallet({ chains }),
-      metaMaskWallet({ chains, shimDisconnect: false }),
-      walletConnectWallet({ chains }),
-      ledgerWallet({ chains }),
-    ],
-  },
+  ...wallets,
   {
     groupName: "Others",
     wallets: [
-      rainbowWallet({ chains }),
+      rainbowWallet({ projectId, chains }),
       coinbaseWallet({ chains, appName: "Blood of Moloch" }),
-      argentWallet({ chains }),
+      argentWallet({ projectId, chains }),
       braveWallet({ chains }),
+      metaMaskWallet({projectId, chains}),
+      walletConnectWallet({projectId, chains}),
+      injectedWallet({chains}),
+      ledgerWallet({projectId, chains})
+
     ],
   },
 ]);
 
+
+
+// const connector = new WalletConnectConnector({
+//   chains,
+//   options: {
+//     projectId,
+//     showQrModal: true
+//   }
+// })
+
 export const wagmiClient = createClient({
-  provider,
-  connectors,
-  // turn off autoConnect in development
   autoConnect: true,
+  provider,
+  connectors: connectors,
 });
+
